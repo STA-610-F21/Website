@@ -32,8 +32,6 @@ By the end of this course, students should be able to
 
 #### Labs
 
-<font color="#6CA0DC"><i class="fas fa-user fa-lg"></i></font> &nbsp; **[Chengxin Yang](https://scholars.duke.edu/person/chengxin.yang)**
-
 <font color="#6CA0DC"><i class="fas fa-calendar-alt fa-lg"></i></font> &nbsp; **Fridays (1:45 - 3:00pm)**
 
 <font color="#6CA0DC"><i class="fas fa-university fa-lg"></i></font> &nbsp; **Perkins Link 071 (Classroom 5)**.</font>

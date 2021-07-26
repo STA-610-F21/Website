@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>STA 610: FALL 2021</title>
+    <link>/</link>
+    <description>Recent content on STA 610: FALL 2021</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 15 Jul 2021 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title></title>
+      <link>/syllabus/</link>
+      <pubDate>Thu, 15 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/syllabus/</guid>
+      <description>Note: *Please check this page frequently for updates and always remember to refresh the page.*  Week Date Lesson Reading Video Slides Slides (pdf) Lab Problem Sets Case Study     MODULE 1: INTRODUCTION AND REVIEW                       WEEK 1 Mon, Aug 23 Module 1.1: Course overview and introduction           Fri, Jan 22 Module 1.</description>
+    </item>
+    
+    <item>
+      <title>Policies</title>
+      <link>/policies/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/policies/</guid>
+      <description>When in doubt about anything at all, ask questions!!!
+Prerequisites ALL students are expected to be familiar with all the topics covered within the required prerequisites to be in this course. That is, courses covering linear and matrix algebra and STA 360/601/602. Students are also expected to be very familiar with R and are encouraged to have learned LaTeX or a Markdown language by the end of the course.
+Workload Work hours will include time spent going through the preassigned readings, attending the lectures, attending the lab sessions, and doing all graded work.</description>
+    </item>
+    
+    <item>
+      <title>Resources</title>
+      <link>/resources/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/resources/</guid>
+      <description>Supplementary Textbooks These textbooks are great resources for some of the topics we will cover. You do not need to buy them, but you may be able to borrow them from Duke library should you need extra reading materials, besides the class slides and main textbooks.
+ Bayesian Data Analysis (Third Edition) by Andrew Gelman, John Carlin, Hal Stern, David Dunson, Aki Vehtari, and Donald Rubin. Introduction to multilevel modeling using rstanarm: A tutorial for education researchers.</description>
+    </item>
+    
+  </channel>
+</rss>

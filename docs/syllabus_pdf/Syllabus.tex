@@ -1,0 +1,315 @@
+\documentclass[11pt, a4paper]{article}
+%\usepackage{geometry}
+\usepackage[inner=2cm,outer=2cm,top=2.5cm,bottom=2.5cm]{geometry}
+\pagestyle{empty}
+\usepackage{graphicx}
+\usepackage{fancyhdr, lastpage, bbding, pmboxdraw}
+\usepackage[usenames,dvipsnames]{color}
+\definecolor{darkblue}{rgb}{0,0,.6}
+\definecolor{darkred}{rgb}{.7,0,0}
+\definecolor{darkgreen}{rgb}{0,.6,0}
+\definecolor{red}{rgb}{.98,0,0}
+\usepackage[colorlinks,pagebackref,pdfusetitle,urlcolor=darkblue,citecolor=darkblue,linkcolor=darkred,bookmarksnumbered,plainpages=false]{hyperref}
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+\pagestyle{fancyplain}
+\fancyhf{}
+\lhead{ \fancyplain{}{\textsc{STA 610:\ Multilevel and Hierarchical Models}} }
+%\chead{ \fancyplain{}{} }
+\rhead{ \fancyplain{}{\textsc{Fall 2021}} }
+\rfoot{Page \thepage}
+%\fancyfoot[RO, LE] {page \thepage\ of \pageref{LastPage} }
+\thispagestyle{plain}
+
+%%%%%%%%%%%% LISTING %%%
+\usepackage{listings}
+\usepackage{caption}
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{\textwidth}{#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
+\usepackage{verbatim} % used to display code
+\usepackage{fancyvrb}
+\usepackage{acronym}
+\usepackage{amsthm}
+\usepackage{ulem}
+\VerbatimFootnotes % Required, otherwise verbatim does not work in footnotes!
+
+
+
+\definecolor{OliveGreen}{cmyk}{0.64,0,0.95,0.40}
+\definecolor{CadetBlue}{cmyk}{0.62,0.57,0.23,0}
+\definecolor{lightlightgray}{gray}{0.93}
+
+
+\lstset{
+%language=bash,                          % Code langugage
+basicstyle=\ttfamily,                   % Code font, Examples: \footnotesize, \ttfamily
+keywordstyle=\color{OliveGreen},        % Keywords font ('*' = uppercase)
+commentstyle=\color{gray},              % Comments font
+numbers=left,                           % Line nums position
+numberstyle=\tiny,                      % Line-numbers fonts
+stepnumber=1,                           % Step between two line-numbers
+numbersep=5pt,                          % How far are line-numbers from code
+backgroundcolor=\color{lightlightgray}, % Choose background color
+frame=none,                             % A frame around the code
+tabsize=2,                              % Default tab size
+captionpos=t,                           % Caption-position = bottom
+breaklines=true,                        % Automatic line breaking?
+breakatwhitespace=false,                % Automatic breaks only at whitespace?
+showspaces=false,                       % Dont make spaces visible
+showtabs=false,                         % Dont make tabls visible
+columns=flexible,                       % Column format
+morekeywords={__global__, __device__},  % CUDA specific keywords
+}
+
+
+
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{makecell}
+
+\newcommand{\tabitem}{~~\llap{\textbullet}~~}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\renewcommand{\arraystretch}{1.5}	
+
+
+\begin{center}
+{\Large \textsc{STA 610:\ Multilevel and Hierarchical Models}}
+\end{center}
+
+
+\begin{center}
+	\textsc{Fall 2021} \\
+	\textsc{Duke University} \\
+	%\textsc{\color{darkred} Draft Syllabus} \\
+\end{center}
+
+
+
+\begin{center}
+	\begin{minipage}[t]{.95\textwidth}
+		\begin{tabular}{@{}L{3cm}L{12.5cm}}
+			\toprule[0.065cm]
+			\textsc{Instructor:} & \href{https://olanrewajuakande.com}{\textsc{Olanrewaju Michael Akande, Ph.D.}} \\
+			\textsc{Email:} &\href{mailto:olanrewaju.akande@duke.edu}{\Envelope ~olanrewaju.akande@duke.edu} \\
+			\textsc{Office:} & \textbf{256 Gross Hall} \\
+			\textsc{Office Hours:} & \textbf{Mondays and Thursdays (9am -- 10am)}. \\% \newline Zoom meeting ID: \textbf{See Sakai}. \\
+			%\textsc{Office:} & 256 Gross Hall \\
+			\textsc{Course Page:} & \href{https://sta610-f21.olanrewajuakande.com}{https://sta610-f21.olanrewajuakande.com} \\
+			\textsc{Meeting Times:}  & \textbf{Mondays and Wednesdays (1:45 - 3:00pm), Perkins Link 071 (Classroom 5).} \\
+			\textsc{Labs:} & \textbf{Fridays (1:45 - 3:00pm), Perkins Link 071 (Classroom 5).} \\
+			%\textsc{Teaching Assistants:} & \textbf{TBD} \\
+			\textsc{Teaching Assistants:} & \href{https://scholars.duke.edu/person/chengxin.yang}{\textsc{Chengxin Yang}}. 
+							\newline \textbf{Times TBD}. \\% \newline Zoom meeting ID: \textbf{See Sakai}.  \\
+			&\href{https://scholars.duke.edu/person/alessandro.zito}{\textsc{Alessandro Zito}}. 
+							\newline \textbf{Times TBD}. \\% \newline Zoom meeting ID: \textbf{See Sakai}. \\
+			\textsc{Recommended Textbooks:} & -- \href{https://www.amazon.com/gp/product/052168689X/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=052168689X&linkCode=as2&tag=andrsblog0f-20&linkId=PX5B5V6ZPCT2UIYV}{\textit{Data Analysis Using Regression and Multilevel/Hierarchical Models}} by Gelman A., and Hill, J.  \\
+			& -- Peter Hoff's Lecture Notes on Hierarchical Modeling (Sakai) \\
+			\textsc{Important Dates:} & \begin{minipage}[t]{.95\textwidth}
+				\begin{tabular}{@{}ll}
+					\tabitem Monday, August 23	& Fall classes begin \\
+					\tabitem Friday, September 3	& Drop/Add ends \\
+					\tabitem Monday, September 6 & Labor day. Classes in session \\
+					\tabitem Wednesday, September 22 & Exam I (\textit{tentative})\\
+					\tabitem Monday, November 15 & Exam II (\textit{tentative})\\
+					\tabitem Tuesday, November 23 &	End of semester \\
+				\end{tabular}
+			\end{minipage} \\
+			\bottomrule[0.065cm]
+		\end{tabular}
+	\end{minipage}
+\end{center}
+
+
+
+\vspace{.5cm}
+\setlength{\unitlength}{1in}
+\renewcommand{\arraystretch}{1.5}
+
+
+
+\section{Course Overview}
+Statistical models are necessary for analyzing the type of multivariate (often large) datasets that are usually encountered in data science and statistical science, and hierarchical models often play a vital role in many of those applications. This is a graduate-level course that introduces students to the building blocks of hierarchical modeling and provides students with the tools needed to build, fit and interpret hierarchical models.
+
+Hierarchical or multilevel models provide a principled way to model naturally grouped or clustered data, in a way that takes advantage of the relationship between observations in the same group, but also allows for borrowing of information across the groups. In this course, you will be introduced to these models, with particular emphasis on the theoretical and conceptual foundations, as well as implementation, model fitting, and interpretation of the results.
+
+This course emphasizes the mathematical theory behind hierarchical models, as well as real data analyses, including interpretation of results. All students must have the theoretical background covered in the prerequisites (in particular, in the context of Bayesian statistics) to be able to keep up with and understand the materials. 
+
+
+\section{Learning Objectives}
+By the end of this course, students should be able to
+\begin{itemize}[label= {\color{darkblue}{\ArrowBoldRightStrobe}}]
+	\item Understand the foundations and general structure of both classical and Bayesian hierarchical models.
+	\item Specify and fit hierarchical models to various types of grouped or clustered data.
+	\item Use the models covered in class to analyze real data sets.
+	\item Assess the adequacy of hierarchical models to any given data and make a decision on what to do in cases when certain models are not appropriate for a given dataset.
+\end{itemize}
+
+
+%\section{Course Info}
+%\section{Course Format}
+%This is an online course designed to be primarily synchronous. However, there will also be some asynchronous activities. Students will be required to do pre-assigned readings, go through lecture slides, watch pre-recorded lecture videos, and take the quizzes embedded in the videos, all before each synchronous meeting time. The meeting times, which will be held on Zoom, are thus designed to be live demonstration, discussion and Q\&A sessions. Occasionally, the meeting times will also be used for group activities. Each live meeting session will be recorded and made available afterwards. Additional live sessions include office hours for the instructor and TAs. Those will not be recorded. Students who are unable to attend the office hours can send their questions in advance of the live meeting sessions, so that the instructor or TAs can provide answers during those recorded sessions.
+
+%\subsection{Playposit}
+%To gain access to the pre-recorded lecture videos, you will have to create a Playposit account. There are participation quizzes embedded within the videos. These quizzes make up a part of your final grade (see: \href{https://sta-610l-s21.github.io/Course-Website/policies/}{course policies}) so take them seriously. To join the class on Playposit, you need to create a new account as a student \href{https://www.playposit.com/join}{here}. Next, you will use the class link, which I will send out via email, to join the class site. While you need not create an account with your Duke email, I strongly suggest you do.
+
+%\subsection{Zoom meetings}
+%The easiest way for you to join the different Zoom meetings is to log in to Sakai, go to the``Zoom meetings'' tab, and click ``Upcoming Meetings''. For the recordings (for lab and discussion sessions), also log in to Sakai, go to the ``Zoom meetings'' tab, and click ``Cloud Recordings''. Those will be available few minutes after the sessions.
+
+%\subsection{Wellness day}
+%In lieu of a traditional class meeting on April 12, 2021, please use our regular class time to engage in reflection and wellness endeavors. A list of wellness strategies and programs is available at \url{https://studentaffairs.duke.edu/duwell/wellness-day-2021}.
+
+%Although the goal of Wellness Day 2021 is to provide time and space to engage in activities that enhance your well-being, please remember that wellness isn’t achieved in one day.  Learning to balance your personal, professional, and academic commitments is a skill that should be practiced regularly and over time.
+
+
+\section{Prerequisites}
+ALL students are expected to be familiar with all the topics covered within the required prerequisites to be in this course. That is, courses covering linear and matrix algebra and STA 360/601/602. Students are also expected to be very familiar with \textsf{R} and are encouraged to have learned \LaTeX \ or a Markdown language by the end of the course.
+
+
+\section{Team Work}
+This course also emphasizes the ability to work in teams so that students can learn team productivity and performance. Each student must be ready to contribute to their team's success. During the first or second week of class, we will develop teams of around four to five students - these teams will stay consistent throughout the semester (barring extraordinary circumstances). You will work in these teams during classes/labs and on the group case studies.
+
+
+\section{Class Materials}
+Lecture notes and slides, lab exercises and assigned readings will be posted on the course website, while lecture and lab videos will be posted on Sakai. %White boards will also be used frequently in the lecture videos, so please pay special attention to those.
+
+\section{Workload}
+Work hours will include time spent going through the preassigned readings, attending the lectures, attending the lab sessions, and doing all graded work. Please note that the more focused and engaged you are, the quicker you will be able to get through all the materials.
+
+\section{Graded Work} 
+Graded work for the course will consist of problem sets, lab exercises, two case studies and two exams. Regrade requests for problem sets, lab exercises and case studies must be done via Gradescope AT MOST \textbf{24 hours} after grades are released! Regrade requests for the exams must be done via Gradescope AT MOST \textbf{12 hours} after grades are released!
+\begin{itemize}[label= {\color{darkblue}{\ArrowBoldRightStrobe}}]
+		\item Students' final grades will be determined as shown by the breakdown in Table \ref{gradedwork}.
+	\begin{table}[h]
+		\centering
+		\caption{Breakdown of graded work} \label{gradedwork}
+		\begin{tabular}{ll}
+			Component & Percentage \\ 
+			\hline
+			Lab Exercises \& Overall Participation & 12.5\% \\
+			Group Case Study I & 12.5\% \\
+			Group Case Study II & 15\% \\
+			Problem Sets & 20\% \\
+			Exam I & 20\% \\ 
+			Exam II & 20\% \\
+			\hline 
+		\end{tabular}
+	\end{table}
+	
+	\item There are no make-ups for any of the graded work except for medical or familial emergencies or for reasons approved by the instructor BEFORE the due date. Contact the instructor in advance of relevant due dates to discuss possible alternatives. 
+	
+	\item Grades may be curved at the end of the semester. Cumulative averages of 90\% -- 100\% are guaranteed at least an A-, 80\% -- 89\% at least a B-, and 70\% -- 79\% at least a C-, however the exact ranges for letter grades will be determined at the end of the course.
+\end{itemize}
+
+
+\section{Descriptions of graded work}
+\subsection{Problem sets}
+Four problem sets will be handed out over the course of the semester. These problem sets are to be completed independently without collaborating with other students. Be sure to check the website regularly for the dates and deadlines! \textbf{Please note that any work that is not legible by the instructor or TAs will not be graded (given a score  of 0). Every write-up must be clearly written in full sentences and clear English. Any assignment that is completely unclear to the instructors and/or TAs, may result in a grade of a 0.} For programming exercises, you are required to use R and you must submit ALL of the code as an appendix.  
+
+Each student MUST write up and turn in their own answers. You are encouraged to talk to each other, regarding problem sets or to the instructor/TA. However, the write-up, solutions, and code must be entirely your own work. The assignments must be submitted on Gradescope under ``Assignments''. Note that you will not be able to make online submissions after the due date, so be sure to submit before or by the Gradescope-specified deadline.
+
+Solutions to the problem sets will be curated from student solutions with proper attribution. For each problem set, the TAs will select a representative correct solution for the assigned problems and put them together into one solution set with each answer being attributed to the student who wrote it. \textbf{If you would like to OPT OUT of having your solutions used for as a representative solution, please let the instructor and TAs know in advance.}
+
+\subsection{Lab exercises}
+The objective of the lab assignments is to give you more hands-on experience with hierarchical data analysis. Come learn a concept or two and some R from the TAs, and then work on the computational part of the problem sets. Each lab assignment should be submitted in timely fashion. You are REQUIRED to use R Markdown to type up your lab reports.
+
+\subsection{Group Case Studies}
+There will be detailed analysis of two case studies using current, relevant data. Each case study will involve a final submission per team.
+Each team will present their findings in class, and also turn in written reports. You must participate in each presentation to receive full credit for that group case study. Individual contributions to each submission will also be assessed. Team members must provide these assessments in order to receive credit for an assignment. An individual team member’s grade may be modified if assessments indicate this is appropriate. Additional details on the case studies will be made available later.
+
+\subsection{Exams}
+There will be two exams as specified on the syllabus and schedule. If you know in advance you must miss an examination, please contact the instructor as soon as possible. Detailed instructions will be made available later.
+
+
+\section{Late Submission Policy} 
+\begin{itemize}
+	\item You will lose
+	\begin{enumerate}
+		\item 40\% of the total points on each problem set or case studies if you submit within the first 24 hours after it is due, and
+		\item 100\% of the total points if you submit later than that.
+	\end{enumerate}
+	
+	In addition, you will lose 
+	\begin{enumerate}
+		\item 50\% of the total points on each lab exercise if you submit within the first 24 hours after it is due, and
+		\item 100\% of the total points if you submit later than that.
+	\end{enumerate}
+	
+	\item You will lose 100\% of the total points on exams if you miss the dates/times.
+\end{itemize}
+
+
+\section{Auditing}
+Students who audit this course will be expected to complete most of the graded work with the goal of getting an overall score of at least 70\%; you will only need to complete enough graded work to get to 70\%. You are also expected to attend most lectures, go through the readings, and generally, participate like everyone else. You must contact the instructor in advance if you wish to audit the course.
+
+
+
+\section{Tentative Course Schedule} 
+We will cover the topics below. We may spend different amounts of time on each topic. For a detailed and updated outline, check on the updated course schedule on the course page regularly. 
+\begin{enumerate}[label= {\color{darkblue}{\ArrowBoldRightStrobe}}]
+	\item \textbf{Building blocks:}
+	\begin{enumerate}[label= {\color{cyan}{\Rectangle}}]
+		\item One way ANOVA: scalar and matrix formulations
+		\item MLEs, contrasts, coding schemes, and interactions
+		\item Random effects ANOVA
+		\item Bayesian estimation
+		\item Random effects ANCOVA
+	\end{enumerate}
+
+	\item \textbf{Linear mixed effect models: }
+	\begin{enumerate}[label= {\color{cyan}{\Rectangle}}]
+		\item Review of linear model
+		\item Linear mixed effect models
+		\item Diagnostics and influence measures
+		\item Bayesian linear mixed effect models
+		\item Longitudinal data
+		\item Crossed/non-nested random effects
+		\item Measurement error
+		\item Poststratification and weighting
+		\item Missing data
+		\item Meta analysis
+		\item Multilevel categorical outcomes
+		\item Introduction to finite mixture models 
+	\end{enumerate}
+	
+	\item \textbf{Wrap up and review}
+\end{enumerate}
+
+
+\section{Academic Integrity}  
+Duke University is a community dedicated to scholarship, leadership, and service and to the principles of honesty, fairness, respect, and accountability. Citizens of this community commit to reflect upon and uphold these principles in all academic and nonacademic endeavors, and to protect and promote a culture of integrity. To uphold the \href{https://studentaffairs.duke.edu/conduct/about-us/duke-community-standard}{Duke Community Standard}:
+\begin{itemize}[label= {\color{darkred}{\Large \HandRight}}]
+	\item I will not lie, cheat, or steal in my academic endeavors;
+	\item I will conduct myself honorably in all my endeavors; and
+	\item I will act if the Standard is compromised.
+\end{itemize}
+
+Cheating or plagiarism on any graded assessments, lying about an illness or absence and other forms of academic dishonesty are a breach of trust with classmates and faculty, violate the Duke Community Standard, and will not be tolerated. Such incidences will result in a 0 grade for all parties involved. Additionally, there may be penalties to your final class grade along with being reported to the Office of Student Conduct. Review the academic dishonesty policies at \url{https://studentaffairs.duke.edu/conduct/z-policies/academic-dishonesty}.
+
+
+\section{Diversity \& Inclusiveness:}
+This course is designed so that students from all backgrounds and perspectives all feel welcome both in and out of class. Please feel free to talk to me (in person or via email) if you do not feel well-served by any aspect of this class, or if some aspect of class is not welcoming or accessible to you. My goal is for you to succeed in this course, therefore, let me know immediately if you feel you are struggling with any part of the course more than you know how to manage. Doing so will not affect your grades, but it will allow me to provide the resources to help you succeed in the course.
+
+
+\section{Disability Statement} 
+Students with disabilities who believe that they may need accommodations in the class are encouraged to contact the \href{https://access.duke.edu/students/staff.php}{Student Disabilities Access Office} at 919.668.1267 or \href{mailto:disabilities@aas.duke.edu}{disabilities@aas.duke.edu}  as soon as possible to better ensure that such accommodations are implemented in a timely fashion.
+
+
+\section{Other Information} 
+It can be a lot more pleasant oftentimes to get one-on-one answers and help. Make use of the teaching team's office hours, we're here to help! Do not hesitate to talk to me during office hours or by appointment to discuss a problem set or any aspect of the course.  Questions related to course assignments and honesty policy should be directed to me. When the teaching team has announcements for you we will send an email to your Duke email address. Be sure to check your email daily.
+
+%Most of the course components, including live meeting sessions and all office hours, will be held online using Zoom meetings. 
+If you have any concerns, issues or challenges, let the instructor know as soon as possible. Also, all students are strongly encouraged to rely on Ed Discussion, for interacting among yourself and asking other students questions. You can also ask the instructor or the TAs questions on there and we will try to respond as soon as possible.  If you experience any technical issues with joining or using Ed Discussion, let the instructor know.
+
+
+\section{Professionalism}
+Try as much as possible to refrain from texting or using your computer for anything other than coursework while in class. Again, the more engaged you are, the quicker you will be able to get through the materials. You are responsible for everything covered in class, the lecture notes/slides, and in the assigned readings.
+
+
+\end{document} 
