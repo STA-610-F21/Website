@@ -1,3 +1,383 @@
 lessons:
   
-
+  - title: "MODULE 1: INTRODUCTION AND REVIEW"
+  - title: " "
+  
+  
+  
+  - week: "WEEK 1"
+    date: "Mon, Aug 23"
+    title: "Module 1.1: Course overview and introduction"
+    #slides: "1-1-course-overview.html"
+    
+  - title: "Module 1.2: Review"
+    #slides: "1-2-review.html"
+    
+  - title: "Module 1.3: Introduction to hierarchical models"
+    #slides: "1-3-intro.html"
+    #slidespdf: "1-3-intro.pdf"
+    
+  - title: "Module 1.4: Short activity"
+    #slides: "1-4-intro-activity.html"
+    
+    
+  - title: " "
+  - title: "MODULE 2: RANDOM EFFECTS ANOVA / HIERARCHICAL NORMAL MODEL"
+  - title: " "
+    
+    
+  - date: "Wed, Aug 25"
+    title: "Module 2.1: One way ANOVA (formulation and estimation)"
+    #reading: "2-1-reading.html"
+    #slides: "2-1-anova-estimation.html"
+    #slidespdf: "2-1-anova-estimation.pdf"
+    #video: "https://api.playposit.com/go/play/1127078/1403540/1028257/0/Multilevel-and-Hierarchical-Models--Module-21-One-way-ANOVA-formulation-and-estimation"
+    
+  - title: "Module 2.2: One way ANOVA (step-down tests and matrix formulation)"
+    #reading: "2-2-reading.html"
+    #slides: "2-2-anova-matrix-formulation.html"
+    #slidespdf: "2-2-anova-matrix-formulation.pdf"
+    #video: "https://api.playposit.com/go/play/1127090/1403540/1028257/0/Multilevel-and-Hierarchical-Models--Module-22-One-way-ANOVA-step-down-tests-and-matrix-formulation"
+    
+    
+  - date: "Fri, Aug 27"
+    title: "Lab 1: Help, these kids are killing me! (Part I)"
+    #lab: "lab-01.html"
+    
+    
+    
+  - week: "WEEK 2"
+    date: "Mon, Aug 30"
+    title: "Module 2.3: One way ANOVA (distribution of estimates and linear combinations)"
+    #reading: "2-3-reading.html"
+    #slides: "2-3-anova-linear-combinations.html"
+    #slidespdf: "2-3-anova-linear-combinations.pdf"
+    #video: "https://api.playposit.com/go/play/1133403/1403540/1028257/0/Multilevel-and-Hierarchical-Models--Module-23-One-way-ANOVA-distribution-of-estimates-and-linear-combinations"
+    
+  - title: "Module 2.4: Multi-way ANOVA and interactions"
+    #reading: "2-4-reading.html"
+    #slides: "2-4-multi-way-anova.html"
+    #slidespdf: "2-4-multi-way-anova.pdf"
+    #video: "https://api.playposit.com/go/play/1133405/1403540/1028257/0/Multilevel-and-Hierarchical-Models--Module-24-Multi-way-ANOVA-and-interactions"
+    
+  - title: "Module 2.5: Short activity"
+    #slides: "2-5-short-activity.html"
+    
+    
+  - date: "Wed, Sept 1"
+    title: "Module 2.6: Random effects ANOVA (introduction)"
+    #reading: "2-6-reading.html"
+    #slides: "2-6-random-effects-anova-intro.html"
+    #slidespdf: "2-6-random-effects-anova-intro.pdf"
+    #video: "https://api.playposit.com/go/play/1138761/1403540/1028257/0/Multilevel-and-Hierarchical-Models--Module-26-Random-effects-ANOVA-introduction"
+    
+  - title: "Module 2.7: Random effects ANOVA (estimation)"
+    #reading: "2-7-reading.html"
+    #slides: "2-7-random-effects-anova-estimation.html"
+    #slidespdf: "2-7-random-effects-anova-estimation.pdf"
+    #video: "https://api.playposit.com/go/play/1138743/1403540/1028257/0/Multilevel-and-Hierarchical-Models--Module-27-Random-effects-ANOVA-estimation"
+    
+    
+  - date: "NEW ASSIGNMENT:"
+    title: "Homework 1"
+    #hw: "hw-01.html"
+    
+    
+  - date: "Fri, Sept 3"
+    title: "Lab 2: Help, these kids are killing me! (Part II)"
+    #lab: "lab-02.html"
+    
+  - title: "Drop/Add ends"
+    
+    
+  - week: "WEEK 3"
+    date: "Mon, Sept 6"
+    title: "Module 2.8: Random effects ANOVA illustration (in class)"
+    #slides: "2-8-random-effects-anova-illustration.html"
+    #slidespdf: "2-8-random-effects-anova-illustration.pdf"
+    
+  
+  - date: "Wed, Sept 8"
+    title: "Module 2.9: Random effects ANOVA (Bayesian estimation I)"
+    #reading: "2-9-reading.html"
+    #slides: "2-9-random-effects-anova-bayesian-estimation.html"
+    #slidespdf: "2-9-random-effects-anova-bayesian-estimation.pdf"
+    
+  - title: "Module 2.10: Random effects ANOVA (Bayesian estimation II)"
+    #reading: "2-10-reading.html"
+    #slides: "2-10-random-effects-anova-bayesian-estimation-II.html"
+    #slidespdf: "2-10-random-effects-anova-bayesian-estimation-II.pdf"
+    
+  - title: "R illustration for lme4 and brms"
+    #video: "https://api.playposit.com/go/play/1164919/1403540/1028257/0/Multilevel-and-Hierarchical-Models--R-illustration-for-lme4-and-brms"
+    
+    
+  - date: "DELIVERABLES:"
+    title: "Homework 1 due!"
+    
+    
+  - date: "Fri, Sept 10"
+    title: "Lab 3: Hospital Rankings (Part I)"
+    #lab: "lab-03.html"
+    
+    
+    
+  - week: "WEEK 4"
+    date: "Mon, Sept 13"
+    title: "Module 2.11: Random effects ANOVA (priors for group-level variance)"
+    #slides: "2-11-random-effects-anova-priors-group-level-variance.html"
+    #slidespdf: "2-11-random-effects-anova-priors-group-level-variance.pdf"
+    
+  - title: "Module 2.12: Random effects ANCOVA (introduction)"
+    #reading: "2-12-reading.html"
+    #slides: "2-12-random-effects-ancova-intro.html"
+    #slidespdf: "2-12-random-effects-ancova-intro.pdf"
+    
+    
+  - date: "Wed, Sept 15"
+    title: "Module 2.13: Random effects ANCOVA (cont'd)"
+    #slides: "2-13-random-effects-ancova-contd.html"
+    #slidespdf: "2-13-random-effects-ancova-contd.pdf"
+    
+  - date: "NEW ASSIGNMENT:"
+    title: "Homework 2"
+    #hw: "hw-02.html"
+    
+    
+  - date: "Fri, Sept 17"
+    title: "Lab 4: Hospital Rankings (Part II)"
+    #lab: "lab-04.html"
+    
+    
+  
+  - week: "WEEK 5"
+    date: "Mon, Sept 20"
+    title: "Module 2.14: Random effects ANCOVA (holistic analysis)"
+    #slides: "2-14-random-effects-ancova-holistic-analysis.html"
+    #slidespdf: "2-14-random-effects-ancova-holistic-analysis.pdf"
+    
+  
+  - date: "Tue, Sept 21 | NEW ASSIGNMENT:"
+    title: "Case Study I"
+    #project: "case-study-I.html"
+    
+  - date: "Wed, Sept 22"
+    title: "Exam review"
+    
+  - date: "DELIVERABLES:"
+    title: "Homework 2 due!"
+    
+  - date: "Fri, Sept 24"
+    title: "Lab 5: Do more beautiful professors get higher evaluations? (Part I)"
+    #lab: "lab-05.html"
+    
+  
+  
+  - week: "WEEK 6"
+    date: "Mon, Sept 27"
+    title: "Exam I"
+    
+    
+  - title: " " 
+  - title: "MODULE 3: GENERALIZED LINEAR MIXED EFFECTS MODELS"
+  - title: " " 
+    
+    
+  - date: "Wed, Sept 29"
+    title: "Module 3.1: Linear mixed effects models"
+    #reading: "3-1-reading.html"
+    #slides: "3-1-linear-mixed-effects-models.html"
+    #slidespdf: "3-1-linear-mixed-effects-models.pdf"
+    
+  - title: "Module 3.2: Linear mixed effects models (influence measures)"
+    ##reading: "3-2-reading.html"
+    #slides: "3-2-linear-mixed-effects-models-diagnostics.html"
+    #slidespdf: "3-2-linear-mixed-effects-models-diagnostics.pdf"
+    
+    
+  - date: "Fri, Oct 1"
+    title: "No lab"
+    
+    
+    
+  - week: "WEEK 7"
+    date: "Mon, Oct 4"
+    title: "Module 3.3: Bayesian linear mixed effects models"
+    ##reading: "3-3-reading.html"
+    #slides: "3-3-Bayesian-linear-mixed-effects-models.html"
+    #slidespdf: "3-3-Bayesian-linear-mixed-effects-models.pdf"
+    
+    
+  - date: "Wed, Oct 6"
+    title: "Module 3.4: Nested vs non-nested random effects"
+    #reading: "4-4-reading.html"
+    #slides: "4-4-nested-vs-nonnested-random-effects.html"
+    #slidespdf: "4-4-nested-vs-nonnested-random-effects.pdf"
+    
+    
+  - date: "Fri, Oct 8"
+    title: "Lab: Help, I’m Behind! Hands-on Analysis and Q&A"
+    
+   
+   
+  - week: "WEEK 8"
+    date: "Mon, Oct 11"
+    title: "Case Study I Presentations"
+    
+  
+  - date: "Wed, Oct 13"
+    title: "Module 3.5: Logistic mixed effects model (Part I)"
+    #slides: "4-1-generalized-linear-mixed-effects-models.html"
+    #slidespdf: "4-1-generalized-linear-mixed-effects-models.pdf"
+    
+  
+  - date: "Fri, Oct 15"
+    title: "Lab 6: Hands on with Stan (Part I)"
+    
+    
+  - date: "Sun, Oct 17 | DELIVERABLES:"
+    title: "Case Study I reports due!"
+    
+  
+    
+  - week: "WEEK 9"
+    date: "Mon, Oct 18"
+    title: "Module 3.6: Logistic mixed effects model (Part II)"
+    
+  - date: "DELIVERABLES:"
+    title: "Case Study I evaluations due!"
+    
+  
+  - date: "Wed, Oct 20"
+    title: "Module 3.7: Logistic mixed effects model (Part III)"
+    #reading: "4-3-reading.html"
+    #slides: "4-3-logistic-mixed-effects-model-wrapup.html"
+    #slidespdf: "4-3-logistic-mixed-effects-model-wrapup.pdf"
+    
+    
+  - date: "NEW ASSIGNMENT:"
+    title: "Homework 3"
+    #hw: "hw-03.html"
+    
+    
+  - date: "Fri, Oct 22"
+    title: "Lab 6: Hands on with Stan (Part II)"
+    
+    
+    
+  - week: "WEEK 10"
+    date: "Mon, Oct 25"
+    title: "Module 3.8: Multilevel categorical outcomes"
+    #slides: "4-9-categorical-outcomes.html"
+    #slidespdf: "4-9-categorical-outcomes.pdf"
+    
+    
+    
+  - title: " " 
+  - title: "MODULE 4: OTHER TOPICS"
+  - title: " "
+    
+    
+    
+  - date: "Wed, Oct 27"
+    title: "Module 4.1: Measurement error"
+    #reading: "4-5-reading.html"
+    #slides: "4-5-measurement-error.html"
+    #slidespdf: "4-5-measurement-error.pdf"
+    
+  - date: "DELIVERABLES:"
+    title: "Homework 3 due!"
+    
+  - date: "NEW ASSIGNMENT:"
+    title: "Case Study II"
+    #project: "case-study-II.html"
+    
+    
+  - date: "Fri, Oct 29"
+    title: "Lab 7: Badgered by Badgers"
+    #lab: "lab-06.html"
+    
+    
+    
+  - week: "WEEK 11"
+    date: "Mon, Nov 1"
+    title: "Module 4.2: Poststratification and weighting"
+    #slides: "4-6-poststratification.html"
+    #slidespdf: "4-6-poststratification.pdf"
+    
+    
+  - date: "Wed, Nov 3"
+    title: "Module 4.3: Missing data"
+    #slides: "4-7-missing-data.html"
+    #slidespdf: "4-7-missing-data.pdf"
+    
+  - date: "NEW ASSIGNMENT:"
+    title: "Homework 4"
+    #hw: "hw-04.html"
+    
+    
+  - date: "Fri, Nov 5"
+    title: "Lab 8: Hands on with Stan (Part III)"
+    
+    
+    
+  - week: "WEEK 12"
+    date: "Mon, Nov 8"
+    title: "Module 4.4: Meta-analysis"
+    #slides: "4-8-meta-analysis.html"
+    #slidespdf: "4-8-meta-analysis.pdf"
+    
+  
+  - date: "Wed, Nov 10"
+    title: "Exam review"
+    
+  - date: "Fri, Nov 12"
+    title: "Lab: Help, my team needs help with Case Study II!"
+    
+    
+    
+  - week: "WEEK 13"
+    date: "Mon, Nov 15"
+    title: "Exam II"
+    
+    
+  - date: "Wed, Nov 17"
+    title: "Module 4.5: Introduction to finite mixture models (categorical data)"
+    #slides: "4-10-mixture-models-categorical.html"
+    #slidespdf: "4-10-mixture-models-categorical.pdf"
+    
+  - title: "Module 4.6: Introduction to finite mixture models (continuous data)"
+    #slides: "4-11-mixture-models-continuous.html"
+    #slidespdf: "4-11-mixture-models-continuous.pdf"
+    
+    
+  - date: "Fri, Nov 19"
+    title: "Lab: Help, I need help with HW4/Case Study II!"
+    
+    
+  - week: "WEEK 14"
+    date: "Mon, Nov 22"
+    title: "Case Study II Presentations; wrap-up"
+    
+  - date: "Tue, Nov 23 | DELIVERABLES:"
+    title: "Homework 4 due!"
+    
+    
+  - date: "Wed, Nov 24"
+    title: "Reading week: work on Case Study II"
+    
+    
+  - date: "Fri, Nov 26"
+    title: "Reading week: work on Case Study II"
+    
+    
+    
+  - week: "WEEK 15"
+    title: "Reading week: work on Case Study II"
+    
+    
+    
+  - week: "WEEK 16"
+    date: "Thur, Dec 9 | DELIVERABLES:"
+    title: "Case Study II reports and evaluations due"
+    

@@ -7,3 +7,9 @@
 *.key
 *.rdb
 *.key
+
+Syllabus.aux
+Syllabus.log
+Syllabus.tex
+Syllabus.out
+Syllabus.synctex.gz

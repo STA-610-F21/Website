@@ -42,7 +42,7 @@ By the end of this course, students should be able to
 {.table .table-condensed .table-striped .text-left}
 <span></span>     | <span></span>     | <span></span>    | <span></span>    |  <span></span>      
 ------------------|-------------------|------------------|------------------|------------------ 
-Instructor        | [Dr. Olanrewaju Michael Akande](https://olanrewajuakande.com) | <a href="mailto:olanrewaju.akande@duke.edu" title="email"><i class="fa fa-envelope"></i></a> &nbsp; <a href="https://github.com/akandelanre" title="GitHub"><i class="fa fa-github"></i></a> | Mondays and Thursdays (9am -- 10am) | 256 Gross Hall
+Instructor        | [Dr. Olanrewaju Michael Akande](https://olanrewajuakande.com) | <a href="mailto:olanrewaju.akande@duke.edu" title="email"><i class="fa fa-envelope"></i></a> &nbsp; <a href="https://github.com/akandelanre" title="GitHub"><i class="fa fa-github"></i></a> | Mondays and Thursdays (9am -- 10am) | Zoom Meeting ID: **See Sakai**
 TAs               | [Chengxin Yang](https://scholars.duke.edu/person/chengxin.yang) | <a href="mailto:chengxin.yang@duke.edu" title="email"><i class="fa fa-envelope"></i></a> | TBD | TBD
                   | [Alessandro Zito](https://scholars.duke.edu/person/alessandro.zito) | <a href="mailto:alessandro.zito@duke.edu" title="email"><i class="fa fa-envelope"></i></a> | TBD | TBD
 
@@ -70,8 +70,10 @@ Monday, August 23	| Fall classes begin
 Friday, September 3	| Drop/Add ends
 Monday, September 6 | Labor day. Classes in session
 Wednesday, September 22 | Exam I (*tentative*)
+Sunday, October 17 | Case Study I reports due (*tentative*)
 Monday, November 15 | Exam II (*tentative*)
 Tuesday, November 23 |	End of semester
+Thursday, December 9 |	Case Study II reports due (*tentative*)
 
 
 ### Green Classroom
