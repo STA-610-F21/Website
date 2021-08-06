@@ -23,7 +23,8 @@ Students' final grades will be determined as shown below:
 {.table .table-condensed .table-striped .text-left}
 Component             | Percentage
 ----------------------|----------------
-Lab Exercises & Overall Participation | 12.5%\
+Participation | 2.5%
+Lab Exercises | 10%
 Group Case Study I | 12.5%
 Group Case Study II | 15%
 Problem Sets | 20%
