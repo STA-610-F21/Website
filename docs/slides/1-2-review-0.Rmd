@@ -1,0 +1,95 @@
+---
+title: "STA 610L: Module 1.2"
+subtitle: "Review"
+author: "Dr. Olanrewaju Michael Akande"
+date: " "
+output:
+  xaringan::moon_reader:
+    css: "slides.css"
+    logo: img/class_logo.png
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  warm = 1
+  )
+# Set dpi and height for images
+library(knitr)
+knitr::opts_chunk$set(fig.height = 2.65, dpi = 300,fig.align='center',fig.show='hold',size='footnotesize', small.mar=TRUE) 
+# For nonsese...
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(rvest)
+```
+
+
+
+## Review on your own, as needed
+
+Prerequisites for this course include STA 360/601/602 (Bayesian Inference) and all its prerequisite at Duke (linear algebra, multivariable calculus, probability, inference, and regression).
+
+Review slides are provided for linear algebra as well as some probability and inference material, including the following. Please familiarize yourself with the content of these notes if your recollection is fuzzy.
+
+- basic properties of vectors and matrices
+- linear independence, dependence, and rank of a matrix
+- inversion of full-rank and less than full-rank matrices
+- common distributions
+- maximum likelihood estimation
+
+
+---
+## Review slides
+
+[Basics: vectors and matrices](https://sta610-f21.olanrewajuakande.com/slides/1-2-review-1.html)
+
+[Linear dependence and rank](https://sta610-f21.olanrewajuakande.com/slides/1-2-review-2.html)
+
+[Determinants and inverses](https://sta610-f21.olanrewajuakande.com/slides/1-2-review-3.html)
+
+[Random vectors and matrices](https://sta610-f21.olanrewajuakande.com/slides/1-2-review-4.html)
+
+[Important distributions](https://sta610-f21.olanrewajuakande.com/slides/1-2-review-5.html)
+
+[Maximum likelihood](https://sta610-f21.olanrewajuakande.com/slides/1-2-review-6.html)
+
+
+---
+## Other review resources
+
+Penn State University maintains some very nice review materials online (these are shorter in length than those on the previous slide.)
+
+[Matrix definitions](https://onlinecourses.science.psu.edu/statprogram/reviews/matrix-algebra/definitions)
+
+[Matrix arithmetic](https://onlinecourses.science.psu.edu/statprogram/reviews/matrix-algebra/arithmetic)
+
+[Matrix properties](https://onlinecourses.science.psu.edu/statprogram/reviews/matrix-algebra/properties)
+
+[Matrix inverse](https://onlinecourses.science.psu.edu/statprogram/reviews/matrix-algebra/inverse)
+
+[Advanced matrix properties](https://onlinecourses.science.psu.edu/statprogram/reviews/matrix-algebra/advanced-properties)
+
+
+
+
+---
+
+class: center, middle
+
+# What's next? 
+
+### Move on to the readings for the next module!
+
+
+
+

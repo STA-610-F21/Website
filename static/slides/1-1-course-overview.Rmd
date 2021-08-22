@@ -1,0 +1,195 @@
+---
+title: "STA 610L: Module 1.1"
+subtitle: "Course overview"
+author: "Dr. Olanrewaju Michael Akande"
+date: " "
+output:
+  xaringan::moon_reader:
+    css: "slides.css"
+    logo: img/class_logo.png
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  warm = 1
+  )
+# Set dpi and height for images
+library(knitr)
+knitr::opts_chunk$set(fig.height = 2.65, dpi = 300,fig.align='center',fig.show='hold',size='footnotesize', small.mar=TRUE) 
+# For nonsese...
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(rvest)
+```
+
+class: center, middle
+
+# Welcome!
+
+
+
+---
+
+## What is this course about?
+
+<i class="fa fa-book fa-2x"></i> Learning the foundations of hierarchical modeling.
+
+--
+
+<i class="fa fa-folder-open fa-2x"></i> Working through the theory of some hierarchical models.
+
+--
+
+<i class="fa fa-tasks fa-2x"></i> Using hierarchical models to answer inferential questions.
+
+--
+
+<i class="fa fa-database fa-2x"></i> Applying hierarchical models to real datasets.
+
+--
+
+<i class="fa fa-group fa-2x"></i> Honing collaborative and presentations skills.
+
+--
+
+--- 
+<i class="fa fa-quote-left fa-2x fa-pull-left fa-border" aria-hidden="true"></i>
+<i class="fa fa-quote-right fa-2x fa-pull-right fa-border" aria-hidden="true"></i>
+The Bayesian paradigm is well suited for building hierarchical models. Usually you just have several levels of conditional distributions making up the prior.
+
+
+
+---
+## Instructor
+
+[Dr. Olanrewaju Michael Akande](https://olanrewajuakande.com)
+
+<i class="fa fa-envelope"></i> &nbsp; [olanrewaju.akande@duke.edu](mailto:olanrewaju.akande@duke.edu) <br>
+<i class="fa fa-home"></i> &nbsp; [https://sta610-f21.olanrewajuakande.com](https://sta610-f21.olanrewajuakande.com) <br>
+<i class="fa fa-calendar"></i> &nbsp; Mondays and Thursdays (9am -- 10am) <br>
+<i class="fa fa-university"></i> &nbsp; Zoom Meeting ID: **See Sakai**
+
+
+---
+## TAs
+
+[Chengxin Yang](https://scholars.duke.edu/person/chengxin.yang)
+
+<i class="fa fa-envelope"></i> &nbsp; [chengxin.yang@duke.edu](mailto:chengxin.yang@duke.edu) <br>
+<i class="fa fa-calendar"></i> &nbsp; Tuesdays (1pm - 2pm) and Fridays (4pm - 5pm) <br>
+<i class="fa fa-university"></i> &nbsp; Zoom Meeting ID: **See Sakai**
+
+[Alessandro Zito](https://scholars.duke.edu/person/alessandro.zito)
+
+<i class="fa fa-envelope"></i> &nbsp; [alessandro.zito@duke.edu](mailto:alessandro.zito@duke.edu) <br>
+<i class="fa fa-calendar"></i> &nbsp; Wednesdays (10am - 11am) and Fridays (8:30am - 9:30am) <br>
+<i class="fa fa-university"></i> &nbsp; Zoom Meeting ID: **See Sakai**
+
+
+
+---
+## FAQs
+
+All materials and information will be posted on the course website.
+
+--
+
+- How much theory will this class cover? *A decent amount.*
+
+--
+
+- Am I prepared to take this course? *Yes, if you are familiar with the topics covered in STA 360/601/602 (Bayesian Inference) and all its prerequisite at Duke.*
+
+--
+
+- What if I can't remember the topics in the prerequisites? *See the review materials in the next module.*
+
+--
+
+- Will we be doing "very heavy" computing? *Not too heavy but a good amount.*
+
+--
+
+- What computing language will we use? *R!*
+
+--
+
+- What if I don't know R? *This course assumes you already know R but you can still learn on the fly (you must be self-motivated). Here are some resources for you: [https://sta610-f21.olanrewajuakande.com/resources/](https://sta610-f21.olanrewajuakande.com/resources/).*
+
+
+
+
+---
+
+class: center, middle
+
+# Course structure and policies
+
+
+---
+## Course structure and policies
+
+- See: [https://sta610-f21.olanrewajuakande.com/policies/](https://sta610-f21.olanrewajuakande.com/policies/)
+
+--
+
+- Make use of the teaching team's office hours, we're here to help!
+
+--
+
+- Do not hesitate to show up during office hours. You can also make an appointment to discuss a homework problem or any aspect of the course. 
+
+--
+
+- When the teaching team has announcements for you we will send an email to your Duke email address. Please make sure to check your email daily.
+
+--
+
+- Try as much as possible to refrain from texting or using your computer for anything other than coursework while in class.
+
+
+---
+## Other details
+
+- What topics will we cover? Refer to Section 11 of the syllabus (here: [Syllabus](https://sta610-f21.olanrewajuakande.com/syllabus_pdf/Syllabus.pdf)).
+
+--
+
+- Also, refer to the schedule on the website for an updated breakdown of the topics. Remember to refresh the page frequently. See here: [Class Schedule](https://sta610-f21.olanrewajuakande.com/syllabus/).
+
+--
+
+- If you are auditing this course, remember to complete the necessary audit forms.
+
+--
+
+- Confirm that you have access to Sakai, Ed Discussion and Gradescope.
+
+--
+
+- Finally, please respect Duke's masking and social distancing policies, both in and out of classes.
+
+
+
+---
+
+class: center, middle
+
+# What's next? 
+
+### Move on to the readings for the next module!
+
+
+
+

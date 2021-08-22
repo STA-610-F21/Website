@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>STA 610L: Review</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Olanrewaju Michael Akande" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# STA 610L: Review
+## Matrix determinants and inverses
+### Dr. Olanrewaju Michael Akande
+
+---
+
+
+
+
+
+
+
+
+## Determinants
+
+The *determinant* is a single number summary of a square matrix that gives us information about the rank of the matrix.
+
+The determinant of a square matrix `\({\bf A}\)` is denoted `\(\mid {\bf A} \mid\)` or `\(\text{det}({\bf A})\)`.  
+
+The determinant of a diagonal or triangular matrix equals the product of the diagonal values.
+
+`\begin{eqnarray*}
+\left|
+\begin{bmatrix} 1 &amp; 6 &amp; 5 \\
+0 &amp; 2 &amp; 4 \\
+0 &amp; 0 &amp; 3
+\end{bmatrix} \right| =
+\end{eqnarray*}`
+
+
+---
+## Determinants
+
+For any `\(2 \times 2\)` matrix,
+
+`\begin{eqnarray*}
+\left| \begin{bmatrix} a &amp; b\\ c &amp; d \end{bmatrix} \right| = ad-bc.
+\end{eqnarray*}`
+
+For any `\(3 \times 3\)` matrix,
+
+`\begin{eqnarray*}
+\left| \begin{bmatrix} a &amp; b &amp; c \\ d &amp; e &amp; f \\ g &amp; h &amp; i \end{bmatrix} \right|&amp;=&amp; a \left| \begin{bmatrix} e &amp; f \\ h &amp; i \end{bmatrix} \right| -
+d \left| \begin{bmatrix} b &amp; c \\ h &amp; i \end{bmatrix} \right| +
+g \left| \begin{bmatrix} b &amp; c \\ e &amp; f \end{bmatrix} \right| \\
+&amp;=&amp; a (ei-hf) - d (bi-hc) + g (bf-ec).
+\end{eqnarray*}`
+
+This pattern (called Laplace expansion) continues for higher-order matrices, though there are other methods of calculating determinants, which are needed for larger matrices due to the computational inefficiency of Laplace expansion.
+
+
+---
+## Useful properties of determinants
+
+`\begin{eqnarray*}
+\mid {\bf A}_{n \times n}\mid  =0 &amp;\Leftrightarrow &amp; \text{rank}({\bf A})&lt;n \\
+&amp; \Leftrightarrow &amp; { \bf A} \text{ is less than full rank} \\ 
+&amp; \Leftrightarrow &amp; \text{the inverse of } {\bf A} \text{ does not exist} \\
+&amp; \Leftrightarrow &amp; \text{the columns of } {\bf A} \text{ are linearly dependent},
+\end{eqnarray*}`
+while
+`\begin{eqnarray*}
+\mid {\bf A}_{n \times n} \mid \ne 0 &amp;\Leftrightarrow &amp; \text{rank}({\bf A})=n \\
+&amp; \Leftrightarrow &amp; {\bf A} \text{ is full rank} \\
+&amp; \Leftrightarrow &amp; \text{the inverse of } {\bf A} \text{ exists} \\
+&amp; \Leftrightarrow &amp; \text{columns of } {\bf A} \text{ are linearly independent}.
+\end{eqnarray*}`
+
+For full rank matrices that conform, `\(\mid {\bf A B} \mid=\mid {\bf A}\mid \mid {\bf B} \mid\)`.
+
+In addition, `\(\mid {\bf A}' \mid=\mid {\bf A} \mid\)`.
+
+
+
+---
+## Positive definite and semidefinite matrices
+
+Let `\({\bf A}\)` be an `\(n \times n\)` symmetric matrix.  
+
+Let `\(a_{ii}\)` denote the `\(i^{th}\)` diagonal element of `\({\bf A}\)`.  
+
+Then `\({\bf A}\)` is *positive definite* if and only if
+
+  - `\(a_{ii}&gt;0\)` for all `\(i=1,\ldots,n\)`
+  - the determinant of every submatrix is positive.  That is,
+`\begin{eqnarray*}
+\left| \begin{bmatrix} a_{11} &amp; a_{12} \\ a_{12} &amp; a_{22} \end{bmatrix} \right| &gt; 0, 
+\left| \begin{bmatrix} a_{11} &amp; a_{12} &amp; a_{13} \\ a_{12} &amp; a_{22} &amp; a_{23} \\ a_{13} &amp; a_{23} &amp; a_{33} \end{bmatrix} \right| &gt; 0,
+\cdots , \mid {\bf A} \mid &gt;0.
+\end{eqnarray*}`
+
+
+The matrix `\({\bf A}\)` is *positive semidefinite* if we replace `\(&gt;0\)`  above with `\(\geq 0\)`.
+
+
+---
+## Nonnegative definite matrices
+
+A matrix is called *nonnegative definite* if it is positive definite or positive semidefinite.  
+
+Covariance matrices are nonnegative definite. 
+
+Inner and outer products are nonnegative definite.
+
+`\(\textbf{Exercise:}\)`
+
+Let 
+
+`\begin{eqnarray*}
+{\bf A}=\begin{bmatrix}
+2 &amp; -1 &amp; 1 &amp; 1 \\
+-1 &amp; 4 &amp; 0 &amp; 2 \\
+1 &amp; 0 &amp; 1 &amp; 3 \\
+1 &amp; 2 &amp; 3 &amp; 2 \end{bmatrix}.
+\end{eqnarray*}`
+
+Is `\({\bf A}\)` positive definite, positive semidefinite, or neither?
+
+
+
+---
+## Inverse of a matrix
+
+Suppose we have a system of equations like
+
+`\begin{equation*}
+({\bf X}_{n \times p})'({\bf X}_{n \times p})\widehat{\beta}=({\bf X}_{n \times p})'{\bf y}_{n \times 1},
+\end{equation*}`
+
+which are the *normal equations* for the linear model.  
+
+In order to solve these equations and obtain our estimate, `\(\widehat{\beta}\)`, we would like to divide by `\({\bf X}'{\bf X}\)` in some sense.  
+
+Because `\({\bf X}'{\bf X}\)` is a matrix, this presents us some difficulty.  
+
+Thus we develop the idea of a matrix inverse.
+
+
+
+---
+## Inverse of a matrix
+
+Consider the `\(n \times n\)` matrix `\({\bf A}\)`.  
+
+If `\({\bf A}\)` has full rank `\(n\)`, then there exists a unique matrix, `\({\bf A}^{-1}\)`, called the *inverse* of `\({\bf A}\)`, such that `$${\bf A}^{-1} {\bf A}={\bf A A}^{-1}={\bf I}.$$`  
+
+
+
+---
+## Some properties of inverses
+
+  - For a scalar, `\({\bf A}_{1 \times 1}=a\)`,  `\({\bf }A^{-1}=\frac{1}{a}\)`
+
+  - The inverse of a diagonal matrix is the diagonal matrix of reciprocals of the diagonal elements
+  
+  - For conforming full rank matrices, `\(({\bf A B})^{-1}={\bf B}^{-1} {\bf A}^{-1}\)`
+
+  - A symmetric matrix has a symmetric inverse
+
+  - The inverse of the transpose is the transpose of the inverse.  That is, `\(({\bf A}')^{-1}=({\bf A}^{-1})'\)`.  `\(({\bf A}')^{-1}\)` is also sometimes denoted `\({\bf A}^{-t}\)`  
+  - The determinant of the inverse is the inverse of the determinant.  That is, `\(\mid {\bf A}^{-1} \mid=\frac{1}{\mid {\bf A} \mid}\)`.
+
+
+
+---
+## Some properties of inverses
+
+  - The inverse of the `\(2 \times 2\)` matrix `\({\bf A}=\begin{pmatrix} a_{11} &amp; a_{12} \\ a_{21} &amp; a_{22} \end{pmatrix}\)` is given by `\({\bf A}^{-1}=\frac{1}{|{\bf A}|} \begin{pmatrix} a_{22} &amp; -a_{12} \\ -a_{21} &amp; a_{11}\end{pmatrix}\)`. 
+  
+  The formula can be extended to matrices of larger dimension, but this is not practical due to the complexity of such formulae.
+
+  - For certain linear models (some ANOVA models for example), we will want to obtain inverses of matrices that are not full rank.  
+  
+  For any `\({\bf A}_{r \times c}\)`, there exists a *generalized inverse*, denoted `\({\bf A}^-_{c \times r}\)`, such that `$${\bf A A}^- {\bf A}={\bf A}.$$`  
+  
+  The generalized inverse is not unique.  (If we must use a generalized inverse to obtain parameter estimates, our parameter estimates are not unique, either.)
+
+
+
+---
+
+class: center, middle
+
+# What's next? 
+
+### Move on to the readings for the next module!
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

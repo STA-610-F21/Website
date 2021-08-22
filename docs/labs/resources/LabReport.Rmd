@@ -1,0 +1,54 @@
+---
+title: 'STA 602L Homework and Lab Template'
+author: "Student"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document: default
+---
+
+```{r setup, message=F, warning=F, echo=F}
+library(tidyverse)
+require(magrittr)
+require(plyr)
+ggplot2::theme_set(ggplot2::theme_bw())
+knitr::opts_chunk$set(fig.align = 'center')
+```
+
+Visit [this site](https://rmarkdown.rstudio.com/lesson-1.html) for more information on R Markdown.
+
+***
+
+## Exercise 1
+
+Brief statement of the problem (optional)
+
+### Part (a)
+
+Then, some math:
+
+$$
+\begin{aligned}
+X \sim N(\mu,1) \implies p_X(x) = \frac{1}{\sqrt{2\pi}}e^{-\frac{1}{2}(x - \mu)^2}
+\end{aligned}
+$$
+
+### Part (b)
+
+Finally, some code:
+
+```{r}
+x <- rnorm(1000, 0, 1)
+x %>% data.frame() %>% ggplot2::ggplot() + geom_histogram(aes(x = x))
+  
+```
+
+## Exercise 2
+
+Repeat...
+
+### Part (a)
+
+### Part (b)
+
+***
+

@@ -1,0 +1,21 @@
+---
+title: "Module 1.6: Review of one way ANOVA (distribution of estimates and linear combinations)"
+output: 
+  html_document:
+    css: reading.css
+    theme: yeti
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## Required:
+
+- Lecture Notes on Hierarchical Modeling by Peter D. Hoff.:
+    + Section 2.1: Review of standard one-way ANOVA
+    + Section 3.2: Maximum likelihood estimation
+
+

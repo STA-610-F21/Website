@@ -1,0 +1,26 @@
+---
+title: "Module 1.7: Review of multi-way ANOVA and interactions"
+output: 
+  html_document:
+    css: reading.css
+    theme: yeti
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## Required:
+
+- Lecture Notes on Hierarchical Modeling by Peter D. Hoff.:
+    + Section 2.1: Review of standard one-way ANOVA
+
+
+## Optional:
+
+- [Univ. of Washington Notes (Finding Interactions)](https://courses.washington.edu/smartpsy/interactions.htm).
+
+
+

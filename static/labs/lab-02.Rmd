@@ -1,0 +1,88 @@
+---
+title: "Lab 2: Help, these kids are killing me! (Part II)"
+author: "Multilevel and hierarchical models"
+output: 
+  tufte::tufte_html:
+    tufte_variant: "envisioned"
+    highlight: pygments
+    css: "lab.css"
+    toc: true
+link-citations: yes
+---
+
+```{r include=FALSE}
+library(tidyverse)
+library(tufte)
+library(knitr)
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  digits = 2
+  )
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+
+**Due:**  11:59pm, Sunday, September 5
+
+
+# Housekeeping
+
+## R/RStudio
+You all should have R and RStudio installed on your computers by now. If you do not, first install the latest version of R here: https://cran.rstudio.com (remember to select the right installer for your operating system). Next, install the latest version of RStudio here: https://www.rstudio.com/products/rstudio/download/. Scroll down to the "Installers for Supported Platforms" section and find the right installer for your operating system.
+
+
+## Gradescope
+You MUST submit both your .Rmd and .pdf files to the course site on Gradescope here: https://www.gradescope.com/courses/224715/assignments. Do NOT create a zipped folder with the two documents but instead, upload them as two separate documents. Also, be sure to knit to pdf and NOT html; ask the TA about knitting to pdf if you cannot figure it out. Be sure to submit under the right assignment entry. Finally, when submitting your files, please select the corresponding pages for each exercise.
+
+
+
+# Introduction
+This individual lab is a continuation of the previous lab.
+
+In a classic *Nature* communication, Partridge and Farquhar argued that there is a physiological cost of reproduction, which is in line with many evolutionary theories. At that time, this cost had been shown experimentally for females, but no cost for sexual activity had been shown for males in which the only paternal contribution to offspring is provision of gametes.  
+
+To explore whether there is any effect of sexual activity on lifespan, researchers randomized male fruit flies to one of two groups:  an isolated population of males (no sexual activity), or a mixed-gender population in which the male fruit flies were sexually active. Because body size has also been linked to longevity, we consider it here (measured by thorax length) as well.
+
+
+# The Data
+
+The data are in the file [fruitfly_thorax_len.csv](https://sta-610l-s21.github.io/Course-Website/labs/data/fruitfly_thorax_len.csv), which contains lifespan, thorax length, and sexual activity for male fruit flies in the experiment.
+
+For reference and as a quick recap of the EDA you did in the previous lab, here is a visualization of the lifespan of the male fruit flies as a function of body size and sexual activity.
+```{r buzz,eval=T}
+library(ggplot2)
+buzzkiller=read_csv("data/fruitfly_thorax_len.csv")
+#reorder factors
+buzzkiller$thorax <- factor(buzzkiller$thorax,
+                                     levels = c("short",
+                                                "long"))
+ggplot(buzzkiller,
+       aes(x = sexually_active, y = longevity, color = thorax)) +
+  stat_summary(fun = mean,
+               geom = "point",
+               shape = 5,
+               size = 4,
+               position = position_dodge(0.5)) +
+  geom_jitter(position = position_dodge(0.5), alpha = 0.3) +
+  scale_color_manual(values=c("black", "dodgerblue3")) +
+  xlab("Sexual Activity") +
+  ylab("Longevity (days)")  
+```
+
+
+# Exercises
+
+The main purpose of this lab is to help you practice or start to develop your report writing skills. Prepare a short (maximum of 2 pages) but well organized written report describing the association between sexual activity, body size, and longevity in male fruit flies. You should be able to rely heavily on the work you did in the last lab. Your report should include the following.
+
++ Clear specification of a two-way ANOVA model with interactions (using an equation) used to explore the associations of interest.
++ Clearly-labeled tables communicating your findings. You must present the ANOVA table as well as a table of the estimated effects.
++ Uncertainty quantification around effect estimates of interest (no point estimates without uncertainty!).
++ Evidence of adequacy of model fit and evaluation of suitability of modeling assumptions.
++ Clear description of results in language accessible to a general scientifically-savvy reader (e.g., someone reading a science article in the BBC or CNN apps)
+
+DO NOT INCLUDE R CODE OR OUTPUT IN YOUR REPORTS. All R outputs should be converted to nicely formatted tables. Feel free to use R packages such as kable, xtable, stargazer, etc.
+
+
+
+

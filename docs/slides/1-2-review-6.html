@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>STA 610L: Review</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Olanrewaju Michael Akande" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# STA 610L: Review
+## Maximum Likelihood Estimation
+### Dr. Olanrewaju Michael Akande
+
+---
+
+
+
+
+
+
+
+
+## Maximum likelihood estimators
+
+*Maximum likelihood estimates* (MLE's) have excellent large-sample properties and are applicable in a wide variety of situations.  
+
+Examples of maximum likelihood estimates include the following:
+
+  - The sample average `\(\bar{X}\)` of a group of independent and identically normally distributed observations `\(X_1, \ldots, X_n\)` is a maximum likelihood estimate.
+
+  - Parameter estimates in a linear regression model fit to normally distributed data are maximum likelihood estimates.
+
+  - Parameter estimates in a logistic regression model are maximum likelihood estimates.
+
+
+
+---
+## Maximum likelihood estimators
+
+  - The estimate `\(s^2=\frac{\sum_{i=1}^n (x_i-\overline{x})^2}{n-1}\)` of the variance of a group of independent and identically normally distributed observations is **not** a maximum likelihood estimate.  (The MLE of the variance is `\(\left(\frac{n-1}{n}\right)s^2\)`.)
+
+
+
+---
+## Finding the MLE
+
+Let `\(L(\theta \mid {\bf Y})\)` denote the likelihood function for data `\({\bf Y}=(Y_1,Y_2,\ldots,Y_n)\)` from some population described by the parameters `\(\theta=(\theta_1,\theta_2,\ldots,\theta_p)\)`.  
+
+
+
+The maximum likelihood estimate of `\(\theta\)` is given by the estimator `\(\widehat{\theta}=(\widehat{\theta}_1,\widehat{\theta}_2,\ldots, \widehat{\theta}_p)\)` for which
+`$$L(\widehat{\theta} \mid {\bf Y}) &gt; L(\theta^* \mid {\bf Y}),$$` where `\(\theta^*\)` is any other estimate of `\(\theta\)`.  
+
+
+Thus the maximum likelihood estimate is the most "probable" or "likely" given the data.
+
+
+---
+## Finding the MLE
+
+Maximizing the likelihood `\(L(\theta \mid {\bf Y})\)` is equivalent to maximizing the natural logarithm `\(\ln(L(\theta \mid {\bf Y}))=\ell(\theta \mid {\bf Y})\)`, called the log-likelihood.  The maximum likelihood estimates are typically found as the solutions of the `\(p\)` equations obtained by setting the `\(p\)` partial derivatives of `\(\ell(\theta \mid {\bf Y})\)` with respect to each `\(\theta_j\)`, `\(j=1,\ldots,p\)`, equal to zero.
+
+
+
+---
+## Finding the MLE
+
+Why do we solve the derivatives for zero?  The derivative gives us the slope of the likelihood (or log-likelihood), and when the slope is zero, we know that we are at either a local minimum or local maximum.  (The second derivative is negative for a maximum and positive for a minimum.)
+
+
+&lt;img src="img/loglike.jpg" width="550px" height="400px" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+## Finding the MLE
+
+When closed form expressions for maximum likelihood estimates do not exist, computer algorithms may be used to solve for the estimates.
+
+Example:  Let `\(Y_i\)`, `\(i=1, \ldots, n\)` be iid normal random variables with mean `\(\mu\)` and variance `\(\sigma^2\)`, so `\(Y_i \sim N(\mu,\sigma^2)\)`, `\(i=1,\ldots,n\)`.  
+
+`\(\text{The density of } Y_i \text{ is given by }\)`
+
+`\begin{eqnarray*}
+f(Y_i \mid \mu, \sigma^2)=(2 \pi)^{-\frac{1}{2}}( \sigma^2)^{-\frac{1}{2}} \exp \left\{-\frac{1}{2 \sigma^2}(Y_i-\mu)^2 \right\}.
+\end{eqnarray*}`
+
+Find the maximum likelihood estimates of `\(\mu\)` and `\(\sigma^2\)`.
+
+
+
+---
+## Hypothesis testing and interval estimation with MLE's
+
+It can be shown (based on large-sample properties of MLE's) that
+`\begin{equation*}
+\frac{\widehat{\beta}_1 - \beta_1}{\sqrt{\widehat{\text{Var}}(\widehat{\beta}_1)}}
+\end{equation*}`
+is approximately `\(N(0,1)\)` when the sample size is large.
+
+A test of `\(H_0: \beta_1=0\)` versus `\(H_A: \beta_1 \ne 0\)` can be based on the `\(Z\)` statistic `\(\frac{\widehat{\beta}_1}{\sqrt{\widehat{\text{Var}}(\widehat{\beta}_1)}}\)`, which has approximately a `\(N(0,1)\)` distribution under `\(H_0\)`.  
+
+This test is called a *Wald test*.
+
+
+
+
+---
+## Hypothesis testing and interval estimation with MLE's
+
+By a similar argument, an approximate `\(100(1-\alpha)\%\)` large-sample confidence interval for `\(\beta_1\)` takes the form
+`\begin{equation*}
+\widehat{\beta}_1 \pm Z_{1-\frac{\alpha}{2}} \sqrt{\widehat{\text{Var}}(\widehat{\beta}_1)},
+\end{equation*}`
+where `\(Pr(Z &gt; Z_{1-\frac{\alpha}{2}})=\frac{\alpha}{2}\)` when `\(Z \sim N(0,1)\)`.
+
+**NOTE:**  Testing `\(\sigma^2\)` is more complicated, and the Wald test for the hypothesis `\(\sigma^2=0\)` is not recommended because the value `\(\sigma^2=0\)` is on the boundary of the parameter space for `\(\sigma^2\)`, a violation of a regularity condition for the validity of the test.
+
+
+
+---
+
+class: center, middle
+
+# What's next? 
+
+### Move on to the readings for the next module!
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

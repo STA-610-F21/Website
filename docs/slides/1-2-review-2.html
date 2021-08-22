@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>STA 610L: Review</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Olanrewaju Michael Akande" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# STA 610L: Review
+## Linear dependence and rank
+### Dr. Olanrewaju Michael Akande
+
+---
+
+
+
+
+
+
+
+
+## Linear dependence
+
+Consider the system of equations
+`\begin{eqnarray}
+5x_1+2x_2&amp;=&amp;2\\
+10x_1+4x_2&amp;=&amp;4,
+\end{eqnarray}`
+or
+`\begin{eqnarray*}
+{\bf a}_1x_1+{\bf a}_2x_2={\bf b},
+\end{eqnarray*}`
+
+where
+
+`\begin{eqnarray*}
+{\bf a}_1=\begin{pmatrix} 5 \\ 10 \end{pmatrix}, {\bf a}_2=\begin{pmatrix}2 \\ 4 \end{pmatrix}, \text{ and } {\bf b}=\begin{pmatrix} 2 \\ 4 \end{pmatrix}.
+\end{eqnarray*}`
+
+This system of equations has infinite solutions given by `\(x_1=\frac{4}{5}-\frac{2}{5}x_2\)`.
+
+
+---
+## Linear dependence
+
+  - We do not have one unique solution because the coefficients in the second equation are a multiple of the first and thus are *linearly dependent*.
+
+  - So equation (2) does not provide any additional information about `\(x_1\)` or `\(x_2\)`.
+
+  - Examining `\({\bf a}_1=\begin{pmatrix} 5 \\ 10 \end{pmatrix}\)` and `\({\bf a}_2=\begin{pmatrix}2 \\ 4 \end{pmatrix}\)`, we see that `\(a_{11}=\frac{5}{2}a_{12}\)` and `\(a_{21}=\frac{5}{2}a_{22}\)`.  
+  
+  Thus `\({\bf a}_1\)` and `\({\bf a}_2\)` are linearly dependent vectors.
+
+
+---
+## Linear dependence
+
+The `\(n\)` vectors `\({\bf a}_1, {\bf a}_2, \cdots, {\bf a}_n\)` in `\(\mathcal{R}^n\)` are *linearly dependent* if there exist numbers `\(c_1, c_2, \ldots, c_n\)` (not all zero) such that `\({\bf a}_1c_1 + {\bf a}_2c_2 + \cdots + {\bf a}_nc_n=0\)`.
+
+That is, the vectors are *linearly dependent* if at least one of the vectors in the set can be defined as a linear combination of the others.
+
+If this equation is true only when `\(c_1=c_2=\cdots=c_n=0\)` then the vectors are *linearly independent*.
+
+
+---
+## Linear dependence
+
+More generally, suppose we have the matrix
+
+`\begin{equation*}
+{\bf A}=
+\begin{bmatrix} 2 &amp; 2 &amp; 4 \\
+1 &amp; 0 &amp; 2 \\
+0 &amp; 8 &amp; 0 \\
+3 &amp; 1 &amp; 6 
+\end{bmatrix}.
+\end{equation*}`
+
+Each column of `\({\bf A}\)` may be viewed as a vector. 
+
+The *column space* of `\({\bf A}\)`, denoted `\(C({\bf A})\)`, is the set of all vectors that may be written as a linear combination of the columns of `\({\bf A}\)`. 
+
+
+---
+## Linear dependence
+
+That is, `\(C({\bf A})\)` is the set of all vectors that may be written as
+
+`\begin{equation*}
+\lambda_1 \begin{bmatrix}
+2 \\ 1 \\ 0 \\ 3
+\end{bmatrix} + \lambda_2 \begin{bmatrix}
+2 \\ 0 \\ 8 \\ 1
+\end{bmatrix} + \lambda_3 \begin{bmatrix}
+4 \\ 2 \\ 0 \\ 6
+\end{bmatrix} = {\bf A} \begin{bmatrix}
+\lambda_1 \\ \lambda_2 \\ \lambda_3
+\end{bmatrix}={\bf A} {\bf \lambda},
+\end{equation*}`
+
+for some vector `\({\bf \lambda}=(\lambda_1,\lambda_2,\lambda_3)'\)`.
+
+
+---
+## Linear dependence
+
+For example, the column space of `\({\bf J}_2\)` includes all vectors of the form
+
+`$$\lambda {\bf J}_2=\begin{pmatrix} \lambda \\ \lambda \end{pmatrix},$$` 
+
+including 
+
+$$ \begin{pmatrix} 1 \\ 1 \end{pmatrix}, \begin{pmatrix} 2 \\ 2 \end{pmatrix}, \begin{pmatrix} -0.03 \\  -0.03 \end{pmatrix}, \text{ and } \begin{pmatrix} \pi \\ \pi \end{pmatrix}.$$  
+
+
+
+---
+## Linear dependence
+
+The columns of `\({\bf A}\)` are *linearly dependent* if they contain redundant information.  
+
+If we can find two distinct vectors, say `\({\bf \lambda}\)` and `\({\bf \gamma}\)`, that give rise to the same vector `\({\bf x}\)` when premultiplied by `\({\bf A}\)`, then the columns of `\({\bf A}\)` are linearly dependent. 
+
+(So `\({\bf A \lambda}={\bf A \gamma}={\bf x}\)` implies that the columns of `\({\bf A}\)` are linearly dependent.)
+
+ An equivalent definition, obtained by letting `\({\bf \delta}={\bf \lambda}-{\bf \gamma}\)` (prove to yourself!), is that the columns of `\({\bf A}\)` are linearly dependent if there exists a vector `\({\bf \delta} \neq {\bf 0}\)` such that `\({\bf A \delta}={\bf 0}\)`.
+
+If the columns of `\({\bf A}\)` are not linearly dependent, then they are *linearly independent*.
+
+
+---
+## Linear dependence
+
+Does the matrix 
+
+`\begin{equation*}
+{\bf A}=
+\begin{bmatrix} 2 &amp; 2 &amp; 4 \\
+1 &amp; 0 &amp; 2 \\
+0 &amp; 8 &amp; 0 \\
+3 &amp; 1 &amp; 6 
+\end{bmatrix}\\
+\end{equation*}`
+
+have linearly independent or linearly dependent columns?
+
+
+---
+## Linear dependence
+
+Does the matrix
+
+`\begin{equation*}
+{\bf B}=
+\begin{bmatrix} 2 &amp; 2 &amp; 4 \\
+1 &amp; 0 &amp; 2 \\
+0 &amp; 8 &amp; 0 \\
+4 &amp; 1 &amp; 6 
+\end{bmatrix}\\
+\end{equation*}`
+
+have linearly independent or linearly dependent columns?
+
+
+
+---
+## Rank
+
+The *rank* of a matrix `\({\bf A}\)` is the number of linearly independent columns in `\({\bf A}\)`.  
+
+Knowledge of the matrix rank is important in determining the existence and multiplicity of solutions to a system of linear equations.
+
+The matrix
+
+`\begin{equation*}
+{\bf A}=
+\begin{bmatrix} 2 &amp; 2 &amp; 4 \\
+1 &amp; 0 &amp; 2 \\
+0 &amp; 8 &amp; 0 \\
+3 &amp; 1 &amp; 6 
+\end{bmatrix}\\
+\end{equation*}`
+
+has rank = ???
+
+
+---
+## Full rank matrices
+
+If `\({\bf A}\)` is an `\((r \times c)\)` matrix with `\(r \geq c\)`, we say `\({\bf A}\)` is *full rank* if `\(\text{rank}({\bf A}) = c\)`.  
+
+If `\(\text{rank}({\bf A}) &lt; c\)`, then we say `\({\bf A}\)` is less than full rank.  
+
+In linear regression, the matrix of covariates `\({\bf X}\)` must have full rank in order for our parameter estimates, `\(\widehat{\beta}\)`, to be unique.
+
+A square matrix that is less than full rank is called *singular*, while a full rank square matrix is called *nonsingular*.
+
+
+
+
+---
+
+class: center, middle
+
+# What's next? 
+
+### Move on to the readings for the next module!
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

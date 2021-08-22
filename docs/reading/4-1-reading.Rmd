@@ -1,0 +1,18 @@
+---
+title: "Module 4.1: Measurement error"
+output: 
+  html_document:
+    css: reading.css
+    theme: yeti
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## Required:
+
+- [Statistical Rethinking with brms, ggplot2, and the tidyverse](https://bookdown.org/ajkurz/Statistical_Rethinking_recoded/) by A Solomon Kurz:
+    + Section 14.1: Measurement error

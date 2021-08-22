@@ -1,0 +1,201 @@
+---
+title: "STA 610L: Module 1.7"
+subtitle: "Review of multi-way ANOVA and interactions"
+author: "Dr. Olanrewaju Michael Akande"
+date: " "
+output:
+  xaringan::moon_reader:
+    css: "slides.css"
+    logo: img/class_logo.png
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  warm = 1
+  )
+# Set dpi and height for images
+library(knitr)
+knitr::opts_chunk$set(fig.height = 2.65, dpi = 300,fig.align='center',fig.show='hold',size='footnotesize', small.mar=TRUE) 
+# For nonsese...
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(rvest)
+```
+
+
+
+## Multi-way ANOVA and interactions
+
+ANOVA can be easily extended to accommodate any number of categorical variables. 
+
+Variables may each contribute independently to a response, or they may work together to influence response values.
+
+*Interaction effects* are important when the association between one independent variable and the response may depend on the level of another independent variable.
+
+
+[Click this link for insight on what interactions imply in terms of group means](https://courses.washington.edu/smartpsy/interactions.htm)
+
+
+
+---
+## Interaction example
+
+For example, suppose that we are interested in a two-way ANOVA model in which the response $y$ is a measure of headache pain, and the independent variables include the type of pill taken $j$, with $j=1$ for placebo and $j=2$ for ibuprofen, and the number of pills taken $k$, where $k=1,2$.
+
+While we may expect lower pain if multiple ibuprofen pills are taken, we would not expect the same decrease in pain if multiple placebo pills were taken. 
+
+
+Consider the model
+$$y_{ijk}=\mu + \alpha I(j=2) + \beta I(k=2) + \gamma I(j=k=2)+\varepsilon_{ijk}.$$
+
+
+
+---
+## Interaction example
+
+$$y_{ijk}=\mu + \alpha I(j=2) + \beta I(k=2) + \gamma I(j=k=2)+\varepsilon_{ijk}$$
+
+In this model, the mean is parameterized as follows.
+
+| Drug | \# of Pills | Mean |
+| ---- | :-----------: | :----: |
+| Placebo | 1 | $\mu$ |
+| Ibuprofen | 1 | $\mu+\alpha$ |
+| Placebo | 2 | $\mu+\beta$ |
+| Ibuprofen | 2 | $\mu +\alpha+\beta+\gamma$ |
+
+
+What types of parameter values would we expect to see if there is an interaction in which there is a dose effect for Ibuprofen but not for placebo?
+
+
+
+
+---
+## Interaction example
+
+$$y_{ijk}=\mu + \alpha I(j=2) + \beta I(k=2) + \gamma I(j=k=2)+\varepsilon_{ijk}$$
+
+In this model,
+
+  - the expected difference in pain level moving from 1 to 2 ibuprofen pills is $\mu+\alpha - \mu - \alpha - \beta - \gamma$
+  - the expected difference in pain level moving from 1 to 2 placebo pills is $\mu - \mu - \beta$
+  - the expected drug effect for those taking one pill is $\mu+\alpha-\mu=\alpha$
+  - the expected drug effect for those taking two pills is $\mu+\alpha+\beta+\gamma - \mu - \beta=\alpha+\gamma$
+  
+  
+So no interaction $(\gamma=0)$ means that the drug effect is the same regardless of the number of pills taken.
+
+For there to be no drug effect at all, we need $\gamma=0$ and $\alpha=0$.  
+
+
+
+
+
+
+---
+## R's most exciting data
+
+We are going to explore R's most thrilling data -- the famous tooth growth in Guinea pigs data!
+
+
+```{r echo=FALSE, out.height="350px",out.width="550px"}
+knitr::include_graphics("img/olivertwist.jpg")
+```
+
+
+Ahh, how cute!  Our Dickensian guinea pig has a mystery to solve -- which type of Vitamin C supplement is best for tooth growth!
+
+
+
+---
+## R's most exciting data
+
+```{r echo=FALSE, out.height="200px",out.width="200px"}
+knitr::include_graphics("img/teeth1.jpg")
+```
+
+
+Guinea pig dental problems are NOT fun. 
+
+Our dataset (Crampton, 1947) contains, as a response, the length of odontoblasts (cells responsible for tooth growth) in 60 guinea pigs, each of which receives one dose of vitamin C (0.5, 1, or 2 mg/day) via one of two delivery methods (orange juice (OJ) or ascorbic acid (VC)).
+
+Researchers wanted to know if the odontoblast length could be used as a marker of Vitamin C uptake, for the purposes of providing better nutritional supplementation to members of the Canadian armed forces (alas, the first of many injustices for Oliver Twisted Teeth -- the study was not done to help little Guinea piggies).
+
+
+
+---
+## R's most exciting data
+
+
+```{r guineadescriptives0,echo=TRUE, eval=FALSE}
+library(ggplot2)
+gp=ToothGrowth
+gp$dose=as.factor(gp$dose)
+# Default bar plot
+p<- ggplot(gp, aes(x=dose, y=len, fill=supp)) + 
+  geom_bar(stat="identity", position=position_dodge()) 
+# Finished bar plot
+p+labs(title="Odontoblast length by dose", x="Dose (mg)", y = "Length")+
+   theme_classic() +
+   scale_fill_manual(values=c('#999999','#E69F00'))
+
+```
+
+
+
+---
+## R's most exciting data
+
+```{r guineadescriptives,echo=FALSE, warning=FALSE, fig.height=3.6}
+library(ggplot2)
+gp=ToothGrowth
+gp$dose=as.factor(gp$dose)
+# Default bar plot
+p<- ggplot(gp, aes(x=dose, y=len, fill=supp)) + 
+  geom_bar(stat="identity", position=position_dodge()) 
+# Finished bar plot
+p+labs(title="Odontoblast length by dose", x="Dose (mg)", y = "Length")+
+   theme_classic() +
+   scale_fill_manual(values=c('#999999','#E69F00'))
+
+```
+
+Looking at the boxplot of the growth data, what type of ANOVA model may be most appropriate?
+
+We will revisit this in the class discussion sesssion.
+
+
+
+<!-- --- -->
+<!-- ## Your task! -->
+
+<!-- 1. Under your ANOVA model, write out (in terms of parameters) the means for each combination of supplement type and dose. -->
+<!-- 2. Fit your model and provide a $\leq$ one-page summary of the analysis in language accessible to the general public. -->
+<!-- 3. Suppose that greater lengths are indicative of better absorption. Make a recommendation for the dose(s) and supplement type(s) to be used to deliver vitamin C to armed forces members, assuming that the goal is to maximize absorption of vitamin C. Use statistical evidence to support your recommendation. -->
+<!-- 4. Conduct diagnostic checks to see how well the assumptions behind your model are satisfied. Are there any reasons for concern about your model choice? -->
+
+
+
+
+---
+
+class: center, middle
+
+# What's next? 
+
+### Move on to the readings for the next module!
+
+
+
+

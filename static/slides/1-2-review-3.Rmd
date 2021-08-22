@@ -1,0 +1,214 @@
+---
+title: "STA 610L: Review"
+subtitle: "Matrix determinants and inverses"
+author: "Dr. Olanrewaju Michael Akande"
+date: " "
+output:
+  xaringan::moon_reader:
+    css: "slides.css"
+    logo: img/class_logo.png
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  warm = 1
+  )
+# Set dpi and height for images
+library(knitr)
+knitr::opts_chunk$set(fig.height = 2.65, dpi = 300,fig.align='center',fig.show='hold',size='footnotesize', small.mar=TRUE) 
+# For nonsese...
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#library(tidyverse)
+#library(rvest)
+```
+
+
+
+## Determinants
+
+The *determinant* is a single number summary of a square matrix that gives us information about the rank of the matrix.
+
+The determinant of a square matrix ${\bf A}$ is denoted $\mid {\bf A} \mid$ or $\text{det}({\bf A})$.  
+
+The determinant of a diagonal or triangular matrix equals the product of the diagonal values.
+
+\begin{eqnarray*}
+\left|
+\begin{bmatrix} 1 & 6 & 5 \\
+0 & 2 & 4 \\
+0 & 0 & 3
+\end{bmatrix} \right| =
+\end{eqnarray*}
+
+
+---
+## Determinants
+
+For any $2 \times 2$ matrix,
+
+\begin{eqnarray*}
+\left| \begin{bmatrix} a & b\\ c & d \end{bmatrix} \right| = ad-bc.
+\end{eqnarray*}
+
+For any $3 \times 3$ matrix,
+
+\begin{eqnarray*}
+\left| \begin{bmatrix} a & b & c \\ d & e & f \\ g & h & i \end{bmatrix} \right|&=& a \left| \begin{bmatrix} e & f \\ h & i \end{bmatrix} \right| -
+d \left| \begin{bmatrix} b & c \\ h & i \end{bmatrix} \right| +
+g \left| \begin{bmatrix} b & c \\ e & f \end{bmatrix} \right| \\
+&=& a (ei-hf) - d (bi-hc) + g (bf-ec).
+\end{eqnarray*}
+
+This pattern (called Laplace expansion) continues for higher-order matrices, though there are other methods of calculating determinants, which are needed for larger matrices due to the computational inefficiency of Laplace expansion.
+
+
+---
+## Useful properties of determinants
+
+\begin{eqnarray*}
+\mid {\bf A}_{n \times n}\mid  =0 &\Leftrightarrow & \text{rank}({\bf A})<n \\
+& \Leftrightarrow & { \bf A} \text{ is less than full rank} \\ 
+& \Leftrightarrow & \text{the inverse of } {\bf A} \text{ does not exist} \\
+& \Leftrightarrow & \text{the columns of } {\bf A} \text{ are linearly dependent},
+\end{eqnarray*}
+while
+\begin{eqnarray*}
+\mid {\bf A}_{n \times n} \mid \ne 0 &\Leftrightarrow & \text{rank}({\bf A})=n \\
+& \Leftrightarrow & {\bf A} \text{ is full rank} \\
+& \Leftrightarrow & \text{the inverse of } {\bf A} \text{ exists} \\
+& \Leftrightarrow & \text{columns of } {\bf A} \text{ are linearly independent}.
+\end{eqnarray*}
+
+For full rank matrices that conform, $\mid {\bf A B} \mid=\mid {\bf A}\mid \mid {\bf B} \mid$.
+
+In addition, $\mid {\bf A}' \mid=\mid {\bf A} \mid$.
+
+
+
+---
+## Positive definite and semidefinite matrices
+
+Let ${\bf A}$ be an $n \times n$ symmetric matrix.  
+
+Let $a_{ii}$ denote the $i^{th}$ diagonal element of ${\bf A}$.  
+
+Then ${\bf A}$ is *positive definite* if and only if
+
+  - $a_{ii}>0$ for all $i=1,\ldots,n$
+  - the determinant of every submatrix is positive.  That is,
+\begin{eqnarray*}
+\left| \begin{bmatrix} a_{11} & a_{12} \\ a_{12} & a_{22} \end{bmatrix} \right| > 0, 
+\left| \begin{bmatrix} a_{11} & a_{12} & a_{13} \\ a_{12} & a_{22} & a_{23} \\ a_{13} & a_{23} & a_{33} \end{bmatrix} \right| > 0,
+\cdots , \mid {\bf A} \mid >0.
+\end{eqnarray*}
+
+
+The matrix ${\bf A}$ is *positive semidefinite* if we replace $>0$  above with $\geq 0$.
+
+
+---
+## Nonnegative definite matrices
+
+A matrix is called *nonnegative definite* if it is positive definite or positive semidefinite.  
+
+Covariance matrices are nonnegative definite. 
+
+Inner and outer products are nonnegative definite.
+
+$\textbf{Exercise:}$
+
+Let 
+
+\begin{eqnarray*}
+{\bf A}=\begin{bmatrix}
+2 & -1 & 1 & 1 \\
+-1 & 4 & 0 & 2 \\
+1 & 0 & 1 & 3 \\
+1 & 2 & 3 & 2 \end{bmatrix}.
+\end{eqnarray*}
+
+Is ${\bf A}$ positive definite, positive semidefinite, or neither?
+
+
+
+---
+## Inverse of a matrix
+
+Suppose we have a system of equations like
+
+\begin{equation*}
+({\bf X}_{n \times p})'({\bf X}_{n \times p})\widehat{\beta}=({\bf X}_{n \times p})'{\bf y}_{n \times 1},
+\end{equation*}
+
+which are the *normal equations* for the linear model.  
+
+In order to solve these equations and obtain our estimate, $\widehat{\beta}$, we would like to divide by ${\bf X}'{\bf X}$ in some sense.  
+
+Because ${\bf X}'{\bf X}$ is a matrix, this presents us some difficulty.  
+
+Thus we develop the idea of a matrix inverse.
+
+
+
+---
+## Inverse of a matrix
+
+Consider the $n \times n$ matrix ${\bf A}$.  
+
+If ${\bf A}$ has full rank $n$, then there exists a unique matrix, ${\bf A}^{-1}$, called the *inverse* of ${\bf A}$, such that $${\bf A}^{-1} {\bf A}={\bf A A}^{-1}={\bf I}.$$  
+
+
+
+---
+## Some properties of inverses
+
+  - For a scalar, ${\bf A}_{1 \times 1}=a$,  ${\bf }A^{-1}=\frac{1}{a}$
+
+  - The inverse of a diagonal matrix is the diagonal matrix of reciprocals of the diagonal elements
+  
+  - For conforming full rank matrices, $({\bf A B})^{-1}={\bf B}^{-1} {\bf A}^{-1}$
+
+  - A symmetric matrix has a symmetric inverse
+
+  - The inverse of the transpose is the transpose of the inverse.  That is, $({\bf A}')^{-1}=({\bf A}^{-1})'$.  $({\bf A}')^{-1}$ is also sometimes denoted ${\bf A}^{-t}$  
+  - The determinant of the inverse is the inverse of the determinant.  That is, $\mid {\bf A}^{-1} \mid=\frac{1}{\mid {\bf A} \mid}$.
+
+
+
+---
+## Some properties of inverses
+
+  - The inverse of the $2 \times 2$ matrix ${\bf A}=\begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{pmatrix}$ is given by ${\bf A}^{-1}=\frac{1}{|{\bf A}|} \begin{pmatrix} a_{22} & -a_{12} \\ -a_{21} & a_{11}\end{pmatrix}$. 
+  
+  The formula can be extended to matrices of larger dimension, but this is not practical due to the complexity of such formulae.
+
+  - For certain linear models (some ANOVA models for example), we will want to obtain inverses of matrices that are not full rank.  
+  
+  For any ${\bf A}_{r \times c}$, there exists a *generalized inverse*, denoted ${\bf A}^-_{c \times r}$, such that $${\bf A A}^- {\bf A}={\bf A}.$$  
+  
+  The generalized inverse is not unique.  (If we must use a generalized inverse to obtain parameter estimates, our parameter estimates are not unique, either.)
+
+
+
+---
+
+class: center, middle
+
+# What's next? 
+
+### Move on to the readings for the next module!
+
+
+
+

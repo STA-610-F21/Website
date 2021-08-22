@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2021.7.16)  6 AUG 2021 12:57
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2022/dev) (preloaded format=pdflatex 2021.7.16)  22 AUG 2021 14:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -730,7 +730,7 @@ Package rerunfilecheck Info: File `Syllabus.out' has not changed.
 Here is how much of TeX's memory you used:
  13819 strings out of 478542
  208964 string characters out of 5850387
- 551875 words of memory out of 5000000
+ 552875 words of memory out of 5000000
  31527 multiletter control sequences out of 15000+600000
  409845 words of font info for 50 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -746,7 +746,7 @@ b></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><
 usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></u
 sr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></us
 r/local/texlive/2021/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb>
-Output written on Syllabus.pdf (6 pages, 160653 bytes).
+Output written on Syllabus.pdf (6 pages, 160768 bytes).
 PDF statistics:
  214 PDF objects out of 1000 (max. 8388607)
  184 compressed objects within 2 object streams

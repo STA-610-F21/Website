@@ -1,0 +1,210 @@
+---
+title: "STA 610L: Module 1.5"
+subtitle: "Review of one way ANOVA (step-down tests and matrix formulation)"
+author: "Dr. Olanrewaju Michael Akande"
+date: " "
+output:
+  xaringan::moon_reader:
+    css: "slides.css"
+    logo: img/class_logo.png
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  warm = 1
+  )
+# Set dpi and height for images
+library(knitr)
+knitr::opts_chunk$set(fig.height = 2.65, dpi = 300,fig.align='center',fig.show='hold',size='footnotesize', small.mar=TRUE) 
+# For nonsese...
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(rvest)
+```
+
+
+
+## Where is the difference?
+
+After an *overall F test* is rejected, the next obvious questions is "Why?"
+
+It could be the case that each group is different from all other groups, or maybe only one group differs from the other.
+
+[Many types of step-down tests](https://online.stat.psu.edu/stat503/lesson/3/3.3) are available with varying degrees of protection of the type I error rate.
+
+
+
+
+---
+## Step-down tests
+
+The phrasing .hlight[step-down] is a reminder that these tests are not conducted unless the overall F test is rejected.  Some options include the following.
+
+- The Bonferroni comparison using the significance level $\frac{\alpha}{\text{number of tests}}$  is generally the most conservative and is not guaranteed to find a signficant pairwise comparison even if the overall F test is rejected.
+- Fisher's LSD test is generally the least conservative, as it involves regular pairwise t-tests with no correction to $\alpha$, with the type I error rate protection in the sense of not carrying out the pairwise tests if the overall F test is not rejected. 
+- Many methods lie in between these extremes, with some additional protection of the type I error rate after rejection of the overall null hypothesis, including Tukey's method, Scheffe's method, ....
+
+
+
+---
+## Step-down tests
+
+```{r echo=F}
+load("data/PsychBikeData.RData")
+PsychBikeData$kerb <- as.factor(PsychBikeData$kerb)
+aov.res=aov(`passing distance`~kerb,data=PsychBikeData)
+```
+
+
+```{r}
+TukeyHSD(aov.res)
+```
+
+Because we're curious, we'll look for where the difference appears to be with [Tukey's HSD test](https://en.wikipedia.org/wiki/Tukey%27s_range_test), which is basically a regular t-test that controls the family-wide error rate.
+
+Looks like the passing distance is similar for curb distances of 0.75m and 1m but different for other combinations. Contrary to the hypothesis, the passing distance was greater when bikers rode closer to the curb.
+
+
+
+---
+## Advantages and drawbacks of classical approach
+
+  - This approach controls type I error rate (compared to testing group differences separately)
+  
+  - Easy implementation and reporting
+  
+  - Rejecting $H_0$ does not mean there are no *similarities* across groups; in fact, $\overline{y}_{j}$ can be a pretty inefficient estimate of $\mu_j$
+  
+
+
+
+
+
+
+---
+## Matrix formulation
+
+As we move towards more complex models, it will be a lot easier to work with the model in *matrix* form rather than in *scalar* form. 
+
+The *general linear model* is written in matrix form as $y=X\beta+\varepsilon$. Consider the treatment means model $y_{ij}=\mu_j+\varepsilon_{ij}$. We can represent this model in matrix form as follows.
+
+\begin{eqnarray*}
+y &=& X \mu + \varepsilon \\
+\begin{bmatrix} y_{11} \\ y_{21} \\ \vdots \\ y_{n_11} \\ y_{12} \\ y_{22} \\ \vdots \\ y_{n_JJ} \end{bmatrix} &=& \begin{bmatrix} 1 & 0 & \cdots & 0 \\ 1 & 0 & \cdots & 0 \\ \vdots & & & \\ 1 & 0 & \cdots & 0 \\ 0 & 1 & 0 & \cdots \\ 0 & 1 & 0 & \cdots \\ \vdots & \ddots & & \vdots \\ 0 & \cdots & & 1 \end{bmatrix}_{(\sum_j n_j) \times J}  \begin{bmatrix} \mu_1 \\ \vdots \\ \mu_J \end{bmatrix} + \begin{bmatrix} \varepsilon_{11} \\ \varepsilon_{21} \\ \vdots \\ \varepsilon_{n_11} \\ \varepsilon_{12} \\ \varepsilon_{22} \\ \vdots \\ \varepsilon_{n_JJ} \end{bmatrix}
+\end{eqnarray*}
+
+
+
+---
+## Aside: essence matrix
+
+In ANOVA, the $X$ matrix has a special form, which is sometimes summarized by the *essence matrix*, which shows  the unique rows of the matrix.
+
+  - The essence matrix of a treatment means formulation of ANOVA is the $J \times J$ identity matrix, with each row repeated $n_j$ times: if $j=3$ we have $\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}$
+
+
+
+---
+## Aside: essence matrix
+  
+  - The essence matrix in the treatment effects model is a column of ones appended to the left of the identity matrix: $\begin{bmatrix} 1 & 1 & 0 & 0 \\ 1 & 0 & 1 & 0 \\ 1 & 0 & 0 & 1 \end{bmatrix}$
+  
+  - The essence matrix in reference cell coding is given by $\begin{bmatrix} 1 & 1 & 0  \\ 1 & 0 & 1  \\ 1 & 0 & 0  \end{bmatrix}$ (assuming without loss of generality that the last group is the reference)
+  
+  
+In each case, the row corresponding to group $j$ is repeated $n_j$ times so that the full $X$ matrix has $\sum_j n_j$ rows.
+
+
+
+
+---
+## Simple example
+
+Consider a study in which we wish to compare pain levels among children recovering from surgery who were randomized to one of three groups:  audio books (chosen by each child), music (the child could select the playlist), or control (noise cancelling headphones). 
+
+After 30 minutes of one of the three conditions, each child rated his or her pain status using the following scale.
+
+```{r echo=FALSE, out.height="300px",out.width="600px"}
+knitr::include_graphics("img/faces.gif")
+```
+
+
+---
+## Simple example
+
+The study is described [here](https://www.npr.org/sections/health-shots/2015/06/22/415048075/to-ease-pain-reach-for-your-playlist-instead-of-popping-a-pill), but we will consider similar data from a hypothetical smaller study (n=15 total).
+
+Suppose the data from the three groups is as follows.
+  + Audio books:  5,6,7,2,6
+  + Music:  5,4,4,7,6
+  + Control: 4,8,7,6,10
+
+Write each element of $y=X\beta+\varepsilon$ in matrix or vector form using a group means coding scheme.
+
+Once you've finished, repeat the exercise using reference cell coding.
+
+
+
+
+
+---
+## Least squares estimation
+
+The least squares estimate minimizes the sum of squared residuals given by 
+
+\begin{eqnarray*}
+\text{SSE}(\mu)&=& (y-X\mu)'(y-X\mu) \\
+&=& y'y-2\mu'X'y+\mu'X'X\mu
+\end{eqnarray*}
+
+
+To find $\mu$ that minimizes the $\text{SSE}=y'y-2\mu'X'y+\mu'X'X\mu$, take derivatives:
+
+$$\frac{\partial SSE}{\partial \mu}=0-2X'y+2X'X\mu$$ and then set to 0:
+
+$$0=-2X'y+2X'X\mu$$ to get the *normal equations* $$(X'X)_{p \times p}\widehat{\mu}=X'y.$$
+
+[Read more here if you're rusty on matrix differentiation.](https://eli.thegreenplace.net/2015/the-normal-equation-and-matrix-calculus/)
+
+
+
+
+---
+## Least squares estimation
+
+When $X$ has rank $p$, we solve the normal equations
+
+\begin{eqnarray*}
+(X'X)\widehat{\mu}&=&X'y \\
+(X'X)^{-1}(X'X)\widehat{\mu}&=&(X'X)^{-1}X'y \\
+\widehat{\mu}&=&(X'X)^{-1}X'y
+\end{eqnarray*}
+
+Our least squares estimate in this case is unique, the best linear unbiased estimate, and if our errors are Gaussian, $\widehat{\mu}$ is the MLE and minimum variance unbiased estimator. 
+
+When $X$ has rank $<p$, we can use a generalized inverse, but $\widehat{\mu}$ is not unique, though the predicted values and residuals are unique.
+
+
+
+---
+
+class: center, middle
+
+# What's next? 
+
+### Move on to the readings for the next module!
+
+
+
+

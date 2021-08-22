@@ -1,0 +1,27 @@
+---
+title: "Module 2.4: Random effects ANOVA (Bayesian estimation I)"
+output: 
+  html_document:
+    css: reading.css
+    theme: yeti
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## Required:
+
+- Lecture Notes on Hierarchical Modeling by Peter D. Hoff.:
+    + Section 4: Bayesian estimation
+    
+- [A First Course in Bayesian Statistical Methods](https://find.library.duke.edu/catalog/DUKE004968562) by Peter D. Hoff.:
+    + Section 8.2: Comparing multiple groups
+    + Section 8.3: The hierarchical normal model
+    
+## Optional:
+
+- [Bayesian Data Analysis (Third Edition)](http://www.amazon.com/Bayesian-Analysis-Chapman-Statistical-Science/dp/1439840954/) by Andrew Gelman, John Carlin, Hal Stern, David Dunson, Aki Vehtari, and Donald Rubin.:
+    + Section 5.3: Fully Bayesian analysis of conjugate hierarchical models

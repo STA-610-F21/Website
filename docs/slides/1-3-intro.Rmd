@@ -1,0 +1,243 @@
+---
+title: "STA 610L: Module 1.3"
+subtitle: "Introduction to hierarchical models"
+author: "Dr. Olanrewaju Michael Akande"
+date: " "
+output:
+  xaringan::moon_reader:
+    css: "slides.css"
+    logo: img/class_logo.png
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  warm = 1
+  )
+# Set dpi and height for images
+library(knitr)
+knitr::opts_chunk$set(fig.height = 2.65, dpi = 300,fig.align='center',fig.show='hold',size='footnotesize', small.mar=TRUE) 
+# For nonsese...
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(rvest)
+```
+
+
+
+## Introduction to hierarchical models
+
+
+The terminology .hlight[hierarchical model] is quite general and covers a very wide range of models.
+
+A hierarchical model can refer to the simple use of a prior distribution for a relatively simple model, or to a highly organized data hierarchy (students nested in classes, nested in schools, nested in states, nested in countries).
+
+Hierarchical models are thus usually richer and more flexible than the usual standard models.
+
+For grouped data for example, we may want to estimate the relationship between a response variable and certain predictors collected across all the groups, where observations in the same group are more alike than those in different groups.
+
+In that case, we may want to do inference in a way that takes advantage of the relationship between observations in the same group, but we may also look to borrow information across groups.
+
+Hierarchical modeling lets us do exactly that.
+
+
+
+
+---
+## Introduction to hierarchical models
+
+Hierarchical models are often used in many commonly-encountered settings such as when
+
+ - members of a "cluster" share more similarities with each other than with members of other clusters, violating the typical independence assumption of generalized linear models
+    + examples of clusters include members of a family, or students in a class;
+ 
+ - hypotheses of interest include context-dependent associations, often across a large number of settings
+    + e.g., does success of a new mode of instruction depend on the individual teacher;
+ 
+ - it is necessary to borrow information across groups in order to stabilize estimates or to obtain estimates with desirable properties
+    + e.g., we want to make state-specific estimates of election candidate preference by country of origin, but some states may have few immigrants from a given country.
+ 
+ 
+ 
+---
+## Hypothetical school testing example
+
+Suppose we wish to estimate the distribution of test scores for students at $J$ different high schools.
+
+In each school $j$, where $j = 1, \ldots, J$, suppose we test a random sample of $n_j$ students.
+
+Let $y_{ij}$ be the test score for the $i$th student in school $j$, with $i = 1,\ldots, n_j$.
+  
+  
+---
+## Hypothetical school testing example
+
+.hlight[Option I]: estimation can be done separately in each group, where we assume
+.block[
+.small[
+$$y_{ij} | \mu_j, \sigma^2_j \sim N \left( \mu_j, \sigma^2_j\right)$$
+]
+]
+
+  where for each school $j$, $\mu_j$ is the school-wide average test score, and $\sigma^2_j$ is the school-wide variance of individual test scores.
+  
+  
+We can do classical inference for each school based on large sample 95% CI: $\bar{y}_j \pm 1.96 \sqrt{s^2_j/n_j}$, where $\bar{y}_j$ is the sample average in school $j$, and $s^2_j$ is the sample variance in school $j$.
+
+Clearly, we can overfit the data within schools, for example, what if we only have 4 students from one of the schools?
+
+
+
+---
+## Hypothetical school testing example
+
+.hlight[Option II]: alternatively, we might believe that $\mu_j = \mu$ for all $j$; that is, all schools have the same mean. This is the assumption (null hypothesis) in ANOVA models for example.
+
+Option I ignores that the $\mu_j$'s should be reasonably similar, whereas option II ignores any differences between them.
+
+It would be nice to find a compromise!
+
+This is what we are able to do with .hlight[hierarchical modeling].
+
+
+---
+## Hierarchical model
+
+Once again, suppose
+.block[
+.small[
+$$y_{ij} | \mu_j, \sigma^2_j \sim N \left( \mu_j, \sigma^2_j\right); \ \ \ i = 1,\ldots, n_j; \ \ \ j = 1, \ldots, J.$$
+]
+]
+
+We can assume that the $\mu_j$'s are drawn from a distribution based on the following: .hlight[conceive of the schools themselves as being a random sample from all possible school.]
+
+Suppose $\mu_0$ is the .hlight[overall mean of all school's average scores (a mean of the means)], and $\tau^2$ is the .hlight[variance of all school's average scores (a variance of the means)].
+
+
+
+---
+## Hierarchical model
+
+Then, we can think of each $\mu_j$ as being drawn from a distribution, e.g.,
+.block[
+.small[
+$$\mu_j | \mu_0, \tau^2 \sim N \left( \mu_0, \tau^2 \right),$$
+]
+]
+
+  which gives us one more level, resulting in a hierarchical specification.
+  
+Usually, $\mu_0$ and $\tau^2$ will also be unknown so that we need to estimate them (usually MLE or Bayesian methods).
+
+We will revisit estimation soon.
+
+
+
+---
+## Hierarchical model: school testing example
+
+Back to our example, it turns out that the multilevel estimate is
+.block[
+.small[
+$$\hat{\mu}_j \approx \dfrac{ \dfrac{n_j}{\sigma^2_j} \bar{y}_j + \dfrac{1}{\tau^2} \mu_0 }{ \dfrac{n_j}{\sigma^2_j} + \dfrac{1}{\tau^2}  },$$
+]
+]
+
+ but since the unknown parameters have to be estimated, the classical estimate is
+.block[
+.small[
+$$\hat{\mu}_j \approx \dfrac{ \dfrac{n_j}{s^2_j} \bar{y}_j + \dfrac{1}{\hat{\tau}^2} \bar{y}_{\textrm{all}} }{ \dfrac{n_j}{s^2_j} + \dfrac{1}{\hat{\tau}^2}  },$$
+]
+]
+ 
+ where $\bar{y}_{\textrm{all}}$ is the completely pooled estimate (the overall sample mean of all test scores).
+
+
+
+---
+## Hierarchical model: implications
+
+Our estimate for each $\mu_j$ is a weighted average of $\bar{y}_j$ and $\mu_0$, ensuring that we are borrowing information across all levels through $\mu_0$ and $\tau^2$.
+
+The weights for the weighted average is determined by relative precisions (.hlight[the inverse of variance is often referred to as precision]) from the data and from the second level model.
+  
+Suppose all $\sigma^2_j \approx \sigma^2$. Then the schools with smaller $n_j$ have estimated $\mu_j$ closer to $\mu_0$ than schools with larger $n_j$.
+
+Thus, the hierarchical model shrinks estimates with high variance towards the grand mean.
+
+We seek to specify models like this in many different contexts, for many reasons, including the idea of "shrinkage".
+
+We will do this over and over throughout the course.
+
+
+ 
+
+<!-- --- -->
+<!-- ## Generalized linear models (GLM) -->
+
+<!-- The generalized linear model framework accommodates many popular statistical models, including linear regression, logistic regression, probit regression, and Poisson regression, among others. -->
+
+<!-- Two popular GLM's we will use in class include the linear regression model and the logistic regression model.  -->
+
+
+
+
+<!-- --- -->
+<!-- ## Linear regression -->
+
+<!-- Linear regression is perhaps the most widely-used statistical model.  -->
+
+<!-- Recall that the model is given by $$y_i=\beta_0+\beta_1x_{1i}+\cdots+\beta_px_{pi}+\varepsilon_i,$$ where $$\varepsilon_i \sim N\left(0,\sigma^2\right).$$ -->
+
+
+<!-- If the parameter $\beta_j>0$, then increasing levels of $x_j$ are associated with larger expected values of $y$, and values of $\beta_j<0$ are associated with smaller expected values of $y$. -->
+
+<!-- $\beta_j=0$ is consistent with no association between $x_j$ and $y$. -->
+
+
+
+
+<!-- --- -->
+<!-- ## Logistic regression -->
+
+<!-- *Logistic regression* is a type of generalized linear model, which generalizes the typical linear model to binary data. -->
+
+<!-- Let $y_i$ take either the value 1 or the value 0 (the labels assigned to 1 and 0 are arbitrary -- that is, we could let 1 denote voters and 0 denote non-voters, or we could exchange the labels -- we just need to remember our coding). -->
+
+<!-- The logistic regression model is linear on the log of the odds: $$\log\frac{\pi_i}{1-\pi_i}=\beta_0+\beta_1x_{1i}+\cdots+\beta_px_{pi},$$ where $\pi_i=Pr(y_i=1)$. -->
+
+<!-- If the parameter $\beta_j>0$, then increasing levels of $x_j$ are associated with higher probabilities that $y=1$, and values of $\beta_j<0$ are associated with lower probabilities that $y=1$. -->
+
+<!-- $\beta_j=0$ is consistent with no association between $x_j$ and $y$. -->
+
+
+
+---
+## Hierarchical model: demo
+
+For some intuition behind hierarchical models, we'll check out [this neat tutorial by Michael Freeman at University of Washington](http://mfviz.com/hierarchical-models/).
+
+
+
+---
+
+class: center, middle
+
+# What's next? 
+
+### Move on to the readings for the next module!
+
+
+
+

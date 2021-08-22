@@ -1,0 +1,25 @@
+---
+title: "Module 2.1: Random effects ANOVA (introduction)"
+output: 
+  html_document:
+    css: reading.css
+    theme: yeti
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## Required:
+
+- Lecture Notes on Hierarchical Modeling by Peter D. Hoff.:
+    + Section 2.2: Random effects ANOVA
+
+
+## Optional:
+
+- [Data Analysis Using Regression and Multilevel/Hierarchical Models](https://www.amazon.com/gp/product/052168689X/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=052168689X&linkCode=as2&tag=andrsblog0f-20&linkId=PX5B5V6ZPCT2UIYV) by Gelman A., and Hill, J.:
+    + Section 22.2: ANOVA and multilevel linear and generalized linear models
+    + Section 22.4: Doing ANOVA using multilevel models

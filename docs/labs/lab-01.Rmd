@@ -1,0 +1,73 @@
+---
+title: "Lab 1: Help, these kids are killing me! (Part I)"
+author: "Multilevel and hierarchical models"
+#date: "Jan 25, 2021"
+output: 
+  tufte::tufte_html:
+    tufte_variant: "envisioned"
+    highlight: pygments
+    css: "lab.css"
+    toc: true
+link-citations: yes
+---
+
+```{r include=FALSE}
+library(tidyverse)
+library(tufte)
+library(knitr)
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  digits = 2
+  )
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+
+**Full TA Session**
+
+
+# Housekeeping
+
+## R/RStudio
+You all should have R and RStudio installed on your computers by now. If you do not, first install the latest version of R here: https://cran.rstudio.com (remember to select the right installer for your operating system). Next, install the latest version of RStudio here: https://www.rstudio.com/products/rstudio/download/. Scroll down to the "Installers for Supported Platforms" section and find the right installer for your operating system.
+
+
+## Gradescope
+You MUST submit both your .Rmd and .pdf files to the course site on Gradescope here: https://www.gradescope.com/courses/224715/assignments. Do NOT create a zipped folder with the two documents but instead, upload them as two separate documents. Also, be sure to knit to pdf and NOT html; ask the TA about knitting to pdf if you cannot figure it out. Be sure to submit under the right assignment entry. Finally, when submitting your files, please select the corresponding pages for each exercise.
+
+
+
+# Introduction
+This individual lab is a quick assessment to gauge your level of comfort with doing exploratory data analysis (in R!) and specifying linear regression models for small data. Since we are yet to cover any rigorous material, your goal is to specify a basic linear regression model to the data below and interpret your results. This should be a relatively short lab, so you should also use it as an opportunity to figure out the logistics of future labs, that is, check your R/RStudio installation, make sure you know how to work in R markdown and knit to .pdf, and so on.
+
+
+# The Data
+In a classic *Nature* communication, Partridge and Farquhar argued that there is a physiological cost of reproduction, which is in line with many evolutionary theories. At that time, this cost had been shown experimentally for females, but no cost for sexual activity had been shown for males in which the only paternal contribution to offspring is provision of gametes.  
+
+To explore whether there is any effect of sexual activity on lifespan, researchers randomized male fruit flies to one of two groups:  an isolated population of males (no sexual activity), or a mixed-gender population in which the male fruit flies were sexually active. Because body size has also been linked to longevity, we consider it here (measured by thorax length) as well.
+
+The data are in the file [fruitfly_thorax_len.csv](https://sta-610l-s21.github.io/Course-Website/labs/data/fruitfly_thorax_len.csv), which contains lifespan, thorax length, and sexual activity for male fruit flies in the experiment.
+
+
+# Exercises
+
+1. Create two plots:
+    - the first to explore the relationship between the lifespan (longevity) of the male fruit flies and thorax length; and
+    - the second to explore the relationship between the lifespan (longevity) of the male fruit flies and sexual activity.
+    
+    Report your findings from the plots. What can you conclude about the relationships?
+2. Now create a single plot to visualize the lifespan (longevity) of the male fruit flies as a function of sexual activity but broken down by thorax length. What can you conclude about this plot?
+3. Specify a two-way ANOVA model without interactions for estimating the association between longevity (your response variable), sexual activity, and thorax length in male fruit flies.
+4. Fit the model in R and interpret your findings. Be sure to use language accessible to a general scientifically-savvy reader (e.g., someone reading a science article in the BBC or CNN apps).
+5. 
+
+
+
+
+<!-- # Acknowledgement -->
+
+<!-- This exercise is based on ideas proposed by [Sam Voisin](https://stat.duke.edu/people/sam-voisin). -->
+
+
+

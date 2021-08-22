@@ -1,0 +1,139 @@
+---
+title: "STA 610L: Review"
+subtitle: "Random vectors and matrices"
+author: "Dr. Olanrewaju Michael Akande"
+date: " "
+output:
+  xaringan::moon_reader:
+    css: "slides.css"
+    logo: img/class_logo.png
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  warm = 1
+  )
+# Set dpi and height for images
+library(knitr)
+knitr::opts_chunk$set(fig.height = 2.65, dpi = 300,fig.align='center',fig.show='hold',size='footnotesize', small.mar=TRUE) 
+# For nonsese...
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#library(tidyverse)
+#library(rvest)
+```
+
+
+
+
+## Random vector
+
+Suppose
+
+\begin{eqnarray*}
+{\bf Y}=\begin{pmatrix} Y_1 \\ Y_2 \\ \vdots \\ Y_n \end{pmatrix}
+\end{eqnarray*}
+
+is a vector of random variables with $E(Y_i)=\mu_i$, $\text{Var}(Y_i)=\sigma_{ii}$, and $\text{Cov}(Y_i,Y_j)=\sigma_{ij}$.  
+
+
+---
+## Expectation of a vector
+
+The expectation of the random vector ${\bf Y}$ is defined
+
+\begin{eqnarray*}
+E({\bf Y})=\begin{pmatrix} E(Y_1) \\ E(Y_2) \\ \vdots \\ E(Y_n) \end{pmatrix} = \begin{pmatrix} \mu_1 \\ \mu_2 \\ \vdots \\ \mu_n \end{pmatrix} = \mu.
+\end{eqnarray*}
+ 
+
+
+---
+## Expectation of a matrix
+
+Suppose ${\bf Z}$ is an $(n \times p)$ matrix of random variables.  Then
+
+\begin{eqnarray*}
+E({\bf Z})=\begin{pmatrix} 
+E(Z_{11}) & \cdots & E(Z_{1p}) \\
+\vdots & \cdots & \vdots \\
+E(Z_{n1}) & \cdots & E(Z_{np}) \end{pmatrix}.
+\end{eqnarray*}
+
+Thus the expectation of a random matrix is the matrix of the expectations.  
+
+ 
+
+
+---
+## Covariance
+
+For ${\bf Y}$ an $(n \times 1)$ random vector, the *covariance matrix* of ${\bf Y}$ is defined as
+\begin{eqnarray*}
+\text{Cov}({\bf Y} )&=&E\left[({\bf Y}-\mu)({\bf Y}-\mu)' \right] \\
+&=& \Sigma = \begin{pmatrix}
+\sigma_{11} & \sigma_{12} & \cdots & \sigma_{1n} \\
+\sigma_{21} & \vdots & \vdots & \vdots \\
+\vdots & \vdots & \vdots & \vdots \\
+\sigma_{n1} & \cdots & \cdots & \sigma_{nn} \end{pmatrix},
+\end{eqnarray*}
+where $\sigma_{ij}=E[(Y_i -\mu_i)(Y_j-\mu_j)]$, $i,j=1,\ldots,n$.
+ 
+
+
+---
+## Linear combinations
+
+Suppose ${\bf Y}_{n \times 1}$ is a random vector with mean $\mu=E({\bf Y})$ and covariance matrix $\Sigma=\text{Cov}({\bf Y})$.  
+
+In addition, suppose ${\bf A}_{r \times n}$ is a matrix of constants and ${\bf b}_{r \times 1}$ is a vector of constants.  
+
+Then
+\begin{eqnarray*}
+E({\bf A Y} + {\bf b}) = {\bf A} E({\bf Y}) + {\bf b} = {\bf A} \mu + {\bf b}
+\end{eqnarray*}
+
+and
+\begin{eqnarray*}
+\text{Cov}({\bf A Y} + {\bf b}) = {\bf A} \text{Cov}({\bf Y}) {\bf A}' = {\bf A} \Sigma {\bf A}'.
+\end{eqnarray*}
+
+
+
+
+---
+## Linear combinations
+
+Let ${\bf W}_{r \times 1}$ be a random vector with $E({\bf W})=\gamma$.  Then
+
+\begin{eqnarray*}
+\text{Cov}({\bf W},{\bf Y}) = E \left[ ({\bf W}-\gamma)({\bf Y}-\mu)' \right],
+\end{eqnarray*}
+
+where $\text{Cov}({\bf W},{\bf Y})$ is an $(r \times n)$ matrix of covariances with $ij^{th}$ element equal to $\text{Cov}(W_i,Y_j)$.
+
+
+
+
+
+---
+
+class: center, middle
+
+# What's next? 
+
+### Move on to the readings for the next module!
+
+
+
+

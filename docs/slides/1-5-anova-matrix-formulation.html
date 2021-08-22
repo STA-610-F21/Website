@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>STA 610L: Module 1.5</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Olanrewaju Michael Akande" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# STA 610L: Module 1.5
+## Review of one way ANOVA (step-down tests and matrix formulation)
+### Dr. Olanrewaju Michael Akande
+
+---
+
+
+
+
+
+
+
+
+## Where is the difference?
+
+After an *overall F test* is rejected, the next obvious questions is "Why?"
+
+It could be the case that each group is different from all other groups, or maybe only one group differs from the other.
+
+[Many types of step-down tests](https://online.stat.psu.edu/stat503/lesson/3/3.3) are available with varying degrees of protection of the type I error rate.
+
+
+
+
+---
+## Step-down tests
+
+The phrasing .hlight[step-down] is a reminder that these tests are not conducted unless the overall F test is rejected.  Some options include the following.
+
+- The Bonferroni comparison using the significance level `\(\frac{\alpha}{\text{number of tests}}\)`  is generally the most conservative and is not guaranteed to find a signficant pairwise comparison even if the overall F test is rejected.
+- Fisher's LSD test is generally the least conservative, as it involves regular pairwise t-tests with no correction to `\(\alpha\)`, with the type I error rate protection in the sense of not carrying out the pairwise tests if the overall F test is not rejected. 
+- Many methods lie in between these extremes, with some additional protection of the type I error rate after rejection of the overall null hypothesis, including Tukey's method, Scheffe's method, ....
+
+
+
+---
+## Step-down tests
+
+
+
+
+
+```r
+TukeyHSD(aov.res)
+```
+
+```
+##   Tukey multiple comparisons of means
+##     95% family-wise confidence level
+## 
+## Fit: aov(formula = `passing distance` ~ kerb, data = PsychBikeData)
+## 
+## $kerb
+##                  diff         lwr         upr     p adj
+## 0.5-0.25  -0.10758034 -0.16590883 -0.04925185 0.0000051
+## 0.75-0.25 -0.19253456 -0.25993094 -0.12513817 0.0000000
+## 1-0.25    -0.20746951 -0.26834834 -0.14659068 0.0000000
+## 1.25-0.25 -0.28524048 -0.35310701 -0.21737394 0.0000000
+## 0.75-0.5  -0.08495422 -0.15489916 -0.01500928 0.0082429
+## 1-0.5     -0.09988917 -0.16357790 -0.03620045 0.0001874
+## 1.25-0.5  -0.17766014 -0.24805821 -0.10726207 0.0000000
+## 1-0.75    -0.01493495 -0.08702041  0.05715051 0.9799835
+## 1.25-0.75 -0.09270592 -0.17078247 -0.01462937 0.0105846
+## 1.25-1    -0.07777097 -0.15029619 -0.00524575 0.0284527
+```
+
+Because we're curious, we'll look for where the difference appears to be with [Tukey's HSD test](https://en.wikipedia.org/wiki/Tukey%27s_range_test), which is basically a regular t-test that controls the family-wide error rate.
+
+Looks like the passing distance is similar for curb distances of 0.75m and 1m but different for other combinations. Contrary to the hypothesis, the passing distance was greater when bikers rode closer to the curb.
+
+
+
+---
+## Advantages and drawbacks of classical approach
+
+  - This approach controls type I error rate (compared to testing group differences separately)
+  
+  - Easy implementation and reporting
+  
+  - Rejecting `\(H_0\)` does not mean there are no *similarities* across groups; in fact, `\(\overline{y}_{j}\)` can be a pretty inefficient estimate of `\(\mu_j\)`
+  
+
+
+
+
+
+
+---
+## Matrix formulation
+
+As we move towards more complex models, it will be a lot easier to work with the model in *matrix* form rather than in *scalar* form. 
+
+The *general linear model* is written in matrix form as `\(y=X\beta+\varepsilon\)`. Consider the treatment means model `\(y_{ij}=\mu_j+\varepsilon_{ij}\)`. We can represent this model in matrix form as follows.
+
+`\begin{eqnarray*}
+y &amp;=&amp; X \mu + \varepsilon \\
+\begin{bmatrix} y_{11} \\ y_{21} \\ \vdots \\ y_{n_11} \\ y_{12} \\ y_{22} \\ \vdots \\ y_{n_JJ} \end{bmatrix} &amp;=&amp; \begin{bmatrix} 1 &amp; 0 &amp; \cdots &amp; 0 \\ 1 &amp; 0 &amp; \cdots &amp; 0 \\ \vdots &amp; &amp; &amp; \\ 1 &amp; 0 &amp; \cdots &amp; 0 \\ 0 &amp; 1 &amp; 0 &amp; \cdots \\ 0 &amp; 1 &amp; 0 &amp; \cdots \\ \vdots &amp; \ddots &amp; &amp; \vdots \\ 0 &amp; \cdots &amp; &amp; 1 \end{bmatrix}_{(\sum_j n_j) \times J}  \begin{bmatrix} \mu_1 \\ \vdots \\ \mu_J \end{bmatrix} + \begin{bmatrix} \varepsilon_{11} \\ \varepsilon_{21} \\ \vdots \\ \varepsilon_{n_11} \\ \varepsilon_{12} \\ \varepsilon_{22} \\ \vdots \\ \varepsilon_{n_JJ} \end{bmatrix}
+\end{eqnarray*}`
+
+
+
+---
+## Aside: essence matrix
+
+In ANOVA, the `\(X\)` matrix has a special form, which is sometimes summarized by the *essence matrix*, which shows  the unique rows of the matrix.
+
+  - The essence matrix of a treatment means formulation of ANOVA is the `\(J \times J\)` identity matrix, with each row repeated `\(n_j\)` times: if `\(j=3\)` we have `\(\begin{bmatrix} 1 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 1 \end{bmatrix}\)`
+
+
+
+---
+## Aside: essence matrix
+  
+  - The essence matrix in the treatment effects model is a column of ones appended to the left of the identity matrix: `\(\begin{bmatrix} 1 &amp; 1 &amp; 0 &amp; 0 \\ 1 &amp; 0 &amp; 1 &amp; 0 \\ 1 &amp; 0 &amp; 0 &amp; 1 \end{bmatrix}\)`
+  
+  - The essence matrix in reference cell coding is given by `\(\begin{bmatrix} 1 &amp; 1 &amp; 0  \\ 1 &amp; 0 &amp; 1  \\ 1 &amp; 0 &amp; 0  \end{bmatrix}\)` (assuming without loss of generality that the last group is the reference)
+  
+  
+In each case, the row corresponding to group `\(j\)` is repeated `\(n_j\)` times so that the full `\(X\)` matrix has `\(\sum_j n_j\)` rows.
+
+
+
+
+---
+## Simple example
+
+Consider a study in which we wish to compare pain levels among children recovering from surgery who were randomized to one of three groups:  audio books (chosen by each child), music (the child could select the playlist), or control (noise cancelling headphones). 
+
+After 30 minutes of one of the three conditions, each child rated his or her pain status using the following scale.
+
+&lt;img src="img/faces.gif" width="600px" height="300px" style="display: block; margin: auto;" /&gt;
+
+
+---
+## Simple example
+
+The study is described [here](https://www.npr.org/sections/health-shots/2015/06/22/415048075/to-ease-pain-reach-for-your-playlist-instead-of-popping-a-pill), but we will consider similar data from a hypothetical smaller study (n=15 total).
+
+Suppose the data from the three groups is as follows.
+  + Audio books:  5,6,7,2,6
+  + Music:  5,4,4,7,6
+  + Control: 4,8,7,6,10
+
+Write each element of `\(y=X\beta+\varepsilon\)` in matrix or vector form using a group means coding scheme.
+
+Once you've finished, repeat the exercise using reference cell coding.
+
+
+
+
+
+---
+## Least squares estimation
+
+The least squares estimate minimizes the sum of squared residuals given by 
+
+`\begin{eqnarray*}
+\text{SSE}(\mu)&amp;=&amp; (y-X\mu)'(y-X\mu) \\
+&amp;=&amp; y'y-2\mu'X'y+\mu'X'X\mu
+\end{eqnarray*}`
+
+
+To find `\(\mu\)` that minimizes the `\(\text{SSE}=y'y-2\mu'X'y+\mu'X'X\mu\)`, take derivatives:
+
+`$$\frac{\partial SSE}{\partial \mu}=0-2X'y+2X'X\mu$$` and then set to 0:
+
+`$$0=-2X'y+2X'X\mu$$` to get the *normal equations* `$$(X'X)_{p \times p}\widehat{\mu}=X'y.$$`
+
+[Read more here if you're rusty on matrix differentiation.](https://eli.thegreenplace.net/2015/the-normal-equation-and-matrix-calculus/)
+
+
+
+
+---
+## Least squares estimation
+
+When `\(X\)` has rank `\(p\)`, we solve the normal equations
+
+`\begin{eqnarray*}
+(X'X)\widehat{\mu}&amp;=&amp;X'y \\
+(X'X)^{-1}(X'X)\widehat{\mu}&amp;=&amp;(X'X)^{-1}X'y \\
+\widehat{\mu}&amp;=&amp;(X'X)^{-1}X'y
+\end{eqnarray*}`
+
+Our least squares estimate in this case is unique, the best linear unbiased estimate, and if our errors are Gaussian, `\(\widehat{\mu}\)` is the MLE and minimum variance unbiased estimator. 
+
+When `\(X\)` has rank `\(&lt;p\)`, we can use a generalized inverse, but `\(\widehat{\mu}\)` is not unique, though the predicted values and residuals are unique.
+
+
+
+---
+
+class: center, middle
+
+# What's next? 
+
+### Move on to the readings for the next module!
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

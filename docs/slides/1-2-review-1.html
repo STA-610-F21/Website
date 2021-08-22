@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>STA 610L: Review</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Olanrewaju Michael Akande" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# STA 610L: Review
+## Vectors and matrices
+### Dr. Olanrewaju Michael Akande
+
+---
+
+
+
+
+
+
+
+
+## Basic definitions
+
+A *matrix* is a two-dimensional array of elements.
+
+`\({\bf A}=\{a_{ij}\}\)` means `\({\bf A}\)` is the matrix whose `\(i,j^{th}\)` element (or component) is the *scalar* `\(a_{ij}\)`, where `\(i\)` indexes row and `\(j\)` indexes
+column, `\(i=1,\ldots,r\)`, `\(j=1, \ldots,c\)`.  
+
+In this context, a scalar `\(s\)` will represent a real number.
+
+Capital letters are used to represent matrices, and lowercase letters are used for vectors.
+
+The *dimension* of `\({\bf A}\)` is `\((r \times c)\)` (say "r by c"),
+often written `\({\bf A}_{r \times c}\)`.  
+
+
+---
+## Basic definitions
+
+The entire matrix `\({\bf A}\)` may be represented
+
+`\begin{equation*}
+{\bf A}_{r \times c} = 
+\begin{bmatrix} a_{11} &amp; a_{12} &amp; \ldots &amp; a_{1c} \\ a_{21} &amp; \ddots &amp; &amp; \cdots \\
+\cdots &amp; &amp; \ddots &amp; \cdots \\ a_{r1} &amp; \ldots &amp; \ldots &amp; a_{rc}
+\end{bmatrix}.  
+\end{equation*}`
+
+
+
+---
+## Basic definitions
+
+A matrix with one column, i.e. an `\((r \times 1)\)` matrix, is called a *vector* or *column vector*.  The vector `\({\bf b}_{3 \times 1}\)` may be written
+
+`\begin{equation*}
+{\bf b}_{3 \times 1} =
+\begin{bmatrix} b_{1} \\
+b_{2} \\
+b_{3}
+\end{bmatrix}.
+\end{equation*}`
+
+A `\((1 \times r)\)` matrix is called a *row vector*.  
+
+
+
+---
+## Basic definitions
+
+We can represent the matrix `\({\bf A}_{r \times c}\)` in terms of its columns `\(({\bf a}_1,{\bf a}_2,\ldots,{\bf a}_c)\)`.
+
+For example, we might represent an `\({\bf X}\)` matrix for a regression model with an intercept and continuous predictor, latitude, as
+
+`\begin{eqnarray*}
+{\bf X}&amp;=&amp;({\bf 1}, \textbf{latitude}) \\
+&amp;=&amp; \begin{bmatrix} 1 &amp; 32.61 \\
+1 &amp; 34.17 \\
+1 &amp; 34.75 \\
+\vdots &amp; \vdots \\
+1 &amp; 42.92 \\ \end{bmatrix}.
+\end{eqnarray*}`
+
+
+
+---
+## Square matrix
+
+A *square matrix* has the same number of rows as columns, so that `\(r=c\)`.
+
+For `\({\bf A}_{r \times c}\)` and `\(r \geq c\)`, the (main) *diagonal* of `\({\bf A}\)` is `\((a_{11}, a_{22}, \ldots, a_{cc})\)`.
+
+We generally refer only to the diagonal that runs from the upper left to the lower right. 
+
+
+
+---
+## Symmetric matrix
+
+A *symmetric matrix* is a square matrix with `\(a_{ij}=a_{ji}\)` for all `\(i,j\)`.
+
+That is, the entry in row `\(i\)` and column `\(j\)` is the same as the entry in row `\(j\)` and column `\(i\)`.
+
+Only square matrices can be symmetric. The matrix
+
+`\begin{equation*}
+\begin{bmatrix} a_{11} &amp; a_{12} &amp; a_{13} \\
+a_{12} &amp; a_{22} &amp; a_{23} \\
+a_{13} &amp; a_{23} &amp; a_{33}
+\end{bmatrix}\\
+\end{equation*}`
+
+is symmetric (note that we refer to symmetry about the main diagonal, which runs from the upper left to the lower right).
+
+
+
+---
+## Diagonal matrix
+
+A symmetric matrix is called a *diagonal matrix* if all elements off the main diagonal are zero; that is, if `\(i \neq j\)`, then `\(a_{ij}=0\)`.
+
+We write `\(\text{Diag}({\bf b})\)` for a square diagonal matrix created from a vector.  For example,
+
+`\begin{equation*}
+\text{Diag } \left(
+\begin{bmatrix} b_1 \\
+b_2 \\
+b_3
+\end{bmatrix}`
+\right) =
+`\begin{bmatrix}
+b_1 &amp; 0 &amp; 0 \\
+0 &amp; b_2 &amp; 0 \\
+0 &amp; 0 &amp; b_3
+\end{bmatrix}.
+\end{equation*}`
+
+
+
+---
+## Identity matrix
+
+An *identity matrix*, denoted `\({\bf I}={\bf I}_n={\bf I}_{n \times n}\)`, is a diagonal matrix with all 1's on the main diagonal and 0's elsewhere.
+
+That is, `\(a_{ij}=1\)` for `\(i=j\)` and `\(a_{ij}=0\)` for `\(i \ne j\)`.
+
+Thus
+
+`\begin{eqnarray*}
+{\bf I}_3=
+\begin{bmatrix} 1 &amp; 0 &amp; 0\\
+0 &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; 1
+\end{bmatrix}.
+\end{eqnarray*}`
+
+Denote an `\((n \times 1)\)` vector of 1's by 
+
+`\begin{eqnarray*}
+{\bf 1}&amp;=&amp;{\bf 1}_n= \begin{bmatrix} 1 &amp; 1 &amp; \cdots &amp; 1 \end{bmatrix}'_{n \times 1}={\bf J}_n.
+\end{eqnarray*}`
+
+
+
+---
+## Zero matrix
+
+A *zero matrix* or *null matrix*, denoted `\({\bf 0}_{r \times c}\)`, has `\(a_{ij}=0\)` for all `\(i,j\)`.
+
+So,
+
+`\begin{equation*}
+{\bf 0}_{2 \times 2}=\begin{pmatrix} 0 &amp; 0 \\ 0 &amp; 0 \end{pmatrix}.
+\end{equation*}`
+
+
+
+---
+## Upper triangular matrix
+
+An *upper triangular matrix* `\({\bf A}\)` has `\(a_{ij}=0\)` for `\(i&gt;j\)`.
+
+That is,
+
+`\begin{equation*}
+{\bf A}=
+\begin{bmatrix} a_{11} &amp; a_{12} &amp; a_{13} \\
+0 &amp; a_{22} &amp; a_{23} \\
+0 &amp; 0 &amp; a_{33}
+\end{bmatrix}\\
+\end{equation*}`
+is an upper triangular matrix.
+
+A *lower triangular matrix* has `\(a_{ij}=0\)` for `\(i&lt;j\)`.
+
+
+
+---
+## Partitioned matrix
+
+A *partitioned matrix* has elements grouped into submatrices by combinations of vertical and horizontal slicing. For example,
+
+`\begin{equation*}
+{\bf A} = \begin{bmatrix}
+a_{11} &amp; a_{12} &amp; \vdots &amp; a_{13} \\
+a_{21} &amp; a_{22} &amp; \vdots &amp; a_{23} \\
+\cdots &amp; \cdots &amp; \cdots &amp; \cdots \\
+a_{31} &amp; a_{32} &amp; \vdots &amp; a_{33}
+\end{bmatrix}_{3 \times 3}=\begin{bmatrix}
+{\bf A}_{11} &amp; {\bf A}_{12} \\
+{\bf A}_{21} &amp; {\bf A}_{22}
+\end{bmatrix}_{3 \times 3}, 
+\end{equation*}`
+
+where
+- `\({\bf A}_{11}=\begin{bmatrix} a_{11} &amp; a_{12} \\ a_{21} &amp; a_{22} \end{bmatrix}_{2 \times 2}\)`
+- `\({\bf A}_{12}=\begin{bmatrix}a_{13} \\ a_{23} \end{bmatrix}_{2 \times 1}\)`
+- `\({\bf A}_{21}=\begin{bmatrix} a_{31} &amp; a_{32} \end{bmatrix}_{1 \times 2}\)`
+- `\({\bf A}_{22}=\begin{bmatrix} a_{33} \end{bmatrix}_{1 \times 1}\)`.
+
+
+
+---
+## Block diagonal matrix
+
+A *block diagonal matrix* has square diagonal submatrices with all off-diagonal submatrices equal to 0.
+
+For example,
+
+`\begin{equation*}
+{\bf A}=\begin{bmatrix}
+a_{11} &amp; a_{12} &amp; 0 &amp; 0 \\
+a_{21} &amp; a_{22} &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; a_{33} &amp; a_{34} \\
+0 &amp; 0 &amp; a_{43} &amp; a_{44}
+\end{bmatrix}=\begin{bmatrix} {\bf A}_{11} &amp; \bf0 \\ \bf0 &amp; {\bf A}_{22}
+\end{bmatrix}\\
+\end{equation*}`
+is a block diagonal matrix.
+
+
+
+---
+## Matrix operations
+
+The *trace* of a square matrix `\({\bf A}_{n \times n}\)` is the sum of the diagonal elements of `\({\bf A}\)`.
+
+That is, `\(\text{trace}({\bf A})=\sum_{i=1}^n a_{ii}\)`.
+
+`\(\textbf{Exercise:}\)`
+`\begin{eqnarray*}
+\text{trace}\left( \begin{bmatrix} a_{11} &amp; a_{12} &amp; a_{13} \\ a_{21} &amp; a_{22} &amp; a_{23} \\ a_{31} &amp; a_{32} &amp; a_{33} \end{bmatrix} \right)= \hspace{1in}  \hspace{1in}.
+\end{eqnarray*}`
+
+
+
+---
+## Transpose
+
+The *transpose* of a matrix `\({\bf A}\)`, denoted `\({\bf A}'\)` or `\({\bf A}^T\)`, changes the rows of `\({\bf A}\)` into the columns of a new matrix `\({\bf A}'\)`.
+
+If `\({\bf A}\)` is an `\((r \times c)\)` matrix, its transpose `\({\bf A}'\)` is a `\((c \times r)\)` matrix.  
+
+The transpose of a column vector is a row vector, i.e.
+
+`\begin{equation*}
+\begin{bmatrix} 1 \\
+2 \\
+3 \\
+4
+\end{bmatrix}_{4 \times 1}' =
+\begin{bmatrix} 1 &amp; 2 &amp; 3 &amp; 4\\
+\end{bmatrix}_{1 \times 4}.
+\end{equation*}`
+
+A symmetric matrix has `\({\bf A}'={\bf A}\)`.  
+
+
+
+---
+## Adding matrices
+
+*Matrix addition* of two matrices `\({\bf A}\)` and `\({\bf B}\)` is defined only if these matrices conform for the operation of matrix addition.
+
+The dimensions of two matrices must be the same in order for them to conform for matrix addition.
+
+If the matrices `\({\bf A}\)` and `\({\bf B}\)` have the same number of rows and the same number of columns, **matrix addition** yields `\({\bf A}_{r \times c} + {\bf B}_{r \times c}=\{a_{ij}+b_{ij}\}_{r \times c}\)`.
+
+`\(\textbf{Exercise:}\)`
+`\begin{eqnarray*}
+\begin{bmatrix} 1 &amp; 2\\
+3 &amp; 4 
+\end{bmatrix} +
+\begin{bmatrix} 5 &amp; 6\\
+7 &amp; 8
+\end{bmatrix} = \hspace{1in} 
+\hspace{2in}.
+\end{eqnarray*}`
+
+
+
+---
+## Matrix multiplication
+
+There are several types of multiplication involving matrices.  We will discuss the following types:
+
+ - scalar multiplication, 
+
+ - matrix multiplication (the "standard"), and
+
+ - the *Kronecker product* or *direct product*.
+
+
+
+---
+## Scalar multiplication of matrices
+
+Define *scalar* multiplication of any matrix `\({\bf A}\)` by a scalar `\(s\)` as `\(s {\bf A}=\{sa_{ij}\}\)`.
+
+`\begin{eqnarray*}
+\sigma^2 \begin{bmatrix} 1 &amp; 0 \\ 0 &amp; 1 \end{bmatrix}=\begin{bmatrix} \sigma^2 &amp; 0 \\ 0 &amp; \sigma^2 \end{bmatrix}.
+\end{eqnarray*}`
+
+
+
+---
+## Matrix multiplication
+
+Two matrices `\({\bf A}\)` and `\({\bf B}\)` conform for the *matrix multiplication* `\({\bf A B}\)` if the number of columns of `\({\bf A}\)` is equal to the number of rows of `\({\bf B}\)`.  
+
+If the matrices `\({\bf A}\)` and `\({\bf B}\)` conform, matrix multiplication is defined as
+`$${\bf A}_{r \times s} {\bf B}_{s \times t} = \left\{ \sum_{k=1}^s a_{ik} b_{kj} \right\}={\bf C}_{r \times t}.$$`  
+
+
+
+---
+## Matrix multiplication
+
+Multiplying the `\(i^{th}\)` row of `\({\bf A}\)` with the `\(j^{th}\)` column of `\({\bf B}\)` yields the scalar `\(c_{ij}=a_{i1}b_{1j}+a_{i2}b_{2j} + \ldots + a_{is}b_{sj}\)`:
+
+
+
+**Calculation of `\(c_{11}\)`:**
+`\begin{equation*}
+\text{row} \\
+\longrightarrow \\
+\begin{bmatrix} a_{11}&amp; \rightarrow &amp; \rightarrow &amp; a_{1s} \\
+&amp; &amp; &amp; \\
+&amp; &amp; &amp; \\
+&amp; &amp; &amp; 
+\end{bmatrix}_{r \times s}
+\begin{bmatrix} b_{11} &amp; &amp; &amp; \\
+\downarrow &amp; &amp; &amp; \\
+\downarrow &amp; &amp; &amp; \\
+b_{s1} &amp; &amp; &amp;
+\end{bmatrix}_{s \times t} \downarrow \text{column}
+\end{equation*}`
+
+So `\(c_{11}=a_{11}b_{11} + a_{12}b_{21} + \ldots + a_{1s}b_{s1}.\)`
+
+
+
+---
+## Matrix multiplication
+
+Note that `\({\bf A I}={\bf A}\)` and `\({\bf I A}={\bf A}\)`.  In general, `\({\bf AB} \neq {\bf B A}\)`.
+
+`\(\textbf{Exercise:}\)`
+Let
+`\begin{equation*}
+{\bf X}=
+\begin{bmatrix} x_{11} &amp; x_{12} &amp; x_{13} \\
+x_{21} &amp; x_{22} &amp; x_{23} \\
+x_{31} &amp; x_{32} &amp; x_{33} 
+\end{bmatrix}.
+\end{equation*}`
+
+`\begin{equation*}
+\end{equation*}`
+
+`\begin{equation*}
+{\bf X' X}= \hspace{1in}  \hspace{1in}
+\end{equation*}`
+
+`\begin{equation*}
+\end{equation*}`
+
+`\begin{equation*}
+{\bf X X'}= \hspace{1in}  \hspace{1in}
+\end{equation*}`
+
+An *inner product* matrix is given by `\({\bf A' A}\)`, and an *outer product* matrix is given by `\({\bf A A'}\)`.  Both are always symmetric.
+
+
+---
+## Kronecker product
+
+Define the *Kronecker* (or *direct*) *product* as
+`\begin{equation*}
+{\bf A}_{r \times c} \bigotimes {\bf B}_{r' \times c'} = \{a_{ij} {\bf B} \} =
+\begin{bmatrix} a_{11} {\bf B} &amp; &amp; \cdots &amp; &amp; a_{1c} {\bf B} \\
+a_{21} {\bf B} &amp; &amp; &amp; &amp; \vdots \\
+\vdots &amp; &amp; &amp; &amp; \vdots \\
+a_{r1} {\bf B} &amp; &amp; &amp; &amp; a_{rc} {\bf B}
+\end{bmatrix}_{(rr') \times (cc')}.
+\end{equation*}`
+
+To compute the Kronecker product, multiply each element of the matrix `\({\bf A}\)` by the entire matrix `\({\bf B}\)`.
+
+Thus if `\({\bf A}\)` is a `\((5 \times 5)\)` matrix and `\({\bf B}\)` is a `\((4 \times 2)\)` matrix, the Kronecker product `\({\bf A} \bigotimes {\bf B}\)` has dimension `\([(5)(4) \times (5)(2)]=(20 \times 10)\)`.
+
+
+
+---
+## Kronecker product
+
+`\(\textbf{Exercise:}\)`
+
+Let `$${\bf A}=\begin{bmatrix} a_{11} &amp; a_{12} \\ a_{21} &amp; a_{22} \end{bmatrix} \text{ and } {\bf B}=\begin{bmatrix} b_{11} &amp; b_{12} &amp; b_{13} \\ b_{21} &amp; b_{22} &amp; b_{23} \\ b_{31} &amp; b_{32} &amp; b_{33} \end{bmatrix}.$$`
+
+Then `$${\bf A} \bigotimes {\bf B}= \hspace{1in}  \hspace{1in}$$`
+
+
+
+---
+## Orthogonal matrix
+
+An *orthogonal matrix* is a square matrix with `\({\bf A}'={\bf A}^{-1}\)`.
+
+That is, a square matrix `\({\bf A}\)` is orthogonal if `\({\bf A}'{\bf A}={\bf I}={\bf A A}'\)`.  
+
+ - The vectors `\({\bf x}\)` and `\({\bf y}\)` are *orthogonal vectors* if `\({\bf x'y}=0\)`.
+ - The vectors `\({\bf x}\)` and `\({\bf y}\)` are *orthonormal vectors* if `\({\bf x}\)` and `\({\bf y}\)` are orthogonal vectors and are normalized: `\({\bf x' y}=0\)`, `\({\bf x'x}=1\)`, and `\({\bf y'y}=1\)`.  
+
+
+
+---
+## Commutative laws
+
+Suppose `\({\bf A}\)` and `\({\bf B}\)` conform for the operation of interest.  
+
+ - `\({\bf A} + {\bf B}={ \bf B} + {\bf A}\)`
+ 
+ - `\(a {\bf B}= {\bf B} a\)`
+
+-  In general, `\({\bf A B} \neq {\bf B A}\)`, and `\({\bf A} \bigotimes {\bf B} \neq {\bf B} \bigotimes {\bf A}\)`.
+
+
+
+---
+## Distributive laws
+
+  - `\({\bf A} ({\bf B} + {\bf C}) = {\bf A B} + {\bf A C}\)`
+
+  -  `\(({\bf B} + {\bf C}) {\bf D} = {\bf B D} + {\bf C D}\)`
+
+  -  `\(a ({\bf B} + {\bf C}) = a {\bf B} + a {\bf C} = ({\bf B + C}) a\)`
+
+
+
+---
+## Associative laws
+
+  - `\(({\bf A} +{\bf B}) + {\bf C} = {\bf A} + ({\bf B} + {\bf C})\)`
+  
+  - `\(({\bf A B}) {\bf C} = {\bf A} ({\bf B C})\)`
+
+
+
+---
+## Transpose operations
+
+  - `\(({\bf A} + {\bf B})'={\bf A}' + {\bf B}'\)`
+
+  - `\(({\bf A B})'={\bf B}' {\bf A}'\)`
+    
+  - `\(({\bf A} \bigotimes {\bf B})'={\bf A}' \bigotimes {\bf B}'\)`
+
+
+
+---
+
+class: center, middle
+
+# What's next? 
+
+### Move on to the readings for the next module!
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

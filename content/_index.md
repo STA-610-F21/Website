@@ -43,8 +43,8 @@ By the end of this course, students should be able to
 <span></span>     | <span></span>     | <span></span>    | <span></span>    |  <span></span>      
 ------------------|-------------------|------------------|------------------|------------------ 
 Instructor        | [Dr. Olanrewaju Michael Akande](https://olanrewajuakande.com) | <a href="mailto:olanrewaju.akande@duke.edu" title="email"><i class="fa fa-envelope"></i></a> &nbsp; <a href="https://github.com/akandelanre" title="GitHub"><i class="fa fa-github"></i></a> | Mondays and Thursdays (9am -- 10am) | Zoom Meeting ID: **See Sakai**
-TAs               | [Chengxin Yang](https://scholars.duke.edu/person/chengxin.yang) | <a href="mailto:chengxin.yang@duke.edu" title="email"><i class="fa fa-envelope"></i></a> | TBD | TBD
-                  | [Alessandro Zito](https://scholars.duke.edu/person/alessandro.zito) | <a href="mailto:alessandro.zito@duke.edu" title="email"><i class="fa fa-envelope"></i></a> | TBD | TBD
+TAs               | [Chengxin Yang](https://scholars.duke.edu/person/chengxin.yang) | <a href="mailto:chengxin.yang@duke.edu" title="email"><i class="fa fa-envelope"></i></a> | Tuesdays (1pm - 2pm) and Fridays (4pm - 5pm) | Zoom Meeting ID: **See Sakai**
+                  | [Alessandro Zito](https://scholars.duke.edu/person/alessandro.zito) | <a href="mailto:alessandro.zito@duke.edu" title="email"><i class="fa fa-envelope"></i></a> | Wednesdays (10am - 11am) and Fridays (8:30am - 9:30am) | Zoom Meeting ID: **See Sakai**
 
 
 ### Texts

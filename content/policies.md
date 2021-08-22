@@ -10,6 +10,12 @@ markup: "mmark"
 
 ALL students are expected to be familiar with all the topics covered within the required prerequisites to be in this course. That is, courses covering linear and matrix algebra and STA 360/601/602. Students are also expected to be very familiar with R and are encouraged to have learned LaTeX or a Markdown language by the end of the course.
 
+### Meeting times
+Meeting times are designed to be as interactive as possible. My role as instructor is to introduce you new tools and techniques, but it is up to you to take them and make use of them. The statistical techniques we will cover are best learned by practical data analysis, so you will be working on various datasets as much as possible, through a variety of tasks and activities throughout each class. Ask as many questions as possible during and outside classes; there are no stupid questions. 
+
+### Team Work
+This course also emphasizes the ability to work in teams so that students can learn team productivity and performance. Each student must be ready to contribute to their team's success. During the first or second week of class, we will develop teams of around four to five students - these teams will stay consistent throughout the semester (barring extraordinary circumstances). You will work in these teams during classes, labs and on the group case studies.
+
 ### Workload
 
 Work hours will include time spent going through the preassigned readings, attending the lectures, attending the lab sessions, and doing all graded work. Please note that the more focused and engaged you are, the quicker you will be able to get through all the materials.
@@ -32,7 +38,7 @@ Exam I | 20%
 Exam II | 20%
 
 There are no make-ups for any of the graded work except for medical or familial emergencies or for reasons approved by the instructor BEFORE the due date. See the instructor in advance of relevant due dates to discuss possible alternatives. 
-	
+
 Grades **may** be curved at the end of the semester. Cumulative averages of 90% -- 100% are guaranteed at least an A-, 80% -- 89% at least a B-, and 70% -- 79% at least a C-, however the exact ranges for letter grades will be determined at the end of the course.
 
 
