@@ -39,7 +39,7 @@ You MUST submit both your .Rmd and .pdf files to the course site on Gradescope h
 
 
 # Introduction
-This individual lab is a quick assessment to gauge your level of comfort with doing exploratory data analysis (in R!) and specifying linear regression models for small data. Since we are yet to cover any rigorous material, your goal is to specify a basic linear regression model to the data below and interpret your results. This should be a relatively short lab, so you should also use it as an opportunity to figure out the logistics of future labs, that is, check your R/RStudio installation, make sure you know how to work in R markdown and knit to .pdf, and so on.
+The goal of this lab is to gauge each student's level of comfort with doing exploratory data analysis in R! and specifying regression models for small data. Since we are yet to cover any rigorous material, the TA will walk you through (in case you don't know or have forgotten) how to specify a basic linear regression model to the data below and how to interpret the results. Also, this should be a relatively short lab, so you should use it as an opportunity to figure out the logistics of future labs, that is, check your R/RStudio installation, make sure you know how to work in R markdown and knit to .pdf, and so on.
 
 
 # The Data
@@ -47,22 +47,25 @@ In a classic *Nature* communication, Partridge and Farquhar argued that there is
 
 To explore whether there is any effect of sexual activity on lifespan, researchers randomized male fruit flies to one of two groups:  an isolated population of males (no sexual activity), or a mixed-gender population in which the male fruit flies were sexually active. Because body size has also been linked to longevity, we consider it here (measured by thorax length) as well.
 
-The data are in the file [fruitfly_thorax_len.csv](https://sta-610l-s21.github.io/Course-Website/labs/data/fruitfly_thorax_len.csv), which contains lifespan, thorax length, and sexual activity for male fruit flies in the experiment.
+The data are in the file [fruitfly_thorax_len.csv](https://sta610-f21.olanrewajuakande.com/labs/data/fruitfly_thorax_len.csv), which contains lifespan, thorax length, and sexual activity for male fruit flies in the experiment.
 
 
 # Exercises
+
+The TA will walk you through how one would approach the following questions.
 
 1. Create two plots:
     - the first to explore the relationship between the lifespan (longevity) of the male fruit flies and thorax length; and
     - the second to explore the relationship between the lifespan (longevity) of the male fruit flies and sexual activity.
     
-    Report your findings from the plots. What can you conclude about the relationships?
-2. Now create a single plot to visualize the lifespan (longevity) of the male fruit flies as a function of sexual activity but broken down by thorax length. What can you conclude about this plot?
-3. Specify a two-way ANOVA model without interactions for estimating the association between longevity (your response variable), sexual activity, and thorax length in male fruit flies.
-4. Fit the model in R and interpret your findings. Be sure to use language accessible to a general scientifically-savvy reader (e.g., someone reading a science article in the BBC or CNN apps).
-5. 
+    Report the findings from the plots. What can you conclude about the relationships?
+2. Create a single plot to visualize the lifespan (longevity) of the male fruit flies as a function of sexual activity but broken down by thorax length. What can you conclude about this plot?
+3. Specify and fit a two-way ANOVA model without interactions for estimating the association between longevity (your response variable), sexual activity, and thorax length in male fruit flies. 
+4. Interpret the findings using language accessible to a general scientifically-savvy reader (e.g., someone reading a science article in the BBC or CNN apps). Findings should include uncertainty quantification around effect estimates of interest (no point estimates without uncertainty!).
+5. Investigate the adequacy of model fit and evaluate the suitability of modeling assumptions.
+6. Compare the existing model to a two-way ANOVA model with interactions using an appropriate statistical test. What can you conclude from the results of the test?
 
-
+No submissions are required at the end of this lab.
 
 
 <!-- # Acknowledgement -->

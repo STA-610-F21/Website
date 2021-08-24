@@ -76,28 +76,31 @@
 </div>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>This individual lab is a quick assessment to gauge your level of comfort with doing exploratory data analysis (in R!) and specifying linear regression models for small data. Since we are yet to cover any rigorous material, your goal is to specify a basic linear regression model to the data below and interpret your results. This should be a relatively short lab, so you should also use it as an opportunity to figure out the logistics of future labs, that is, check your R/RStudio installation, make sure you know how to work in R markdown and knit to .pdf, and so on.</p>
+<p>The goal of this lab is to gauge each student’s level of comfort with doing exploratory data analysis in R! and specifying regression models for small data. Since we are yet to cover any rigorous material, the TA will walk you through (in case you don’t know or have forgotten) how to specify a basic linear regression model to the data below and how to interpret the results. Also, this should be a relatively short lab, so you should use it as an opportunity to figure out the logistics of future labs, that is, check your R/RStudio installation, make sure you know how to work in R markdown and knit to .pdf, and so on.</p>
 </div>
 <div id="the-data" class="section level1">
 <h1>The Data</h1>
 <p>In a classic <em>Nature</em> communication, Partridge and Farquhar argued that there is a physiological cost of reproduction, which is in line with many evolutionary theories. At that time, this cost had been shown experimentally for females, but no cost for sexual activity had been shown for males in which the only paternal contribution to offspring is provision of gametes.</p>
 <p>To explore whether there is any effect of sexual activity on lifespan, researchers randomized male fruit flies to one of two groups: an isolated population of males (no sexual activity), or a mixed-gender population in which the male fruit flies were sexually active. Because body size has also been linked to longevity, we consider it here (measured by thorax length) as well.</p>
-<p>The data are in the file <a href="https://sta-610l-s21.github.io/Course-Website/labs/data/fruitfly_thorax_len.csv">fruitfly_thorax_len.csv</a>, which contains lifespan, thorax length, and sexual activity for male fruit flies in the experiment.</p>
+<p>The data are in the file <a href="https://sta610-f21.olanrewajuakande.com/labs/data/fruitfly_thorax_len.csv">fruitfly_thorax_len.csv</a>, which contains lifespan, thorax length, and sexual activity for male fruit flies in the experiment.</p>
 </div>
 <div id="exercises" class="section level1">
 <h1>Exercises</h1>
+<p>The TA will walk you through how one would approach the following questions.</p>
 <ol style="list-style-type: decimal">
 <li>Create two plots:
 <ul>
 <li>the first to explore the relationship between the lifespan (longevity) of the male fruit flies and thorax length; and</li>
 <li>the second to explore the relationship between the lifespan (longevity) of the male fruit flies and sexual activity.</li>
 </ul>
-Report your findings from the plots. What can you conclude about the relationships?</li>
-<li>Now create a single plot to visualize the lifespan (longevity) of the male fruit flies as a function of sexual activity but broken down by thorax length. What can you conclude about this plot?</li>
-<li>Specify a two-way ANOVA model without interactions for estimating the association between longevity (your response variable), sexual activity, and thorax length in male fruit flies.</li>
-<li>Fit the model in R and interpret your findings. Be sure to use language accessible to a general scientifically-savvy reader (e.g., someone reading a science article in the BBC or CNN apps).</li>
-<li></li>
+Report the findings from the plots. What can you conclude about the relationships?</li>
+<li>Create a single plot to visualize the lifespan (longevity) of the male fruit flies as a function of sexual activity but broken down by thorax length. What can you conclude about this plot?</li>
+<li>Specify and fit a two-way ANOVA model without interactions for estimating the association between longevity (your response variable), sexual activity, and thorax length in male fruit flies.</li>
+<li>Interpret the findings using language accessible to a general scientifically-savvy reader (e.g., someone reading a science article in the BBC or CNN apps). Findings should include uncertainty quantification around effect estimates of interest (no point estimates without uncertainty!).</li>
+<li>Investigate the adequacy of model fit and evaluate the suitability of modeling assumptions.</li>
+<li>Compare the existing model to a two-way ANOVA model with interactions using an appropriate statistical test. What can you conclude from the results of the test?</li>
 </ol>
+<p>No submissions are required at the end of this lab.</p>
 <!-- # Acknowledgement -->
 <!-- This exercise is based on ideas proposed by [Sam Voisin](https://stat.duke.edu/people/sam-voisin). -->
 </div>
