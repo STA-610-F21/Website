@@ -29,42 +29,41 @@ lessons:
     slides: "1-5-anova-matrix-formulation.html"
     slidespdf: "1-5-anova-matrix-formulation.pdf"
     
+  - title: "Module 1.6: Review of ANOVA (wrap-up)"
+    #reading: "1-6-reading.html"
+    slides: "1-6-anova-linear-combinations.html"
+    slidespdf: "1-6-anova-linear-combinations.pdf"
+    
+  #- title: "Module 1.7: Review of multi-way ANOVA and interactions"
+    #reading: "1-7-reading.html"
+    #slides: "1-7-multi-way-anova.html"
+    #slidespdf: "1-7-multi-way-anova.pdf"
+    
+  #- title: "Module 1.8: Short activity"
+    #slides: "1-8-short-activity.html"
+    
     
   - date: "Fri, Aug 27"
     title: "Lab 1: "
     title: "Lab 1: Help, these kids are killing me! (Part I)"
     lab: "lab-01.html"
     
-    
-    
-  - week: "WEEK 2"
-    date: "Mon, Aug 30"
-    title: "Module 1.6: Review of one way ANOVA (distribution of estimates and linear combinations)"
-    #reading: "1-6-reading.html"
-    #slides: "1-6-anova-linear-combinations.html"
-    #slidespdf: "1-6-anova-linear-combinations.pdf"
-    
-  - title: "Module 1.7: Review of multi-way ANOVA and interactions"
-    #reading: "1-7-reading.html"
-    #slides: "1-7-multi-way-anova.html"
-    #slidespdf: "1-7-multi-way-anova.pdf"
-    
-  - title: "Module 1.8: Short activity"
-    #slides: "1-8-short-activity.html"
-    
-    
+  
   - title: " "
   - title: "MODULE 2: RANDOM EFFECTS ANOVA / HIERARCHICAL NORMAL MODEL"
   - title: " "
   
     
-  - date: "Wed, Sept 1"
+  - week: "WEEK 2"
+    date: "Mon, Aug 30"
     title: "Module 2.1: Random effects ANOVA (introduction)"
     #reading: "2-1-reading.html"
     #slides: "2-1-random-effects-anova-intro.html"
     #slidespdf: "2-1-random-effects-anova-intro.pdf"
     
-  - title: "Module 2.2: Random effects ANOVA (estimation)"
+    
+  - date: "Wed, Sept 1"
+    title: "Module 2.2: Random effects ANOVA (estimation)"
     #reading: "2-2-reading.html"
     #slides: "2-2-random-effects-anova-estimation.html"
     #slidespdf: "2-2-random-effects-anova-estimation.pdf"
