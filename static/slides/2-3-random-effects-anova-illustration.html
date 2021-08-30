@@ -574,7 +574,7 @@ ggplot(Radon[is.element(Radon$countyID,sample_county),],
 ---
 ## Radon study
 
-First, we will begin by examining the complete-pooling regression,
+As we have been doing, let's begin by examining the complete-pooling regression,
 `$$y_{ij}=\alpha+\beta x_{ij} + \varepsilon_{ij}; \ \ \ \varepsilon_{ij} \sim N(0,\sigma^2)$$`
 
 and the no-pooling regression
@@ -601,7 +601,7 @@ The estimates of `\(\beta\)` (the association between floor of home and radon le
 
 As we might expect, we tend to have higher radon levels in the basement `\((p &lt; 0.0001)\)`.  
 
-Neither analysis is perfect.  
+As expected, neither analysis is perfect.  
 
 The complete-pooling analysis ignores variation in radon levels between counties, which is undesirable because our goal is to identify counties with high-radon homes -- we can't pool away the main research question!
 
@@ -612,15 +612,16 @@ The no-pooling analysis is also problematic -- for example the Lac Qui Parle Cou
 ---
 ## Radon study
 
-Let's turn to a simple multilevel model instead:
+So we turn to a simple multilevel model instead:
 `$$y_{ij}=\gamma_0 + \alpha_{j}+\beta x_{ij} + \varepsilon_{ij},$$`
 
 where now `\(\alpha_{j} \sim N(0,\tau^2)\)` and `\(\varepsilon_{ij} \sim N(0, \sigma^2)\)`.
 
-We fit this model using the .hlight[lmer()] function in the .hlight[lme4] package.
-
 This model can also be parameterized as
-`$$y_{ij} \sim N(\alpha_{j}+\beta x_{ij}, \sigma^2); \ \ \ \alpha_j \sim N\left(\gamma_0,\tau^2 \right).$$` 
+`$$y_{ij} \sim N(\alpha_{j}+\beta x_{ij}, \sigma^2),$$`
+
+with each
+`$$\alpha_j \sim N\left(\gamma_0,\tau^2 \right).$$` 
 
 
 ---
