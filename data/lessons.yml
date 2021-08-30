@@ -57,16 +57,20 @@ lessons:
   - week: "WEEK 2"
     date: "Mon, Aug 30"
     title: "Module 2.1: Random effects ANOVA (introduction)"
-    #reading: "2-1-reading.html"
-    #slides: "2-1-random-effects-anova-intro.html"
-    #slidespdf: "2-1-random-effects-anova-intro.pdf"
+    reading: "2-1-reading.html"
+    slides: "2-1-random-effects-anova-intro.html"
+    slidespdf: "2-1-random-effects-anova-intro.pdf"
+    
+  - title: "Module 2.2: Random effects ANOVA (estimation)"
+    reading: "2-2-reading.html"
+    slides: "2-2-random-effects-anova-estimation.html"
+    slidespdf: "2-2-random-effects-anova-estimation.pdf"
     
     
   - date: "Wed, Sept 1"
-    title: "Module 2.2: Random effects ANOVA (estimation)"
-    #reading: "2-2-reading.html"
-    #slides: "2-2-random-effects-anova-estimation.html"
-    #slidespdf: "2-2-random-effects-anova-estimation.pdf"
+    title: "Module 2.3: Random effects ANOVA illustration (in class)"
+    slides: "2-3-random-effects-anova-illustration.html"
+    slidespdf: "2-3-random-effects-anova-illustration.pdf"
     
     
   - date: "NEW ASSIGNMENT:"
@@ -84,18 +88,14 @@ lessons:
     
   - week: "WEEK 3"
     date: "Mon, Sept 6"
-    title: "Module 2.3: Random effects ANOVA illustration (in class)"
-    #slides: "2-3-random-effects-anova-illustration.html"
-    #slidespdf: "2-3-random-effects-anova-illustration.pdf"
-    
-  
-  - date: "Wed, Sept 8"
     title: "Module 2.4: Random effects ANOVA (Bayesian estimation I)"
     #reading: "2-4-reading.html"
     #slides: "2-4-random-effects-anova-bayesian-estimation.html"
     #slidespdf: "2-4-random-effects-anova-bayesian-estimation.pdf"
     
-  - title: "Module 2.5: Random effects ANOVA (Bayesian estimation II)"
+  
+  - date: "Wed, Sept 8"
+    title: "Module 2.5: Random effects ANOVA (Bayesian estimation II)"
     #reading: "2-5-reading.html"
     #slides: "2-5-random-effects-anova-bayesian-estimation-II.html"
     #slidespdf: "2-5-random-effects-anova-bayesian-estimation-II.pdf"

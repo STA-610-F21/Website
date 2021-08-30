@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>STA 610L: Module 2.3</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Olanrewaju Michael Akande" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# STA 610L: Module 2.3
+## Random effects ANOVA (illustration)
+### Dr. Olanrewaju Michael Akande
+
+---
+
+
+
+
+
+
+
+
+
+## Radon study
+
+.hlight[Recall]: we want to estimate the distribution of radon levels in houses `\(i\)` within the 85 counties `\(j\)`.
+
+There are 919 total observations in the data. The data is in the file `Radon.txt` on Sakai.
+
+Variable    | Description
+:------------- | :------------
+radon | radon levels for each house
+log_radon | log(radon)
+state | state
+floor | lowest living area of each house: 0 for basement, 1 for first floor
+countyname | county names
+countyID | ID for the county names (1-85)
+fips | state + county fips code
+uranium | county-level soil uranium
+log_uranium | log(uranium)
+
+
+---
+## Radon study
+
+.large[
+
+```r
+Radon &lt;- read.csv("data/Radon.txt", header = T,sep="")
+Radon$floor &lt;- factor(Radon$floor,levels=c(0,1),labels=c("Basement","First Floor"))
+str(Radon)
+```
+
+```
+## 'data.frame':	919 obs. of  9 variables:
+##  $ radon      : num  2.2 2.2 2.9 1 3.1 2.5 1.5 1 0.7 1.2 ...
+##  $ state      : chr  "MN" "MN" "MN" "MN" ...
+##  $ log_radon  : num  0.788 0.788 1.065 0 1.131 ...
+##  $ floor      : Factor w/ 2 levels "Basement","First Floor": 2 1 1 1 1 1 1 1 1 1 ...
+##  $ countyname : chr  "AITKIN" "AITKIN" "AITKIN" "AITKIN" ...
+##  $ countyID   : int  1 1 1 1 2 2 2 2 2 2 ...
+##  $ fips       : int  27001 27001 27001 27001 27003 27003 27003 27003 27003 27003 ...
+##  $ uranium    : num  0.502 0.502 0.502 0.502 0.429 ...
+##  $ log_uranium: num  -0.689 -0.689 -0.689 -0.689 -0.847 ...
+```
+]
+
+
+---
+## Radon study
+
+.large[
+
+```r
+head(Radon)
+```
+
+```
+##   radon state log_radon       floor countyname countyID  fips  uranium
+## 1   2.2    MN 0.7884574 First Floor     AITKIN        1 27001 0.502054
+## 2   2.2    MN 0.7884574    Basement     AITKIN        1 27001 0.502054
+## 3   2.9    MN 1.0647107    Basement     AITKIN        1 27001 0.502054
+## 4   1.0    MN 0.0000000    Basement     AITKIN        1 27001 0.502054
+## 5   3.1    MN 1.1314021    Basement      ANOKA        2 27003 0.428565
+## 6   2.5    MN 0.9162907    Basement      ANOKA        2 27003 0.428565
+##   log_uranium
+## 1  -0.6890476
+## 2  -0.6890476
+## 3  -0.6890476
+## 4  -0.6890476
+## 5  -0.8473129
+## 6  -0.8473129
+```
+
+```r
+summary(Radon[,-c(2,7)])
+```
+
+```
+##      radon          log_radon               floor      countyname       
+##  Min.   : 0.000   Min.   :-2.3026   Basement   :766   Length:919        
+##  1st Qu.: 1.900   1st Qu.: 0.6419   First Floor:153   Class :character  
+##  Median : 3.600   Median : 1.2809                     Mode  :character  
+##  Mean   : 4.768   Mean   : 1.2246                                       
+##  3rd Qu.: 6.000   3rd Qu.: 1.7918                                       
+##  Max.   :48.200   Max.   : 3.8754                                       
+##     countyID        uranium        log_uranium      
+##  Min.   : 1.00   Min.   :0.4140   Min.   :-0.88183  
+##  1st Qu.:21.00   1st Qu.:0.6221   1st Qu.:-0.47467  
+##  Median :44.00   Median :0.9080   Median :-0.09652  
+##  Mean   :43.52   Mean   :0.9339   Mean   :-0.13171  
+##  3rd Qu.:70.00   3rd Qu.:1.2011   3rd Qu.: 0.18324  
+##  Max.   :85.00   Max.   :1.6956   Max.   : 0.52802
+```
+]
+
+
+---
+## Radon study
+
+.midsmall[
+
+```r
+table(Radon$countyname) #we don't have enough data in some counties, so we should look to borrow information across counties.
+```
+
+```
+## 
+##            AITKIN             ANOKA            BECKER          BELTRAMI 
+##                 4                52                 3                 7 
+##            BENTON         BIG STONE        BLUE EARTH             BROWN 
+##                 4                 3                14                 4 
+##           CARLTON            CARVER              CASS          CHIPPEWA 
+##                10                 6                 5                 4 
+##           CHISAGO              CLAY        CLEARWATER              COOK 
+##                 6                14                 4                 2 
+##        COTTONWOOD         CROW WING            DAKOTA             DODGE 
+##                 4                12                63                 3 
+##           DOUGLAS         FARIBAULT          FILLMORE          FREEBORN 
+##                 9                 6                 2                 9 
+##           GOODHUE          HENNEPIN           HOUSTON           HUBBARD 
+##                14               105                 6                 5 
+##            ISANTI            ITASCA           JACKSON           KANABEC 
+##                 3                11                 5                 4 
+##         KANDIYOHI           KITTSON       KOOCHICHING     LAC QUI PARLE 
+##                 4                 3                 7                 2 
+##              LAKE LAKE OF THE WOODS          LE SUEUR           LINCOLN 
+##                 9                 4                 5                 4 
+##              LYON          MAHNOMEN          MARSHALL            MARTIN 
+##                 8                 1                 9                 7 
+##            MCLEOD            MEEKER        MILLE LACS          MORRISON 
+##                13                 5                 2                 9 
+##             MOWER            MURRAY          NICOLLET            NOBLES 
+##                13                 1                 4                 3 
+##            NORMAN           OLMSTED        OTTER TAIL        PENNINGTON 
+##                 3                23                 8                 3 
+##              PINE         PIPESTONE              POLK              POPE 
+##                 6                 4                 4                 2 
+##            RAMSEY           REDWOOD          RENVILLE              RICE 
+##                32                 5                 3                11 
+##              ROCK            ROSEAU             SCOTT         SHERBURNE 
+##                 2                14                13                 8 
+##            SIBLEY          ST LOUIS           STEARNS            STEELE 
+##                 4               116                25                10 
+##           STEVENS             SWIFT              TODD          TRAVERSE 
+##                 2                 4                 3                 4 
+##           WABASHA            WADENA            WASECA        WASHINGTON 
+##                 7                 5                 4                46 
+##          WATONWAN            WILKIN            WINONA            WRIGHT 
+##                 3                 1                13                13 
+##   YELLOW MEDICINE 
+##                 2
+```
+]
+
+
+---
+## Radon study
+
+The raw radon levels can only take on positive values.
+
+
+```r
+ggplot(Radon,aes(radon)) +
+  geom_histogram(aes(y=..density..),color="black",linetype="dashed",
+                 fill=rainbow(15),bins=15) + theme(legend.position="none") +
+  geom_density(alpha=.25, fill="lightblue") + scale_fill_brewer(palette="Blues") +
+  labs(title="Distribution of Radon Levels",y="Radon") + theme_classic() 
+```
+
+&lt;img src="2-3-random-effects-anova-illustration_files/figure-html/unnamed-chunk-5-1.png" style="display: block; margin: auto;" /&gt;
+
+--
+.block[Obviously very skewed.]
+
+
+---
+## Radon study
+
+Let's look at `log_radon` instead.
+
+
+```r
+ggplot(Radon,aes(log_radon)) +
+  geom_histogram(aes(y=..density..),color="black",linetype="dashed",
+                 fill=rainbow(15),bins=15) + theme(legend.position="none") +
+  geom_density(alpha=.25, fill="lightblue") + scale_fill_brewer(palette="Blues") +
+  labs(title="Distribution of Log Radon Levels",y="Log Radon") + theme_classic() 
+```
+
+&lt;img src="2-3-random-effects-anova-illustration_files/figure-html/unnamed-chunk-6-1.png" style="display: block; margin: auto;" /&gt;
+
+--
+
+.block[Much better! Let's go with log radon for now.]
+
+
+
+---
+## Radon study
+
+Are there any variations of radon levels by county? There are too many counties, so, let's do it for a random sample of counties.
+
+```r
+set.seed(1000)
+sample_county &lt;- sample(unique(Radon$countyname),25,replace=F)
+ggplot(Radon[is.element(Radon$countyname,sample_county),],
+       aes(x=countyname, y=log_radon, fill=countyname)) +
+  geom_boxplot() +
+  labs(title="Log radon levels by county",
+       x="County",y="Log Radon") + theme_classic() + 
+  theme(legend.position="none",axis.text.x = element_text(angle = 90))
+```
+
+
+---
+## Radon study
+
+&lt;img src="2-3-random-effects-anova-illustration_files/figure-html/unnamed-chunk-8-1.png" style="display: block; margin: auto;" /&gt;
+
+--
+
+.block[Looks like the levels vary by county. However, there are many counties with very little data.]
+
+
+
+---
+## Radon study
+
+Let's focus on counties with at least 11 houses.
+
+
+```r
+sample_county &lt;- which(table(Radon$countyID) &gt; 10)
+ggplot(Radon[is.element(Radon$countyID,sample_county),],
+       aes(x=countyname, y=log_radon, fill=countyname)) +
+  geom_boxplot() +
+  labs(title="Log radon levels by county",
+       x="County",y="Log Radon") + theme_classic() + 
+  theme(legend.position="none",axis.text.x = element_text(angle = 90))
+```
+
+
+
+---
+## Radon study
+
+&lt;img src="2-3-random-effects-anova-illustration_files/figure-html/unnamed-chunk-10-1.png" style="display: block; margin: auto;" /&gt;
+
+&lt;div class="question"&gt;
+What can you conclude from this plot?
+&lt;/div&gt;
+
+
+
+---
+## Radon study in R
+
+We start with a random effects ANOVA model. We can fit that model in R by doing
+
+```r
+Model1 &lt;- lmer(log_radon ~ (1 | countyname), data = Radon) 
+summary(Model1)
+```
+
+```
+## Linear mixed model fit by REML ['lmerMod']
+## Formula: log_radon ~ (1 | countyname)
+##    Data: Radon
+## 
+## REML criterion at convergence: 2259.4
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -4.4661 -0.5734  0.0441  0.6432  3.3516 
+## 
+## Random effects:
+##  Groups     Name        Variance Std.Dev.
+##  countyname (Intercept) 0.09581  0.3095  
+##  Residual               0.63662  0.7979  
+## Number of obs: 919, groups:  countyname, 85
+## 
+## Fixed effects:
+##             Estimate Std. Error t value
+## (Intercept)  1.31258    0.04891   26.84
+```
+
+
+---
+## Radon study in R
+
+.midsmall[
+
+```r
+coef(Model1)
+```
+
+```
+## $countyname
+##                   (Intercept)
+## AITKIN              1.0674994
+## ANOKA               0.8875568
+## BECKER              1.2303812
+## BELTRAMI            1.2245444
+## BENTON              1.2899760
+## BIG STONE           1.3749235
+## BLUE EARTH          1.7171954
+## BROWN               1.4315991
+## CARLTON             1.0833131
+## CARVER              1.2608819
+## CASS                1.3506019
+## CHIPPEWA            1.4695309
+## CHISAGO             1.1826263
+## CLAY                1.6312662
+## CLEARWATER          1.1867346
+## COOK                1.1627174
+## COTTONWOOD          1.0953027
+## CROW WING           1.0736856
+## DAKOTA              1.2944691
+## DODGE               1.4642936
+## DOUGLAS             1.5089532
+## FARIBAULT           0.9349171
+## FILLMORE            1.2494467
+## FREEBORN            1.6743898
+## GOODHUE             1.6755316
+## HENNEPIN            1.2867314
+## HOUSTON             1.4172565
+## HUBBARD             1.0964581
+## ISANTI              1.2327649
+## ITASCA              1.0714227
+## JACKSON             1.6165831
+## KANABEC             1.2839088
+## KANDIYOHI           1.5941519
+## KITTSON             1.2495867
+## KOOCHICHING         0.8482223
+## LAC QUI PARLE       1.6101391
+## LAKE                0.7427261
+## LAKE OF THE WOODS   1.3858053
+## LE SUEUR            1.4376932
+## LINCOLN             1.6218834
+## LYON                1.6209590
+## MAHNOMEN            1.3189074
+## MARSHALL            1.2489275
+## MARTIN              1.1204333
+## MCLEOD              1.1545020
+## MEEKER              1.2705104
+## MILLE LACS          1.1300481
+## MORRISON            1.1719088
+## MOWER               1.4969979
+## MURRAY              1.4670206
+## NICOLLET            1.6329198
+## NOBLES              1.5039156
+## NORMAN              1.2186497
+## OLMSTED             1.2351414
+## OTTER TAIL          1.3318141
+## PENNINGTON          1.0973710
+## PINE                0.9944189
+## PIPESTONE           1.4509455
+## POLK                1.3309653
+## POPE                1.3048974
+## RAMSEY              1.1292427
+## REDWOOD             1.5385774
+## RENVILLE            1.3492634
+## RICE                1.6054357
+## ROCK                1.3094621
+## ROSEAU              1.2728558
+## SCOTT               1.4904852
+## SHERBURNE           1.1909980
+## SIBLEY              1.2862247
+## ST LOUIS            0.7977368
+## STEARNS             1.3631229
+## STEELE              1.4731860
+## STEVENS             1.4234422
+## SWIFT               1.1902441
+## TODD                1.3657564
+## TRAVERSE            1.5063796
+## WABASHA             1.5209552
+## WADENA              1.1772729
+## WASECA              0.9827000
+## WASHINGTON          1.2589465
+## WATONWAN            1.5976957
+## WILKIN              1.4325911
+## WINONA              1.4079158
+## WRIGHT              1.4961184
+## YELLOW MEDICINE     1.2834113
+## 
+## attr(,"class")
+## [1] "coef.mer"
+```
+]
+
+
+
+---
+## Plotting code
+
+.small[
+
+```r
+y &lt;- Radon$log_radon; ybarbar &lt;- mean(y)
+J &lt;- length(unique(Radon$countyname))
+sample_size &lt;- as.vector(table(Radon$countyname))
+sample_size_jittered &lt;- sample_size*exp(runif(J, -.1, .1))
+
+cty_mns &lt;- tapply(y,Radon$countyname,mean)
+cty_vars &lt;- tapply(y,Radon$countyname,var)
+cty_sds &lt;- mean(sqrt(cty_vars[!is.na(cty_vars)]))/sqrt(sample_size)
+cty_sds_sep &lt;- sqrt(tapply(y,Radon$countyname,var)/sample_size)
+
+
+par(mfrow=c(1,2))
+plot (sample_size_jittered, cty_mns, cex.lab=.9, cex.axis=1,
+      xlab="sample size in county j",
+      ylab="avg. log radon in county j",
+      pch=20, log="x", cex=.3, mgp=c(1.5,.5,0),
+      ylim=c(0,3.2), yaxt="n", xaxt="n")
+axis (1, c(1,3,10,30,100), cex.axis=.9, mgp=c(1.5,.5,0))
+axis (2, seq(0,3), cex.axis=.9, mgp=c(1.5,.5,0))
+for (j in 1:J){
+  lines (rep(sample_size_jittered[j],2),
+         cty_mns[j] + c(-1,1)*cty_sds[j], lwd=.5)
+#         cty_mns[j] + c(-1,1)*mean(cty_sds[!is.na(cty_sds)]), lwd=.5)
+}
+title("No pooling",cex.main=.9, line=1)
+abline(h=ybarbar)
+
+
+library(arm)
+plot (sample_size_jittered, coef(Model1)$countyname[,1], cex.lab=.9, cex.axis=1,
+      xlab="sample size in county j",
+      ylab="avg. log radon in county j",
+      pch=20, log="x", cex=.3, mgp=c(1.5,.5,0),
+      ylim=c(0,3.2), yaxt="n", xaxt="n")
+axis (1, c(1,3,10,30,100), cex.axis=.9, mgp=c(1.5,.5,0))
+axis (2, seq(0,3), cex.axis=.9, mgp=c(1.5,.5,0))
+for (j in 1:J){
+  lines (rep(sample_size_jittered[j],2),coef(Model1)$countyname[j,1] + c(-1,1)*se.ranef(Model1)$countyname[j,1], lwd=.5)
+} 
+title("Partial Pooling",cex.main=.9, line=1)
+abline(h=ybarbar)
+```
+]
+
+
+
+---
+## Plots
+
+&lt;img src="2-3-random-effects-anova-illustration_files/figure-html/unnamed-chunk-14-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+
+
+---
+## Random effects model plus a grouping factor
+
+One important predictor of radon levels is the floor on which the measurement is taken:  basement or first floor.
+
+Radon comes from underground and can enter more easily when the house is built into the ground.
+
+In addition, basements tend to have higher levels than ground floors.
+
+So, let's explore the relationship between `log_radon` and `floor`.
+
+Note that is an individual-level (different observation for each house) variable, unlike the `uranium` variable, which is county-level (group-level).
+
+We will return to this point later.
+
+
+
+
+---
+## Radon study
+
+
+```r
+ggplot(Radon,aes(x=floor, y=log_radon, fill=floor)) +
+  geom_boxplot() + scale_fill_brewer(palette="Greens") +
+  labs(title="Log radon vs floor", x="Lowest living area of each house",y="Log Radon") + 
+  theme_classic() + theme(legend.position="none")
+```
+
+&lt;img src="2-3-random-effects-anova-illustration_files/figure-html/unnamed-chunk-15-1.png" style="display: block; margin: auto;" /&gt;
+
+--
+
+.block[Looks like radon levels are indeed higher for houses with the basement as the lowest living area.]
+
+---
+## Radon study
+
+Let's look at the same relationship for a random sample of counties.
+
+
+```r
+sample_county &lt;- sample(unique(Radon$countyname),8,replace=F)
+ggplot(Radon[is.element(Radon$countyname,sample_county),],
+       aes(x=floor, y=log_radon, fill=floor)) +
+  geom_boxplot() +
+  scale_fill_brewer(palette="Greens") +
+  labs(title="Log radon vs floor by county",
+       x="Lowest living area of each house",y="Log Radon") + 
+  theme_classic() + theme(legend.position="none") +
+  facet_wrap( ~ countyname,ncol=4)
+```
+
+
+---
+## Radon study
+
+&lt;img src="2-3-random-effects-anova-illustration_files/figure-html/unnamed-chunk-17-1.png" style="display: block; margin: auto;" /&gt;
+
+Again, not enough data for some counties.
+
+
+---
+## Radon study
+
+Let's focus on counties with at least 16 houses.
+
+
+```r
+sample_county &lt;- which(table(Radon$countyID) &gt; 15)
+ggplot(Radon[is.element(Radon$countyID,sample_county),],
+       aes(x=floor, y=log_radon, fill=floor)) +
+  geom_boxplot() +
+  scale_fill_brewer(palette="Greens") +
+  labs(title="Log radon vs floor by county",
+       x="Lowest living area of each house",y="Log Radon") + 
+  theme_classic() + theme(legend.position="none") +
+  facet_wrap( ~ countyname,ncol=4)
+```
+
+
+---
+## Radon study
+
+&lt;img src="2-3-random-effects-anova-illustration_files/figure-html/unnamed-chunk-19-1.png" style="display: block; margin: auto;" /&gt;
+
+--
+
+.block[Even though the overall direction is the same, it looks like the actual differences between floor = 0 and floor = 1 differs for some counties.]
+
+
+
+
+---
+## Radon study
+
+First, we will begin by examining the complete-pooling regression,
+`$$y_{ij}=\alpha+\beta x_{ij} + \varepsilon_{ij}; \ \ \ \varepsilon_{ij} \sim N(0,\sigma^2)$$`
+
+and the no-pooling regression
+`$$y_{ij}=\alpha_{j}+\beta x_{ij} + \varepsilon_{ij}; \ \ \ \varepsilon_{ij} \sim N(0,\sigma^2)$$`
+
+where `\(\alpha_{j}\)` is the mean log radon level from basement measures of homes (indexed by i) in county `\(j\)`. 
+
+The following plot shows the dashed lines `\(\widehat{y}=\widehat{\alpha}+\widehat{\beta} x\)` for eight selected counties from the complete pooling model, and the solid lines `\(\widehat{y}=\widehat{\alpha}_j+\widehat{\beta}x\)` from no pooling model.
+
+
+
+---
+## Radon study
+
+&lt;img src="img/gelman2.jpg" width="600px" height="500px" style="display: block; margin: auto;" /&gt;
+
+
+
+
+---
+## Radon study
+
+The estimates of `\(\beta\)` (the association between floor of home and radon level) differ slightly for the two regressions, with `\(\widehat{\beta}=-0.61\)` for the pooling model, and `\(\widehat{\beta}=-0.72\)` for the no-pooling model. 
+
+As we might expect, we tend to have higher radon levels in the basement `\((p &lt; 0.0001)\)`.  
+
+Neither analysis is perfect.  
+
+The complete-pooling analysis ignores variation in radon levels between counties, which is undesirable because our goal is to identify counties with high-radon homes -- we can't pool away the main research question!
+
+The no-pooling analysis is also problematic -- for example the Lac Qui Parle County line is estimated based on just two data points.
+
+
+
+---
+## Radon study
+
+Let's turn to a simple multilevel model instead:
+`$$y_{ij}=\gamma_0 + \alpha_{j}+\beta x_{ij} + \varepsilon_{ij},$$`
+
+where now `\(\alpha_{j} \sim N(0,\tau^2)\)` and `\(\varepsilon_{ij} \sim N(0, \sigma^2)\)`.
+
+We fit this model using the .hlight[lmer()] function in the .hlight[lme4] package.
+
+This model can also be parameterized as
+`$$y_{ij} \sim N(\alpha_{j}+\beta x_{ij}, \sigma^2); \ \ \ \alpha_j \sim N\left(\gamma_0,\tau^2 \right).$$` 
+
+
+---
+## Radon study in R
+
+First, the pooled model
+
+```r
+###pooled model
+lm_pooled &lt;- lm(log_radon ~ floor, data = Radon)
+summary(lm_pooled)
+```
+
+```
+## 
+## Call:
+## lm(formula = log_radon ~ floor, data = Radon)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.6293 -0.5383  0.0342  0.5603  2.5486 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)       1.32674    0.02972  44.640   &lt;2e-16
+## floorFirst Floor -0.61339    0.07284  -8.421   &lt;2e-16
+## 
+## Residual standard error: 0.8226 on 917 degrees of freedom
+## Multiple R-squared:  0.07178,	Adjusted R-squared:  0.07077 
+## F-statistic: 70.91 on 1 and 917 DF,  p-value: &lt; 2.2e-16
+```
+
+
+
+---
+## Radon study in R
+
+Next, the unpooled model.
+
+```r
+###unpooled  model
+lm_unpooled &lt;- lm(log_radon ~ floor + countyname, data = Radon)
+summary(lm_unpooled)
+```
+
+```
+## 
+## Call:
+## lm(formula = log_radon ~ floor + countyname, data = Radon)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -3.14595 -0.45405  0.00065  0.45376  2.65987 
+## 
+## Coefficients:
+##                             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)                  0.84054    0.37866   2.220  0.02670
+## floorFirst Floor            -0.72054    0.07352  -9.800  &lt; 2e-16
+## countynameANOKA              0.03428    0.39274   0.087  0.93047
+## countynameBECKER             0.68816    0.57854   1.189  0.23459
+## countynameBELTRAMI           0.71218    0.47470   1.500  0.13392
+## countynameBENTON             0.59203    0.53487   1.107  0.26867
+## countynameBIG STONE          0.67247    0.57802   1.163  0.24500
+## countynameBLUE EARTH         1.17162    0.42892   2.732  0.00644
+## countynameBROWN              1.14904    0.53519   2.147  0.03208
+## countynameCARLTON            0.16250    0.44764   0.363  0.71669
+## countynameCARVER             0.72336    0.48861   1.480  0.13913
+## countynameCASS               0.56059    0.50775   1.104  0.26988
+## countynameCHIPPEWA           0.88971    0.53519   1.662  0.09680
+## countynameCHISAGO            0.19818    0.48861   0.406  0.68514
+## countynameCLAY               1.14784    0.42886   2.677  0.00759
+## countynameCLEARWATER         0.49743    0.53519   0.929  0.35292
+## countynameCOOK              -0.17568    0.65534  -0.268  0.78871
+## countynameCOTTONWOOD         0.43426    0.53613   0.810  0.41818
+## countynameCROW WING          0.28101    0.43672   0.643  0.52011
+## countynameDAKOTA             0.49777    0.39027   1.275  0.20251
+## countynameDODGE              0.95977    0.57802   1.660  0.09720
+## countynameDOUGLAS            0.89345    0.45467   1.965  0.04974
+## countynameFARIBAULT         -0.20375    0.48831  -0.417  0.67660
+## countynameFILLMORE           0.55945    0.65534   0.854  0.39353
+## countynameFREEBORN           1.26108    0.45456   2.774  0.00566
+## countynameGOODHUE            1.11018    0.42892   2.588  0.00981
+## countynameHENNEPIN           0.52004    0.38549   1.349  0.17770
+## countynameHOUSTON            0.93282    0.48831   1.910  0.05644
+## countynameHUBBARD            0.40105    0.50807   0.789  0.43013
+## countynameISANTI             0.21546    0.57802   0.373  0.70942
+## countynameITASCA             0.08522    0.44204   0.193  0.84718
+## countynameJACKSON            1.18003    0.50775   2.324  0.02036
+## countynameKANABEC            0.39575    0.53519   0.739  0.45983
+## countynameKANDIYOHI          1.22133    0.53519   2.282  0.02274
+## countynameKITTSON            0.74990    0.57854   1.296  0.19527
+## countynameKOOCHICHING       -0.02134    0.47470  -0.045  0.96415
+## countynameLAC QUI PARLE      2.11842    0.65534   3.233  0.00128
+## countynameLAKE              -0.43845    0.45467  -0.964  0.33516
+## countynameLAKE OF THE WOODS  1.02717    0.53519   1.919  0.05529
+## countynameLE SUEUR           0.90752    0.50743   1.788  0.07407
+## countynameLINCOLN            1.47526    0.53487   2.758  0.00594
+## countynameLYON               1.12661    0.46330   2.432  0.01524
+## countynameMAHNOMEN           0.52044    0.84590   0.615  0.53856
+## countynameMARSHALL           0.76170    0.45511   1.674  0.09457
+## countynameMARTIN             0.20045    0.47418   0.423  0.67261
+## countynameMCLEOD             0.45487    0.43252   1.052  0.29325
+## countynameMEEKER             0.37407    0.50775   0.737  0.46150
+## countynameMILLE LACS         0.04339    0.65534   0.066  0.94723
+## countynameMORRISON           0.30758    0.45467   0.676  0.49892
+## countynameMOWER              0.86157    0.43256   1.992  0.04672
+## countynameMURRAY             1.65266    0.84590   1.954  0.05107
+## countynameNICOLLET           1.32450    0.53519   2.475  0.01353
+## countynameNOBLES             1.08715    0.57802   1.881  0.06034
+## countynameNORMAN             0.41026    0.57776   0.710  0.47784
+## countynameOLMSTED            0.46621    0.40987   1.137  0.25567
+## countynameOTTER TAIL         0.77745    0.46330   1.678  0.09371
+## countynamePENNINGTON         0.26056    0.57854   0.450  0.65256
+## countynamePINE              -0.07836    0.48831  -0.160  0.87255
+## countynamePIPESTONE          1.02038    0.53487   1.908  0.05677
+## countynamePOLK               0.88124    0.53519   1.647  0.10002
+## countynamePOPE               0.43885    0.65534   0.670  0.50327
+## countynameRAMSEY             0.31819    0.40132   0.793  0.42809
+## countynameREDWOOD            1.14247    0.50743   2.251  0.02462
+## countynameRENVILLE           0.83016    0.57776   1.437  0.15113
+## countynameRICE               1.00729    0.44181   2.280  0.02286
+## countynameROCK               0.45858    0.65534   0.700  0.48427
+## countynameROSEAU             0.82520    0.42950   1.921  0.05503
+## countynameSCOTT              0.96258    0.43252   2.226  0.02631
+## countynameSHERBURNE          0.24948    0.46357   0.538  0.59060
+## countynameSIBLEY             0.40191    0.53519   0.751  0.45288
+## countynameST LOUIS           0.02709    0.38476   0.070  0.94388
+## countynameSTEARNS            0.65130    0.40740   1.599  0.11027
+## countynameSTEELE             0.73936    0.44788   1.651  0.09916
+## countynameSTEVENS            0.95122    0.65534   1.451  0.14702
+## countynameSWIFT              0.14650    0.53519   0.274  0.78436
+## countynameTODD               0.88318    0.57776   1.529  0.12674
+## countynameTRAVERSE           1.16790    0.53487   2.184  0.02928
+## countynameWABASHA            0.98114    0.47418   2.069  0.03884
+## countynameWADENA             0.44515    0.50754   0.877  0.38070
+## countynameWASECA            -0.22566    0.53487  -0.422  0.67321
+## countynameWASHINGTON         0.48898    0.39445   1.240  0.21545
+## countynameWATONWAN           1.86899    0.57854   3.231  0.00128
+## countynameWILKIN             1.38947    0.84590   1.643  0.10084
+## countynameWINONA             0.78238    0.43250   1.809  0.07082
+## countynameWRIGHT             0.80481    0.43269   1.860  0.06323
+## countynameYELLOW MEDICINE    0.34598    0.65534   0.528  0.59768
+## 
+## Residual standard error: 0.7564 on 833 degrees of freedom
+## Multiple R-squared:  0.287,	Adjusted R-squared:  0.2142 
+## F-statistic: 3.945 on 85 and 833 DF,  p-value: &lt; 2.2e-16
+```
+
+
+---
+## Radon study in R
+
+Finally, the random intercepts model with a fixed effect for floor.
+
+```r
+Model2 &lt;- lmer(log_radon ~ floor + (1 | countyname), data = Radon) 
+summary(Model2)
+```
+
+```
+## Linear mixed model fit by REML ['lmerMod']
+## Formula: log_radon ~ floor + (1 | countyname)
+##    Data: Radon
+## 
+## REML criterion at convergence: 2171.3
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -4.3989 -0.6155  0.0029  0.6405  3.4281 
+## 
+## Random effects:
+##  Groups     Name        Variance Std.Dev.
+##  countyname (Intercept) 0.1077   0.3282  
+##  Residual               0.5709   0.7556  
+## Number of obs: 919, groups:  countyname, 85
+## 
+## Fixed effects:
+##                  Estimate Std. Error t value
+## (Intercept)       1.46160    0.05158  28.339
+## floorFirst Floor -0.69299    0.07043  -9.839
+## 
+## Correlation of Fixed Effects:
+##             (Intr)
+## florFrstFlr -0.288
+```
+
+
+---
+## Radon study in R
+
+.midsmall[
+
+```r
+coef(Model2)
+```
+
+```
+## $countyname
+##                   (Intercept) floorFirst Floor
+## AITKIN              1.1915003       -0.6929937
+## ANOKA               0.9276468       -0.6929937
+## BECKER              1.4792143       -0.6929937
+## BELTRAMI            1.5045012       -0.6929937
+## BENTON              1.4461503       -0.6929937
+## BIG STONE           1.4801817       -0.6929937
+## BLUE EARTH          1.8581255       -0.6929937
+## BROWN               1.6827736       -0.6929937
+## CARLTON             1.1600746       -0.6929937
+## CARVER              1.5086099       -0.6929937
+## CASS                1.4322449       -0.6929937
+## CHIPPEWA            1.5771520       -0.6929937
+## CHISAGO             1.2370518       -0.6929937
+## CLAY                1.8380232       -0.6929937
+## CLEARWATER          1.4024982       -0.6929937
+## COOK                1.2432992       -0.6929937
+## COTTONWOOD          1.3723633       -0.6929937
+## CROW WING           1.2209415       -0.6929937
+## DAKOTA              1.3462611       -0.6929937
+## DODGE               1.5840333       -0.6929937
+## DOUGLAS             1.6311136       -0.6929937
+## FARIBAULT           1.0211902       -0.6929937
+## FILLMORE            1.4409443       -0.6929937
+## FREEBORN            1.8605721       -0.6929937
+## GOODHUE             1.8135585       -0.6929937
+## HENNEPIN            1.3626875       -0.6929937
+## HOUSTON             1.6222663       -0.6929937
+## HUBBARD             1.3467692       -0.6929937
+## ISANTI              1.3149878       -0.6929937
+## ITASCA              1.0999775       -0.6929937
+## JACKSON             1.7329563       -0.6929937
+## KANABEC             1.3646863       -0.6929937
+## KANDIYOHI           1.7197951       -0.6929937
+## KITTSON             1.5015319       -0.6929937
+## KOOCHICHING         1.0870316       -0.6929937
+## LAC QUI PARLE       1.8680900       -0.6929937
+## LAKE                0.7928241       -0.6929937
+## LAKE OF THE WOODS   1.6303574       -0.6929937
+## LE SUEUR            1.5979923       -0.6929937
+## LINCOLN             1.8260565       -0.6929937
+## LYON                1.7636308       -0.6929937
+## MAHNOMEN            1.4456250       -0.6929937
+## MARSHALL            1.5404841       -0.6929937
+## MARTIN              1.2199767       -0.6929937
+## MCLEOD              1.3375197       -0.6929937
+## MEEKER              1.3416955       -0.6929937
+## MILLE LACS          1.2995480       -0.6929937
+## MORRISON            1.2623707       -0.6929937
+## MOWER               1.6294468       -0.6929937
+## MURRAY              1.6253581       -0.6929937
+## NICOLLET            1.7641694       -0.6929937
+## NOBLES              1.6300755       -0.6929937
+## NORMAN              1.3820836       -0.6929937
+## OLMSTED             1.3328317       -0.6929937
+## OTTER TAIL          1.5494611       -0.6929937
+## PENNINGTON          1.3246513       -0.6929937
+## PINE                1.0877738       -0.6929937
+## PIPESTONE           1.6303984       -0.6929937
+## POLK                1.5675867       -0.6929937
+## POPE                1.4116740       -0.6929937
+## RAMSEY              1.1995431       -0.6929937
+## REDWOOD             1.7120493       -0.6929937
+## RENVILLE            1.5338618       -0.6929937
+## RICE                1.7205672       -0.6929937
+## ROCK                1.4170797       -0.6929937
+## ROSEAU              1.5982671       -0.6929937
+## SCOTT               1.6981946       -0.6929937
+## SHERBURNE           1.2380854       -0.6929937
+## SIBLEY              1.3673371       -0.6929937
+## ST LOUIS            0.8899487       -0.6929937
+## STEARNS             1.4829168       -0.6929937
+## STEELE              1.5389227       -0.6929937
+## STEVENS             1.5520593       -0.6929937
+## SWIFT               1.2574762       -0.6929937
+## TODD                1.5530274       -0.6929937
+## TRAVERSE            1.6938491       -0.6929937
+## WABASHA             1.6642923       -0.6929937
+## WADENA              1.3708520       -0.6929937
+## WASECA              1.0944377       -0.6929937
+## WASHINGTON          1.3404792       -0.6929937
+## WATONWAN            1.9060483       -0.6929937
+## WILKIN              1.5835784       -0.6929937
+## WINONA              1.5716875       -0.6929937
+## WRIGHT              1.5906331       -0.6929937
+## YELLOW MEDICINE     1.3862294       -0.6929937
+## 
+## attr(,"class")
+## [1] "coef.mer"
+```
+]
+
+
+
+---
+## Interpretation of fixed effects
+
+- Intuitively, we have an overall "average" regression line for all houses across all counties in Minnesota which has slope -0.69 and intercept 1.46.
+
+--
+
+- That is, the general estimated line for any of the houses in Minnesota is: 
+.block[
+.small[
+`$$\widehat{\text{log(radon)}}_{ij} = 1.46 - 0.69 \times \textrm{floor}_{ij}$$`
+]
+]
+
+- For .hlight[any house in Minnesota with a basement as the lowest living area, the baseline radon level is] `\(e^{1.46} = 4.31\)`.
+
+--
+
+- Then, for any house in Minnesota, .hlight[having a first floor as the lowest living area, instead of a basement], reduces the radon level by a multiplicative effect of `\(e^{-0.69} \approx 0.5016\)`, that is, about a 49.84% reduction.
+
+--
+
+- However, if the house is in Dakota county for example, we also need to add on the random intercept for that county.
+
+
+
+---
+## Interpretation of fixed effects
+
+- For Dakota county, we have
+  
+  ```r
+  (ranef(Model2)$countyname)["DAKOTA",]
+  ```
+  
+  ```
+  ## [1] -0.1153368
+  ```
+
+  so that the estimated regression line for Dakota county is approximately
+.block[
+.small[
+`$$\widehat{\text{log(radon)}}_{ij} = (1.46 - 0.12) + 0.69 \times \textrm{floor}_{ij} = 1.35 - 0.69 \times \textrm{floor}_{ij}$$`
+]
+]
+
+--
+
+- Thus, for any house in Dakota county in Minnesota with a basement as the lowest living area, the baseline radon level is actually `\(e^{1.34} \approx 3.82\)`, which is .hlight[lower than the overall state wide average].
+
+--
+
+- For floor effect remains the same, at least until we explore random slopes.
+
+
+---
+## Radon study in R
+
+Again,
+
+```r
+summary(Model2)
+```
+
+```
+## Linear mixed model fit by REML ['lmerMod']
+## Formula: log_radon ~ floor + (1 | countyname)
+##    Data: Radon
+## 
+## REML criterion at convergence: 2171.3
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -4.3989 -0.6155  0.0029  0.6405  3.4281 
+## 
+## Random effects:
+##  Groups     Name        Variance Std.Dev.
+##  countyname (Intercept) 0.1077   0.3282  
+##  Residual               0.5709   0.7556  
+## Number of obs: 919, groups:  countyname, 85
+## 
+## Fixed effects:
+##                  Estimate Std. Error t value
+## (Intercept)       1.46160    0.05158  28.339
+## floorFirst Floor -0.69299    0.07043  -9.839
+## 
+## Correlation of Fixed Effects:
+##             (Intr)
+## florFrstFlr -0.288
+```
+
+
+---
+## Interpretation of random effects
+
+- The estimated standard error `\(\hat{\sigma} = 0.76\)` describes the within-county or remaining unexplained variation.
+
+--
+
+- The estimated `\(\hat{\tau} = 0.33\)` describes the across-county variation attributed to the random intercept.
+
+--
+
+- The correlation between two houses in the same county is then given by
+`$$\widehat{\text{Corr}(y_{ij},y_{i'j})} = \frac{\hat{\tau}^2}{\hat{\sigma}^2+\hat{\tau}^2} = \frac{0.1077}{0.5709 + 0.1077} \approx 0.16.$$`
+
+--
+
+- We do have some correlation, but not that strong.
+
+--
+
+- You can visualize the random effects by typing `dotplot(ranef(Model2, condVar=TRUE))$countyname` in R.
+
+--
+
+- So many counties! So, you will need to zoom out on your computer.
+
+
+
+---
+## Interpretation of random effects
+
+&lt;img src="2-3-random-effects-anova-illustration_files/figure-html/unnamed-chunk-27-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+
+
+---
+
+class: center, middle
+
+# What's next?
+
+### Move on to the readings for the next module!
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
