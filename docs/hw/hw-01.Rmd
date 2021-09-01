@@ -1,0 +1,64 @@
+---
+title: "Homework 1"
+date: "Due: 11:59pm, Wednesday, September 8"
+output: 
+  html_document: 
+    css: hw.css
+    theme: yeti
+    toc: true
+    fig_caption: false
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+---
+
+## Instructions
+
+Please make sure your final output file is a pdf document. You can submit handwritten solutions for non-programming exercises or type them using R Markdown, LaTeX or any other word processor. All programming exercises must be done in R, typed up clearly and with ALL code attached as an appendix. Submissions should be made on gradescope: go to Assignments $\rightarrow$ Homework 1.
+
+## Questions
+  
+1. <font color="green">Game of Thrones</font> <font color="blue">**(8 points)**</font>
+
+    The handling of female characters in the American series Game of Thrones, and indeed whether it is feminist or mysogynistic, has been hotly debated. The dataset [gotscreen.RData](gotscreen.RData) contains information on the number of seconds of screentime for members of each gender in each episode of seven seasons of Game of Thrones. Using descriptive statistics as well as a two-way ANOVA model with interaction, explore whether an actor's screentime differs by gender (male, female, or unspecified) and whether there are any differences in potential gender effects across the 7 seasons of the show. Your answer should include the following details.
+    + Exploratory data analysis of screentime, including average screentime per gender as well as total screentime for all actors of a given gender.
+    + A clear specification of the model using an equation, including clear specification of any modeling assumptions.
+    + A clearly-labeled table providing point and interval estimates for each parameter in the linear predictor of your model.
+    + Clear specification of any hypothesis tests or other inferential techniques used to evaluate the questions posed above.
+    + Evidence of adequacy of model fit and evaluation of suitability of any assumptions.
+    + Clear description of results in language accessible to the average fan of the show, including graphical displays as appropriate. Comment on any insights that may differ between exploratory data analysis and analysis using the ANOVA model, along with reasons why these insights may differ.
+    
+    
+2. <font color="green">OLS Estimation</font> <font color="blue">**(7 points)**</font>
+
+      + <font color="green">**Part (a).**</font> Using the scalar formulation of the ANOVA model $y_{ij} \sim N\left(\mu_j,\sigma^2 \right)$, with $\mu=(\mu_1,\cdots,\mu_J)$, show that $\widehat{\mu}_{OLS}=(\overline{y}_1,\cdots,\overline{y}_J)$, where $\overline{y}_j$ is the sample mean in group $j$.
+      
+      + <font color="green">**Part (b).**</font> Using the scalar formulation of the ANOVA model $y_{ij} \sim N\left(\mu+\alpha_j,\sigma^2 \right)$ with the constraint $\sum_j \alpha_j=0$, assume $n_j=n$ and show
+          - <font color="green">**i.**</font> $\widehat{\mu}=\overline{y}_{\cdot \cdot}$, where $\overline{y}_{\cdot \cdot}$ is the grand mean over all observations
+          
+          - <font color="green">**ii.**</font> $\widehat{\mu}=\frac{1}{J}\sum_j \widehat{\mu}_j$
+          
+          - <font color="green">**iiii.**</font> $\widehat{\alpha}_j=\widehat{\mu}_j-\widehat{\mu}=\overline{y}_{j}-\overline{y}_{\cdot \cdot}$
+          
+      + <font color="green">**Part (c).**</font> Write the model in part (a) in matrix form assuming you have 3 groups with 3 observations each and show that $(X'X)^{-1}X'y$ yields the same estimates as in the scalar formulation. Note the parameter vector corresponding to this model should contain the three mean parameters $(\mu_1, \mu_2, \mu_3)$.
+
+  
+3. <font color="green">Contrasts</font> <font color="blue">**(5 points)**</font>
+
+    Suppose you fit an ANOVA model to responses collected from J=3 groups. Consider the following two ANOVA model parameterizations.
+\begin{eqnarray}
+y_{ij}&=&\mu_j + \varepsilon_{ij} ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ (1) \\
+y_{ij}&=& \mu + \alpha_1I(j=1)+\alpha_2I(j=2)+\varepsilon_{ij} ~~~~ (2).
+\end{eqnarray}
+    + <font color="green">**Part (a).**</font> Find the linear combinations of parameters in model (2) that are equivalent to $\mu_1-\mu_2$, $\mu_1-\mu_3$, and $\mu_2-\mu_3$ in model (1).
+    
+    + <font color="green">**Part (b).**</font> Show that the estimates of these mean differences are identical regardless of the coding scheme (1) or (2) used, either theoretically or by analyzing the Game of Thrones data using a one-way ANOVA model with gender as the only predictor.
+
+
+
+## Grading
+
+Total: 20 points.
+  
+  
+  

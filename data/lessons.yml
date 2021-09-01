@@ -72,10 +72,15 @@ lessons:
     slides: "2-3-random-effects-anova-illustration.html"
     slidespdf: "2-3-random-effects-anova-illustration.pdf"
     
+  - title: "Module 2.4: Random effects ANOVA (Bayesian estimation I)"
+    reading: "2-4-reading.html"
+    slides: "2-4-random-effects-anova-bayesian-estimation.html"
+    slidespdf: "2-4-random-effects-anova-bayesian-estimation.pdf"
+    
     
   - date: "NEW ASSIGNMENT:"
     title: "Homework 1"
-    #hw: "hw-01.html"
+    hw: "hw-01.html"
     
     
   - date: "Fri, Sept 3"
@@ -88,17 +93,16 @@ lessons:
     
   - week: "WEEK 3"
     date: "Mon, Sept 6"
-    title: "Module 2.4: Random effects ANOVA (Bayesian estimation I)"
-    #reading: "2-4-reading.html"
-    #slides: "2-4-random-effects-anova-bayesian-estimation.html"
-    #slidespdf: "2-4-random-effects-anova-bayesian-estimation.pdf"
-    
-  
-  - date: "Wed, Sept 8"
     title: "Module 2.5: Random effects ANOVA (Bayesian estimation II)"
     #reading: "2-5-reading.html"
     #slides: "2-5-random-effects-anova-bayesian-estimation-II.html"
     #slidespdf: "2-5-random-effects-anova-bayesian-estimation-II.pdf"
+    
+  
+  - date: "Wed, Sept 8"
+    title: "Module 2.6: Random effects ANOVA (priors for group-level variance)"
+    #slides: "2-6-random-effects-anova-priors-group-level-variance.html"
+    #slidespdf: "2-6-random-effects-anova-priors-group-level-variance.pdf"
     
   - title: "R illustration for lme4 and brms"
     #video: "https://api.playposit.com/go/play/1164919/1403540/1028257/0/Multilevel-and-Hierarchical-Models--R-illustration-for-lme4-and-brms"
@@ -116,11 +120,7 @@ lessons:
     
   - week: "WEEK 4"
     date: "Mon, Sept 13"
-    title: "Module 2.6: Random effects ANOVA (priors for group-level variance)"
-    #slides: "2-6-random-effects-anova-priors-group-level-variance.html"
-    #slidespdf: "2-6-random-effects-anova-priors-group-level-variance.pdf"
-    
-  - title: "Module 2.7: Random effects ANCOVA (introduction)"
+    title: "Module 2.7: Random effects ANCOVA (introduction)"
     #reading: "2-7-reading.html"
     #slides: "2-7-random-effects-ancova-intro.html"
     #slidespdf: "2-7-random-effects-ancova-intro.pdf"

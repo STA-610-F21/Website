@@ -1,0 +1,481 @@
+---
+title: "STA 610L: Module 2.4"
+subtitle: "Random effects ANOVA (Bayesian estimation I)"
+author: "Dr. Olanrewaju Michael Akande"
+date: " "
+output:
+  xaringan::moon_reader:
+    css: "slides.css"
+    logo: img/class_logo.png
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  warm = 1
+  )
+# Set dpi and height for images
+library(knitr)
+knitr::opts_chunk$set(fig.height = 2.65, dpi = 300,fig.align='center',fig.show='hold',size='footnotesize', small.mar=TRUE) 
+# For nonsese...
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(rvest)
+```
+
+
+
+
+## Introduction
+
+Bayesian estimation is usually the approach of choice for fitting hierarchical models.
+
+Two major advantages include
+
+  - estimation and computation, particularly in complex, highly structured, or generalized linear models; and
+    
+  - straightforward uncertainty quantification.
+    
+ 
+
+
+---
+## Hierarchical normal model
+
+Recall our random effects ANOVA model:
+
+\begin{eqnarray*}
+y_{ij}&=&\mu_j+\varepsilon_{ij}
+\end{eqnarray*}
+where
+  + $\mu_j=\mu +\alpha_j$, and
+  
+  + $\alpha_j \overset{iid}{\sim} N\left(0,\tau^2\right) \perp \varepsilon_{ij} \overset{iid}{\sim} N\left(0,\sigma^2\right)$,
+  
+  so that $\mu_j \overset{iid}{\sim} N\left(\mu,\tau^2\right)$.
+
+To do Bayesian estimation, we also need to specify a prior distribution for $(\mu,\tau^2,\sigma^2)$, which we will write as $p(\theta)=p(\mu,\tau^2,\sigma^2)$.
+
+
+**Note**: this module should be a recap of the derivations you should have covered in STA 360/601/602. Some of the notations might be different so pay attention to those.
+
+
+
+    
+ 
+
+
+---
+## Bayesian specification of the model
+
+We can start with a .hlight[default semi-conjugate] prior specification given by
+
+$$p(\mu,\tau^2,\sigma^2)=p(\mu)p(\tau^2)p(\sigma^2),$$
+
+where
+.block[
+.small[
+$$
+\begin{split}
+\pi(\mu) & = \mathcal{N}\left(\mu_0, \gamma^2_0\right)\\
+\pi(\tau^2) & = \mathcal{IG} \left(\dfrac{\eta_0}{2}, \dfrac{\eta_0\tau_0^2}{2}\right)\\
+\pi(\sigma^2) & = \mathcal{IG} \left(\dfrac{\nu_0}{2}, \dfrac{\nu_0\sigma_0^2}{2}\right).\\
+\end{split}
+$$
+]
+]
+
+
+
+---
+## Bayesian specification of the model
+
+With this default prior specification, we have nice interpretations of the prior parameters.
+
+- For $\mu$,
+  + $\mu_0$: best guess of average of group averages
+  
+  + $\gamma^2_0$: set based on plausible ranges of values of $\mu$
+    
+- For $\tau^2$,
+  + $\tau_0^2$: best guess of variance of group averages
+  
+  + $\eta_0$: set based on how tight prior for $\tau^2$ is around $\tau_0^2$
+    
+- For $\sigma^2$,
+  + $\sigma_0^2$: best guess of variance of individual responses around respective group means
+  
+  + $\nu_0$: set based on how tight prior for $\sigma^2$ is around $\sigma_0^2$.
+
+
+
+
+---
+## Quick review: inverse-gamma distribution
+
+If $\theta \sim \mathcal{IG}(a,b)$, then the pdf is
+.block[
+$$p(\theta) = \frac{b^a}{\Gamma(a)} \theta^{-(a+1)} e^{-\frac{b}{\theta} }\ \ \ \textrm{for} \ \ \ a, b > 0,$$
+]
+
+  with
+
+  + $\mathbb{E}[\theta] = \frac{b}{a - 1}$;
+  
+  + $\mathbb{V}[\theta] = \frac{b^2}{(a - 1)^2(a-2)} \ \ \textrm{for} \ \ a \geq 2$.;
+  
+  + $\textrm{Mode}[\theta] = \frac{b}{a+1}$.
+  
+  
+  
+---
+## Implications on priors
+
+Using an $\mathcal{IG} \left(\dfrac{\eta_0}{2}, \dfrac{\eta_0\tau_0^2}{2}\right)$ prior for $\tau^2$, we see that our best guess of variance of group averages, $\tau_0^2$, is somewhere in the "center" of the distribution (between the mode $\frac{\eta_0\tau_0^2}{\eta_0+2}$ and the mean $\frac{\eta_0\tau_0^2}{\eta_0-2}$).
+
+As the "prior sample size" or "prior degrees of freedom" $\eta_0$ increases, the difference between these quantities goes to 0.
+
+We have similar implications on the prior $\pi(\sigma^2) = \mathcal{IG} \left(\dfrac{\nu_0}{2}, \dfrac{\nu_0\sigma_0^2}{2}\right)$.
+
+
+  
+  
+  
+---
+## Fully-specified model
+
+We have now fully-specified our model with the following components.
+
+1. Unknown parameters $(\mu_0, \tau_0^2, \sigma_0^2, \mu_1, \cdots, \mu_J)$
+
+2. Prior distributions, specified in terms of prior guesses $(\mu_0,\tau_0^2,\sigma_0^2)$ and prior sample sizes or prior degrees of freedoms $(\gamma^2_0,\eta_0,\nu_0)$
+
+3. Data from our groups.
+
+We can then interrogate the posterior distribution of the parameters using Gibbs sampling, as the full conditional distributions have closed forms.
+
+
+
+---
+## Full conditionals
+
+- For the full conditionals we will derive here, we will take advantage of results from the regular univariate normal model (from STA 360/601/602). For a refresher, see [here](https://sta-602l-s21.github.io/Course-Website/slides/3-5-normal-joint-inference.html#1).
+
+--
+
+- Recall that if we assume
+.block[
+.small[
+$$y_i \sim \mathcal{N}(\mu, \sigma^2), \ \ i=1, \ldots, n,$$
+]
+]
+
+--
+
+  and set our priors to be
+.block[
+.small[
+$$
+\begin{split}
+\pi(\mu) & = \mathcal{N}\left(\mu_0, \gamma_0^2\right).\\
+\pi(\sigma^2) & = \mathcal{IG}\left(\dfrac{\nu_0}{2}, \dfrac{\nu_0 \sigma_0^2}{2}\right),\\
+\end{split}
+$$
+]
+]
+
+--
+
+  then we have
+.block[
+.small[
+$$
+\begin{split}
+\pi(\mu, \sigma^2 | Y) & \boldsymbol{\propto} \left\{ \prod_{i=1}^{n} p(y_{i} | \mu, \sigma^2 ) \right\} \cdot \pi(\mu) \cdot \pi(\sigma^2) \\
+\end{split}
+$$
+]
+]
+
+
+
+---
+## Full conditionals
+
+- We have
+.block[
+.small[
+$$
+\begin{split}
+\pi(\mu | \sigma^2, Y) & = \mathcal{N}\left(\mu_n, \gamma_n^2\right).\\
+\end{split}
+$$
+]
+]
+
+  where
+.block[
+.small[
+$$
+\begin{split}
+\gamma^2_n = \dfrac{1}{ \dfrac{n}{\sigma^2} + \dfrac{1}{\gamma_0^2} }; \ \ \ \ \ \ \ \ \mu_n & = \gamma^2_n \left[ \dfrac{n}{\sigma^2} \bar{y} + \dfrac{1}{\gamma_0^2} \mu_0 \right],
+\end{split}
+$$
+]
+]
+
+--
+
+- and
+.block[
+.small[
+$$
+\begin{split}
+\pi(\sigma^2 | \mu,Y) \boldsymbol{=} \mathcal{IG}\left(\dfrac{\nu_n}{2}, \dfrac{\nu_n\sigma_n^2}{2}\right),
+\end{split}
+$$
+]
+]
+
+  where
+.block[
+.small[
+$$
+\begin{split}
+\nu_n & = \nu_0 + n; \ \ \ \ \ \ \ \sigma_n^2  = \dfrac{1}{\nu_n} \left[ \nu_0 \sigma_0^2 + \sum^n_{i=1} (y_i - \mu)^2 \right].\\
+\end{split}
+$$
+]
+]
+
+
+
+
+
+
+---
+## Posterior inference
+
+- Our hierarchical model can be written as
+.block[
+.small[
+$$
+\begin{split}
+y_{ij} | \mu_j, \sigma^2 & \sim \mathcal{N} \left( \mu_j, \sigma^2\right); \ \ \ i = 1,\ldots, n_j\\
+\mu_j | \mu, \tau^2 & \sim \mathcal{N} \left( \mu, \tau^2 \right); \ \ \ j = 1, \ldots, J,
+\end{split}
+$$
+]
+]
+
+--
+
+- Under our prior specification, we can factor the posterior as follows:
+.block[
+.small[
+$$
+\begin{split}
+\pi(\mu_1, \ldots, \mu_J, \mu, \sigma^2,\tau^2 | Y) & \boldsymbol{\propto} p(y | \mu_1, \ldots, \mu_J, \mu, \sigma^2,\tau^2)\\
+& \ \ \ \ \times p(\mu_1, \ldots, \mu_J | \mu, \sigma^2,\tau^2)\\
+& \ \ \ \ \times \pi(\mu, \sigma^2,\tau^2)\\
+\\
+& \boldsymbol{=} p(y | \mu_1, \ldots, \mu_J, \sigma^2 )\\
+& \ \ \ \ \times p(\mu_1, \ldots, \mu_J | \mu,\tau^2)\\
+& \ \ \ \ \times \pi(\mu) \cdot \pi(\sigma^2) \cdot \pi(\tau^2)\\
+\\
+& \boldsymbol{=} \left\{ \prod_{j=1}^{J} \prod_{i=1}^{n_j} p(y_{ij} | \mu_j, \sigma^2 ) \right\}\\
+& \ \ \ \ \times \left\{ \prod_{j=1}^{J} p(\mu_j | \mu,\tau^2) \right\}\\
+& \ \ \ \ \times\pi(\mu) \cdot \pi(\sigma^2) \cdot \pi(\tau^2)\\
+\end{split}
+$$
+]
+]
+  
+
+
+---
+## Full conditional for grand mean
+
+- The full conditional distribution of $\mu$ is proportional to the part of the joint posterior $\pi(\mu_1, \ldots, \mu_J, \mu, \sigma^2,\tau^2 | Y)$ that involves $\mu$.
+
+--
+
+- That is,
+.block[
+.small[
+$$
+\begin{split}
+\pi(\mu | \mu_1, \ldots, \mu_J, \sigma^2,\tau^2, Y) & \boldsymbol{\propto} \left\{ \prod_{j=1}^{J} p(\mu_j | \mu,\tau^2) \right\} \cdot \pi(\mu).
+\end{split}
+$$
+]
+]
+
+--
+
+- This looks like the full conditional distribution from the one-sample normal case, so you can show that
+.block[
+.small[
+$$
+\begin{split}
+\pi(\mu | \mu_1, \ldots, \mu_J, \sigma^2,\tau^2, Y) & = \mathcal{N}\left(\mu_n, \gamma^2_n \right) \ \ \ \ \textrm{where}\\
+\\
+\gamma^2_n = \dfrac{1}{ \dfrac{J}{\tau^2} + \dfrac{1}{\gamma_0^2}  } ; \ \ \ \ \ \ \ \  \mu_n = \gamma^2_n \left[ \dfrac{J}{\tau^2} \bar{\theta} + \dfrac{1}{\gamma_0^2} \mu_0 \right]
+\end{split}
+$$
+]
+]
+
+  and $\bar{\theta} = \frac{1}{J} \sum\limits^J_{j=1} \mu_j$.
+
+
+
+
+---
+## Full conditionals for group means
+
+- Similarly, the full conditional distribution of each $\mu_j$ is proportional to the part of the joint posterior $\pi(\mu_1, \ldots, \mu_J, \mu, \sigma^2,\tau^2 | Y)$ that involves $\mu_j$.
+
+--
+
+- That is,
+.block[
+.small[
+$$
+\begin{split}
+\pi(\mu_j | \mu, \sigma^2,\tau^2, Y) & \boldsymbol{\propto} \left\{ \prod_{i=1}^{n_j} p(y_{ij} | \mu_j, \sigma^2 ) \right\} \cdot p(\mu_j | \mu,\tau^2) \\
+\end{split}
+$$
+]
+]
+
+--
+
+- Those terms include a normal for $\mu_j$ multiplied by a product of normals in which $\mu_j$ is the mean, again mirroring the one-sample case, so you can show that
+.block[
+.small[
+$$
+\begin{split}
+\pi(\mu_j | \mu, \sigma^2,\tau^2, Y) & = \mathcal{N}\left(\mu_j^\star, \nu_j^\star \right) \ \ \ \ \textrm{where}\\
+\\
+\nu_j^\star & = \dfrac{1}{ \dfrac{n_j}{\sigma^2} + \dfrac{1}{\tau^2}  } ; \ \ \ \ \ \ \ \mu_j^\star = \nu_j^\star \left[ \dfrac{n_j}{\sigma^2} \bar{y}_j + \dfrac{1}{\tau^2} \mu \right]
+\end{split}
+$$
+]
+]
+
+
+
+---
+## Full conditionals for group means
+
+- Our estimate for each $\mu_j$ is a weighted average of $\bar{y}_j$ and $\mu$, ensuring that we are borrowing information across all levels through $\mu$ and $\tau^2$.
+
+--
+
+- The weights for the weighted average is determined by relative precisions from the data and from the second level model.
+
+--
+  
+- The groups with smaller $n_j$ have estimated $\mu_j^\star$ closer to $\mu$ than schools with larger $n_j$.
+
+--
+
+- Thus, degree of shrinkage of $\mu_j$ depends on ratio of within-group to between-group variances.
+
+
+
+
+---
+## Full conditionals for across-group variance
+
+- The full conditional distribution of $\tau^2$ is proportional to the part of the joint posterior $\pi(\mu_1, \ldots, \mu_J, \mu, \sigma^2,\tau^2 | Y)$ that involves $\tau^2$.
+
+--
+
+- That is,
+.block[
+.small[
+$$
+\begin{split}
+\pi(\tau^2 | \mu_1, \ldots, \mu_J, \mu, \sigma^2, Y) & \boldsymbol{\propto} \left\{ \prod_{j=1}^{J} p(\mu_j | \mu,\tau^2) \right\} \cdot \pi(\tau^2)\\
+\end{split}
+$$
+]
+]
+
+--
+
+- As in the case for $\mu$, this looks like the one-sample normal problem, and our full conditional posterior is
+.block[
+.small[
+$$
+\begin{split}
+\pi(\tau^2 | \mu_1, \ldots, \mu_J, \mu, \sigma^2, Y) & = \mathcal{IG} \left(\dfrac{\eta_n}{2}, \dfrac{\eta_n\tau_n^2}{2}\right) \ \ \ \ \textrm{where}\\
+\\
+\eta_n = \eta_0 + J ; \ \ \ \ \ \ \ \tau_n^2 & = \dfrac{1}{\eta_n} \left[\eta_0\tau_0^2 + \sum\limits_{j=1}^{J} (\mu_j - \mu)^2 \right].\\
+\end{split}
+$$
+]
+]
+
+
+
+
+---
+## Full conditionals for within-group variance
+
+- Finally, the full conditional distribution of $\sigma^2$ is proportional to the part of the joint posterior $\pi(\mu_1, \ldots, \mu_J, \mu, \sigma^2,\tau^2 | Y)$ that involves $\sigma^2$.
+
+--
+
+- That is,
+.block[
+.small[
+$$
+\begin{split}
+\pi(\sigma^2 | \mu_1, \ldots, \mu_J, \mu, \tau^2, Y) & \boldsymbol{\propto} \left\{ \prod_{j=1}^{J} \prod_{i=1}^{n_j} p(y_{ij} | \mu_j, \sigma^2 ) \right\} \cdot \pi(\sigma^2)\\
+\end{split}
+$$
+]
+]
+
+--
+
+- We can again take advantage of the one-sample normal problem, so that our full conditional posterior (homework) is
+.block[
+.small[
+$$
+\begin{split}
+\pi(\sigma^2 | \mu_1, \ldots, \mu_J, \mu, \tau^2, Y) & = \mathcal{IG} \left(\dfrac{\nu_n}{2}, \dfrac{\nu_n\sigma_n^2}{2}\right) \ \ \ \ \textrm{where}\\
+\\
+\nu_n = \nu_0 + \sum\limits_{j=1}^{J} n_j ; \ \ \ \ \ \ \ \sigma_n^2 & = \dfrac{1}{\nu_n} \left[\nu_0\sigma_0^2 + \sum\limits_{j=1}^{J}\sum\limits_{i=1}^{n_j} (y_{ij} - \mu_j)^2 \right].\\
+\end{split}
+$$
+]
+]
+
+
+
+
+---
+
+class: center, middle
+
+# What's next?
+
+### Move on to the readings for the next module!
+
+
+
+
