@@ -45,7 +45,7 @@ lessons:
     
   - date: "Fri, Aug 27"
     title: "Lab 1: "
-    title: "Lab 1: Help, these kids are killing me! (Part I)"
+    title: "Lab 1: Help, these kids are killing me!"
     lab: "lab-01.html"
     
   
@@ -84,9 +84,8 @@ lessons:
     
     
   - date: "Fri, Sept 3"
-    title: "Lab 2: "
-    #title: "Lab 2: Help, these kids are killing me! (Part II)"
-    #lab: "lab-02.html"
+    title: "Lab 2: Hospital Rankings (Part I)"
+    lab: "lab-02.html"
     
   - title: "Drop/Add ends"
     
@@ -113,7 +112,7 @@ lessons:
     
     
   - date: "Fri, Sept 10"
-    title: "Lab 3: Hospital Rankings (Part I)"
+    title: "Lab 3: Hospital Rankings (Part II)"
     #lab: "lab-03.html"
     
     
@@ -137,7 +136,7 @@ lessons:
     
     
   - date: "Fri, Sept 17"
-    title: "Lab 4: Hospital Rankings (Part II)"
+    title: "Lab 4: Hospital Rankings (Part III)"
     #lab: "lab-04.html"
     
     
@@ -188,7 +187,7 @@ lessons:
     
     
   - date: "Fri, Oct 1"
-    title: "No lab"
+    title: "Lab 6: Do more beautiful professors get higher evaluations? (Part II)"
     
     
     
@@ -223,7 +222,7 @@ lessons:
     
   
   - date: "Fri, Oct 15"
-    title: "Lab 6: Hands on with Stan (Part I)"
+    title: "Lab 7: Hands on with Stan (Part I)"
     
     
   - date: "Sun, Oct 17 | DELIVERABLES:"
@@ -252,7 +251,7 @@ lessons:
     
     
   - date: "Fri, Oct 22"
-    title: "Lab 6: Hands on with Stan (Part II)"
+    title: "Lab 8: Hands on with Stan (Part II)"
     
     
     
@@ -285,7 +284,7 @@ lessons:
     
     
   - date: "Fri, Oct 29"
-    title: "Lab 7: Badgered by Badgers"
+    title: "Lab 9: Badgered by Badgers"
     #lab: "lab-06.html"
     
     

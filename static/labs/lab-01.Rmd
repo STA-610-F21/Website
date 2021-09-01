@@ -1,5 +1,5 @@
 ---
-title: "Lab 1: Help, these kids are killing me! (Part I)"
+title: "Lab 1: Help, these kids are killing me!"
 author: "Multilevel and hierarchical models"
 #date: "Jan 25, 2021"
 output: 
@@ -34,7 +34,7 @@ You all should have R and RStudio installed on your computers by now. If you do 
 
 
 ## Gradescope
-You MUST submit both your .Rmd and .pdf files to the course site on Gradescope here: https://www.gradescope.com/courses/224715/assignments. Do NOT create a zipped folder with the two documents but instead, upload them as two separate documents. Also, be sure to knit to pdf and NOT html; ask the TA about knitting to pdf if you cannot figure it out. Be sure to submit under the right assignment entry. Finally, when submitting your files, please select the corresponding pages for each exercise.
+You MUST submit both your .Rmd and .pdf files to the course site on Gradescope here: https://www.gradescope.com/courses/281587/assignments. Do NOT create a zipped folder with the two documents but instead, upload them as two separate documents. Also, be sure to knit to pdf and NOT html; ask the TA about knitting to pdf if you cannot figure it out. Be sure to submit under the right assignment entry. Finally, when submitting your files, please select the corresponding pages for each exercise.
 
 
 
@@ -47,7 +47,7 @@ In a classic *Nature* communication, Partridge and Farquhar argued that there is
 
 To explore whether there is any effect of sexual activity on lifespan, researchers randomized male fruit flies to one of two groups:  an isolated population of males (no sexual activity), or a mixed-gender population in which the male fruit flies were sexually active. Because body size has also been linked to longevity, we consider it here (measured by thorax length) as well.
 
-The data are in the file [fruitfly_thorax_len.csv](https://sta610-f21.olanrewajuakande.com/labs/data/fruitfly_thorax_len.csv), which contains lifespan, thorax length, and sexual activity for male fruit flies in the experiment.
+The data are in the file [fruitfly_thorax_len.csv](data/fruitfly_thorax_len.csv), which contains lifespan, thorax length, and sexual activity for male fruit flies in the experiment.
 
 
 # Exercises

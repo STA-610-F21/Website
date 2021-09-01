@@ -1,5 +1,5 @@
 ---
-title: "Lab 2: Hospital Rankings (Part I)"
+title: "Lab 3: Hospital Rankings (Part I)"
 author: "Multilevel and hierarchical models"
 output: 
   tufte::tufte_html:
@@ -23,13 +23,13 @@ knitr::opts_chunk$set(eval = FALSE)
 ```
 
 
-**Due:**  11:59pm, Sunday, September 5
+**Preliminary report due:**  11:59pm, Tuesday, February 9
 
 
 # Housekeeping
 
-## R/RStudio
-You all should have R and RStudio installed on your computers by now. If you do not, first install the latest version of R here: https://cran.rstudio.com (remember to select the right installer for your operating system). Next, install the latest version of RStudio here: https://www.rstudio.com/products/rstudio/download/. Scroll down to the "Installers for Supported Platforms" section and find the right installer for your operating system.
+<!-- ## R/RStudio -->
+<!-- You all should have R and RStudio installed on your computers by now. If you do not, first install the latest version of R here: https://cran.rstudio.com (remember to select the right installer for your operating system). Next, install the latest version of RStudio here: https://www.rstudio.com/products/rstudio/download/. Scroll down to the "Installers for Supported Platforms" section and find the right installer for your operating system. -->
 
 
 ## Gradescope
@@ -38,13 +38,13 @@ You MUST submit both your .Rmd and .pdf files to the course site on Gradescope h
 
 
 # Introduction
-You will analyze this data across three labs. This first lab is an individual lab and each student must submit a separate preliminary report by the due date. In the next lab, the TA will walk you through how to extend your preliminary model. In the final lab, you will work within your teams and submit one final report by that due date.
+You will analyze this data across two labs. This first lab is an individual lab and each student must submit a separate preliminary report by the due date. In the next lab, you will work within your teams and submit one final report by that due date.
 
 
 
 # The Data
 
-We will consider [data  from the Centers for Medicare and Medicaid Services on hospital costs and profit from the 2014 fiscal year](data/hc2014.RData). Our interest is in examining variability of net hospital income across states. 
+We will consider [data  from the Centers for Medicare and Medicaid Services on hospital costs and profit from the 2014 fiscal year](https://sta-610l-s21.github.io/Course-Website/labs/data/hc2014.RData). Our interest is in examining variability of net hospital income across states. 
 
 One primary item of interest is the ranking of states by net income of hospitals. 
 
@@ -64,11 +64,6 @@ There will be a page limit on your final report next week but there is NO page l
 
 DO NOT INCLUDE R CODE OR OUTPUT IN YOUR REPORTS. All R outputs should be converted to nicely formatted tables. Feel free to use R packages such as kable, xtable, stargazer, etc.
 
-
-
-## Grading
-
-Total: 10 points.
 
 
 
