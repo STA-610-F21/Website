@@ -33,8 +33,8 @@ knitr::opts_chunk$set(eval = FALSE)
 You all should have R and RStudio installed on your computers by now. If you do not, first install the latest version of R here: https://cran.rstudio.com (remember to select the right installer for your operating system). Next, install the latest version of RStudio here: https://www.rstudio.com/products/rstudio/download/. Scroll down to the "Installers for Supported Platforms" section and find the right installer for your operating system.
 
 
-## Gradescope
-You MUST submit both your .Rmd and .pdf files to the course site on Gradescope here: https://www.gradescope.com/courses/281587/assignments. Do NOT create a zipped folder with the two documents but instead, upload them as two separate documents. Also, be sure to knit to pdf and NOT html; ask the TA about knitting to pdf if you cannot figure it out. Be sure to submit under the right assignment entry. Finally, when submitting your files, please select the corresponding pages for each exercise.
+<!-- ## Gradescope -->
+<!-- You MUST submit both your .Rmd and .pdf files to the course site on Gradescope here: https://www.gradescope.com/courses/281587/assignments. Do NOT create a zipped folder with the two documents but instead, upload them as two separate documents. Also, be sure to knit to pdf and NOT html; ask the TA about knitting to pdf if you cannot figure it out. Be sure to submit under the right assignment entry. Finally, when submitting your files, please select the corresponding pages for each exercise. -->
 
 
 
