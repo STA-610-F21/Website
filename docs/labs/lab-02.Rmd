@@ -55,6 +55,8 @@ It is important to control for the potential influence of hospital ownership (in
 
 For this lab, ignore potential effects of number of beds and ownership of the hospital. Develop and fit a random effects anova model for `netincome` (your response variable) using `state` as your grouping variable. Obtain preliminary results on the rankings of the states.
 
+**Quick note**: without including any other predictors, it turns out that there isn't enough variation across states to properly estimate the parameters under the treatment effects parameterization. This is a very common problem especially when there are many groups. The scale of the response variable here also doesn't help. One easy fix is to exclude the overall intercept in your specification so that you have a treatment means parameterization instead. You should consider doing that when fitting your model in R.
+
 There will be a page limit on your final report next week but there is NO page limit for this preliminary report. Your preliminary report should include the following.
 
 + Clear specification of your model (using equations and the right notations).
