@@ -93,19 +93,20 @@ lessons:
   - week: "WEEK 3"
     date: "Mon, Sept 6"
     title: "Module 2.5: Random effects ANOVA (Bayesian estimation II)"
-    #reading: "2-5-reading.html"
-    #slides: "2-5-random-effects-anova-bayesian-estimation-II.html"
-    #slidespdf: "2-5-random-effects-anova-bayesian-estimation-II.pdf"
+    reading: "2-5-reading.html"
+    slides: "2-5-random-effects-anova-bayesian-estimation-II.html"
+    slidespdf: "2-5-random-effects-anova-bayesian-estimation-II.pdf"
+    
+  - title: "Module 2.6: Random effects ANOVA (priors for group-level variance)"
+    slides: "2-6-random-effects-anova-priors-group-level-variance.html"
+    slidespdf: "2-6-random-effects-anova-priors-group-level-variance.pdf"
     
   
   - date: "Wed, Sept 8"
-    title: "Module 2.6: Random effects ANOVA (priors for group-level variance)"
-    #slides: "2-6-random-effects-anova-priors-group-level-variance.html"
-    #slidespdf: "2-6-random-effects-anova-priors-group-level-variance.pdf"
-    
-  - title: "R illustration for lme4 and brms"
-    #video: "https://api.playposit.com/go/play/1164919/1403540/1028257/0/Multilevel-and-Hierarchical-Models--R-illustration-for-lme4-and-brms"
-    
+    title: "Module 2.7: Random effects ANCOVA (introduction)"
+    reading: "2-7-reading.html"
+    #slides: "2-7-random-effects-ancova-intro.html"
+    #slidespdf: "2-7-random-effects-ancova-intro.pdf"
     
   - date: "DELIVERABLES:"
     title: "Homework 1 due!"
@@ -119,16 +120,14 @@ lessons:
     
   - week: "WEEK 4"
     date: "Mon, Sept 13"
-    title: "Module 2.7: Random effects ANCOVA (introduction)"
-    #reading: "2-7-reading.html"
-    #slides: "2-7-random-effects-ancova-intro.html"
-    #slidespdf: "2-7-random-effects-ancova-intro.pdf"
-    
-    
-  - date: "Wed, Sept 15"
     title: "Module 2.8: Random effects ANCOVA (cont'd)"
     #slides: "2-8-random-effects-ancova-contd.html"
     #slidespdf: "2-8-random-effects-ancova-contd.pdf"
+    
+    
+  - date: "Wed, Sept 15"
+    title: "Some notes on lme4 and brms: in-class illustration using NELS data"
+    #video: "https://api.playposit.com/go/play/1164919/1403540/1028257/0/Multilevel-and-Hierarchical-Models--R-illustration-for-lme4-and-brms"
     
   - date: "NEW ASSIGNMENT:"
     title: "Homework 2"

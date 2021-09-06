@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>STA 610L: Module 2.6</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Olanrewaju Michael Akande" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# STA 610L: Module 2.6
+## Random effects ANOVA (priors for group-level variance)
+### Dr. Olanrewaju Michael Akande
+
+---
+
+
+
+
+
+
+
+
+## Reading
+
+The following slides lean heavily on [Andrew Gelman's 2006 paper on priors for variance components in hierarchical models](http://www.stat.columbia.edu/~gelman/research/published/taumain.pdf).
+
+I strongly suggest you go through the paper on your own.
+
+
+
+
+---
+## Hierarchical normal model
+
+Recall our model (without group-specific variances):
+.block[
+.small[
+$$
+`\begin{split}
+y_{ij} | \mu_j, \sigma^2 &amp; \sim \mathcal{N} \left( \mu_j, \sigma^2 \right); \ \ \ i = 1,\ldots, n_j\\
+\mu_j | \mu, \tau^2 &amp; \sim \mathcal{N} \left( \mu, \tau^2 \right); \ \ \ j = 1, \ldots, J,
+\end{split}`
+$$
+]
+]
+
+also written as
+.block[
+.small[
+$$
+`\begin{split}
+y_{ij} &amp; = \mu + \alpha_j+\varepsilon_{ij} = \mu_j+\varepsilon_{ij}; \ \ \ i = 1,\ldots, n_j\\
+\varepsilon_{ij} &amp; \overset{iid}{\sim} N\left(0,\sigma^2\right); \ \ \ \  \mu_j | \mu, \tau^2 \sim \mathcal{N} \left( \mu, \tau^2 \right); \ \ \ j = 1, \ldots, J,
+\end{split}`
+$$
+]
+]
+
+
+with priors
+.block[
+.small[
+$$
+`\begin{split}
+\pi(\mu) &amp; = \mathcal{N}\left(\mu_0, \gamma^2_0\right)\\
+\pi(\tau^2) &amp; = \mathcal{IG} \left(\dfrac{\eta_0}{2}, \dfrac{\eta_0\tau_0^2}{2}\right)\\
+\pi(\sigma^2) &amp; = \mathcal{IG} \left(\dfrac{\nu_0}{2}, \dfrac{\nu_0\sigma_0^2}{2}\right).\\
+\end{split}`
+$$
+]
+]
+
+
+
+---
+## Relatively noninformative priors 
+
+It is often of interest to specify relatively noninformative priors for parameters.
+
+In general, we have enough data so that we can use any reasonable prior distribution for `\(\mu\)` and `\(\sigma\)`, for example `\(p(\mu, \sigma) \propto 1\)`.
+
+Picking a "flattish prior" for `\(\tau^2\)` is trickier because sometimes our data do not contain a lot of information about this parameter -- e.g., we may have relatively few groups, which is the case in our bike data.
+
+This parameter is also problematic in frequentist models -- in particular there is no "always-non-negative" classical unbiased estimator for it.
+
+
+
+---
+## High variance priors
+
+One basic idea is to base a prior on a proper density but inflate the variance so that its shape gets pretty flat.
+
+Two commonly considered priors for `\(\tau\)` include the uniform(0,A) as `\(A \rightarrow \infty\)` and `\(\mathcal{IG}(\varepsilon,\varepsilon)\)` as `\(\varepsilon \rightarrow 0\)`.
+
+
+
+---
+## Limits of prior distributions
+
+Gelman shows 
+
+- the uniform(0,A) prior on `\(\tau\)` yields a limiting proper posterior density as `\(A \rightarrow \infty\)` as long as we have at least 3 groups. The implication is that if we pick A big enough, our resulting inferences are not sensitive to the choice of A. 
+    
+- the `\(\mathcal{IG}(\varepsilon,\varepsilon)\)` for `\(\tau^2\)` does *not* have a proper limiting posterior, so that posterior inferences are sensitive to the value of `\(\varepsilon\)` chosen, particularly when small values of `\(\tau^2\)` are reasonable.
+
+    Unfortunately, these 'small `\(\varepsilon\)`' priors became quite popular due to being used in many illustrative examples in the WinBUGS manuals, though they are no longer recommended.
+ 
+
+
+---
+## Parameter expansion
+
+Gelman (2006) proposes a parameter expansion that facilitates a family of weakly-informative prior distributions.
+`\begin{eqnarray*}
+y_{ij} &amp;\sim&amp; N(\mu + \xi \eta_j, \sigma^2) \\
+\eta_j &amp;\sim&amp; N(0,\sigma_\eta^2)
+\end{eqnarray*}`
+
+In this case the parameters `\(\alpha_j\)` correspond to `\(\xi \eta_j\)` in this model, and `\(\tau\)` corresponds to `\(|\xi|\sigma_\eta\)` here. 
+
+
+
+---
+## Parameter expansion
+
+For simplicity, consider independent priors on `\(\xi\)` and `\(\sigma_\eta\)`. A conditionally-conjugate choice for `\(\xi\)` is normal -- and given that the scale of `\(\xi\)` cannot be separately identified from that of `\(\eta_j\)`, a N(0,1) is convenient.
+
+A conditionally-conjugate prior family for `\(\sigma_\eta^2\)` is inverse gamma, and when combined with the N(0,1) we have an implied half-t prior for `\(\tau\)`, which is the absolute value of a Student's t distribution centered at zero. 
+
+
+
+---
+## Half t
+
+The half t prior is a function of a scale parameter `\(A\)` and degrees of freedom `\(\nu\)` and can be written
+`$$p(\tau)\propto \left(1+\frac{1}{\nu}\left(\frac{\tau}{A}\right)^2\right)^{-(\nu+1)/2}.$$`
+
+Gelman proposes a half-Cauchy prior (obtained with a large scale parameter `\(A\)` and `\(\nu=1\)`) as a weakly-informative choice that is desirable at times with a small number of groups.
+
+
+
+---
+## Example: hospital income
+
+Recall the lab data from the Centers for Medicare and Medicaid Services on hospital costs and profit from the 2014 fiscal year.
+
+Our interest is in examining variability of net income to the hospital across states.
+
+
+```r
+load("data/hc2014.RData")
+#library(rstan)
+rstan_options(auto_write = TRUE)
+options(mc.cores = parallel::detectCores())
+```
+
+
+
+---
+## Example: hospital income
+
+We can fit the model `$$y_{ij}=\mu_j+\varepsilon_{ij},$$` where `\(y_{ij}\)` represents the net income of hospital `\(i\)` in state `\(j\)`, and `\(\mu_j\)` is the specific income for state `\(j\)`.
+
+
+```r
+#library(brms)
+m1 &lt;- brm(netincome ~ 0 + (1|state), data=hc2014, family = gaussian(),
+       control = list(adapt_delta = .99),
+       prior = c(set_prior("student_t(3, 0, 1)", class = "sd"))
+       ) #By default, sigma also has a half student-t prior
+summary(m1)
+```
+
+
+
+---
+## Example: hospital income
+
+
+```
+##  Family: gaussian 
+##   Links: mu = identity; sigma = identity 
+## Formula: netincome ~ 0 + (1 | state) 
+##    Data: hc2014 (Number of observations: 6170) 
+##   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup draws = 4000
+## 
+## Group-Level Effects: 
+## ~state (Number of levels: 55) 
+##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sd(Intercept)     1.09      1.28     0.04     4.05 1.00     6045     2149
+## 
+## Family Specific Parameters: 
+##          Estimate Est.Error    l-95% CI    u-95% CI Rhat Bulk_ESS Tail_ESS
+## sigma 94845657.69 850103.95 93189555.98 96536915.38 1.00    10650     2703
+## 
+## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).
+```
+
+
+
+---
+
+class: center, middle
+
+# What's next?
+
+### Move on to the readings for the next module!
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

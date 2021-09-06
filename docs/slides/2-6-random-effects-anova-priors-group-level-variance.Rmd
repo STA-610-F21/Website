@@ -1,0 +1,215 @@
+---
+title: "STA 610L: Module 2.6"
+subtitle: "Random effects ANOVA (priors for group-level variance)"
+author: "Dr. Olanrewaju Michael Akande"
+date: " "
+output:
+  xaringan::moon_reader:
+    css: "slides.css"
+    logo: img/class_logo.png
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  warm = 1
+  )
+# Set dpi and height for images
+library(knitr)
+knitr::opts_chunk$set(fig.height = 2.65, dpi = 300,fig.align='center',fig.show='hold',size='footnotesize', small.mar=TRUE) 
+# For nonsese...
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(rvest)
+library(rstan)
+library(brms)
+library(tidyverse)
+library(tidybayes)
+```
+
+
+
+## Reading
+
+The following slides lean heavily on [Andrew Gelman's 2006 paper on priors for variance components in hierarchical models](http://www.stat.columbia.edu/~gelman/research/published/taumain.pdf).
+
+I strongly suggest you go through the paper on your own.
+
+
+
+
+---
+## Hierarchical normal model
+
+Recall our model (without group-specific variances):
+.block[
+.small[
+$$
+\begin{split}
+y_{ij} | \mu_j, \sigma^2 & \sim \mathcal{N} \left( \mu_j, \sigma^2 \right); \ \ \ i = 1,\ldots, n_j\\
+\mu_j | \mu, \tau^2 & \sim \mathcal{N} \left( \mu, \tau^2 \right); \ \ \ j = 1, \ldots, J,
+\end{split}
+$$
+]
+]
+
+also written as
+.block[
+.small[
+$$
+\begin{split}
+y_{ij} & = \mu + \alpha_j+\varepsilon_{ij} = \mu_j+\varepsilon_{ij}; \ \ \ i = 1,\ldots, n_j\\
+\varepsilon_{ij} & \overset{iid}{\sim} N\left(0,\sigma^2\right); \ \ \ \  \mu_j | \mu, \tau^2 \sim \mathcal{N} \left( \mu, \tau^2 \right); \ \ \ j = 1, \ldots, J,
+\end{split}
+$$
+]
+]
+
+
+with priors
+.block[
+.small[
+$$
+\begin{split}
+\pi(\mu) & = \mathcal{N}\left(\mu_0, \gamma^2_0\right)\\
+\pi(\tau^2) & = \mathcal{IG} \left(\dfrac{\eta_0}{2}, \dfrac{\eta_0\tau_0^2}{2}\right)\\
+\pi(\sigma^2) & = \mathcal{IG} \left(\dfrac{\nu_0}{2}, \dfrac{\nu_0\sigma_0^2}{2}\right).\\
+\end{split}
+$$
+]
+]
+
+
+
+---
+## Relatively noninformative priors 
+
+It is often of interest to specify relatively noninformative priors for parameters.
+
+In general, we have enough data so that we can use any reasonable prior distribution for $\mu$ and $\sigma$, for example $p(\mu, \sigma) \propto 1$.
+
+Picking a "flattish prior" for $\tau^2$ is trickier because sometimes our data do not contain a lot of information about this parameter -- e.g., we may have relatively few groups, which is the case in our bike data.
+
+This parameter is also problematic in frequentist models -- in particular there is no "always-non-negative" classical unbiased estimator for it.
+
+
+
+---
+## High variance priors
+
+One basic idea is to base a prior on a proper density but inflate the variance so that its shape gets pretty flat.
+
+Two commonly considered priors for $\tau$ include the uniform(0,A) as $A \rightarrow \infty$ and $\mathcal{IG}(\varepsilon,\varepsilon)$ as $\varepsilon \rightarrow 0$.
+
+
+
+---
+## Limits of prior distributions
+
+Gelman shows 
+
+- the uniform(0,A) prior on $\tau$ yields a limiting proper posterior density as $A \rightarrow \infty$ as long as we have at least 3 groups. The implication is that if we pick A big enough, our resulting inferences are not sensitive to the choice of A. 
+    
+- the $\mathcal{IG}(\varepsilon,\varepsilon)$ for $\tau^2$ does *not* have a proper limiting posterior, so that posterior inferences are sensitive to the value of $\varepsilon$ chosen, particularly when small values of $\tau^2$ are reasonable.
+
+    Unfortunately, these 'small $\varepsilon$' priors became quite popular due to being used in many illustrative examples in the WinBUGS manuals, though they are no longer recommended.
+ 
+
+
+---
+## Parameter expansion
+
+Gelman (2006) proposes a parameter expansion that facilitates a family of weakly-informative prior distributions.
+\begin{eqnarray*}
+y_{ij} &\sim& N(\mu + \xi \eta_j, \sigma^2) \\
+\eta_j &\sim& N(0,\sigma_\eta^2)
+\end{eqnarray*}
+
+In this case the parameters $\alpha_j$ correspond to $\xi \eta_j$ in this model, and $\tau$ corresponds to $|\xi|\sigma_\eta$ here. 
+
+
+
+---
+## Parameter expansion
+
+For simplicity, consider independent priors on $\xi$ and $\sigma_\eta$. A conditionally-conjugate choice for $\xi$ is normal -- and given that the scale of $\xi$ cannot be separately identified from that of $\eta_j$, a N(0,1) is convenient.
+
+A conditionally-conjugate prior family for $\sigma_\eta^2$ is inverse gamma, and when combined with the N(0,1) we have an implied half-t prior for $\tau$, which is the absolute value of a Student's t distribution centered at zero. 
+
+
+
+---
+## Half t
+
+The half t prior is a function of a scale parameter $A$ and degrees of freedom $\nu$ and can be written
+$$p(\tau)\propto \left(1+\frac{1}{\nu}\left(\frac{\tau}{A}\right)^2\right)^{-(\nu+1)/2}.$$
+
+Gelman proposes a half-Cauchy prior (obtained with a large scale parameter $A$ and $\nu=1$) as a weakly-informative choice that is desirable at times with a small number of groups.
+
+
+
+---
+## Example: hospital income
+
+Recall the lab data from the Centers for Medicare and Medicaid Services on hospital costs and profit from the 2014 fiscal year.
+
+Our interest is in examining variability of net income to the hospital across states.
+
+```{r readdata, warning=FALSE, message=FALSE}
+load("data/hc2014.RData")
+#library(rstan)
+rstan_options(auto_write = TRUE)
+options(mc.cores = parallel::detectCores())
+```
+
+
+
+---
+## Example: hospital income
+
+We can fit the model $$y_{ij}=\mu_j+\varepsilon_{ij},$$ where $y_{ij}$ represents the net income of hospital $i$ in state $j$, and $\mu_j$ is the specific income for state $j$.
+
+```{r brmscost, eval=FALSE}
+#library(brms)
+m1 <- brm(netincome ~ 0 + (1|state), data=hc2014, family = gaussian(),
+       control = list(adapt_delta = .99),
+       prior = c(set_prior("student_t(3, 0, 1)", class = "sd"))
+       ) #By default, sigma also has a half student-t prior
+summary(m1)
+```
+
+
+
+---
+## Example: hospital income
+
+```{r brmscost2, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+m1 <- brm(netincome ~ 0 + (1|state), data=hc2014, family = gaussian(),
+       control = list(adapt_delta = .99),
+       prior = c(set_prior("student_t(3, 0, 1)", class = "sd"))
+       ) #By default, sigma also has a half student-t prior
+summary(m1)
+```
+
+
+
+---
+
+class: center, middle
+
+# What's next?
+
+### Move on to the readings for the next module!
+
+
+
+
