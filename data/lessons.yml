@@ -123,7 +123,12 @@ lessons:
     
     
   - date: "Wed, Sept 15"
-    title: "Some notes on lme4 and brms: in-class illustration using NELS data"
+    title: "Module 2.9: Random effects ANCOVA (holistic analysis)"
+    #slides: "2-9-random-effects-ancova-holistic-analysis.html"
+    #slidespdf: "2-9-random-effects-ancova-holistic-analysis.pdf"
+    
+    
+  #- title: "Some notes on lme4 and brms: in-class illustration using NELS data"
     #video: "https://api.playposit.com/go/play/1164919/1403540/1028257/0/Multilevel-and-Hierarchical-Models--R-illustration-for-lme4-and-brms"
     
   - date: "NEW ASSIGNMENT:"
@@ -136,41 +141,13 @@ lessons:
     #lab: "lab-04.html"
     
     
-  
-  - week: "WEEK 5"
-    date: "Mon, Sept 20"
-    title: "Module 2.9: Random effects ANCOVA (holistic analysis)"
-    #slides: "2-9-random-effects-ancova-holistic-analysis.html"
-    #slidespdf: "2-9-random-effects-ancova-holistic-analysis.pdf"
-    
-  
-  - date: "Tue, Sept 21 | NEW ASSIGNMENT:"
-    title: "Case Study I"
-    #project: "case-study-I.html"
-    
-  - date: "Wed, Sept 22"
-    title: "Exam review"
-    
-  - date: "DELIVERABLES:"
-    title: "Homework 2 due!"
-    
-  - date: "Fri, Sept 24"
-    title: "Lab 5: Do more beautiful professors get higher evaluations? (Part I)"
-    #lab: "lab-05.html"
-    
-  
-  
-  - week: "WEEK 6"
-    date: "Mon, Sept 27"
-    title: "Exam I"
-    
-    
   - title: " " 
   - title: "MODULE 3: GENERALIZED LINEAR MIXED EFFECTS MODELS"
   - title: " " 
     
-    
-  - date: "Wed, Sept 29"
+  
+  - week: "WEEK 5"
+    date: "Mon, Sept 20"
     title: "Module 3.1: Linear mixed effects models"
     #reading: "3-1-reading.html"
     #slides: "3-1-linear-mixed-effects-models.html"
@@ -181,6 +158,36 @@ lessons:
     #slides: "3-2-linear-mixed-effects-models-diagnostics.html"
     #slidespdf: "3-2-linear-mixed-effects-models-diagnostics.pdf"
     
+  
+  - date: "Tue, Sept 21 | NEW ASSIGNMENT:"
+    title: "Case Study I"
+    #project: "case-study-I.html"
+    
+    
+  - date: "Wed, Sept 22"
+    title: "Exam review"
+    
+  - date: "DELIVERABLES:"
+    title: "Homework 2 due!"
+    
+    
+  - date: "Fri, Sept 24"
+    title: "Lab 5: Do more beautiful professors get higher evaluations? (Part I)"
+    #lab: "lab-05.html"
+    
+    
+    
+  - week: "WEEK 6"
+    date: "Mon, Sept 27"
+    title: "Exam I"
+    
+    
+  - date: "Wed, Sept 29"
+    title: "Module 3.3: Bayesian linear mixed effects models"
+    #slides: "3-3-Bayesian-linear-mixed-effects-models.html"
+    #slidespdf: "3-3-Bayesian-linear-mixed-effects-models.pdf"
+    
+    
     
   - date: "Fri, Oct 1"
     title: "Lab 6: Do more beautiful professors get higher evaluations? (Part II)"
@@ -189,9 +196,7 @@ lessons:
     
   - week: "WEEK 7"
     date: "Mon, Oct 4"
-    title: "Module 3.3: Bayesian linear mixed effects models"
-    #slides: "3-3-Bayesian-linear-mixed-effects-models.html"
-    #slidespdf: "3-3-Bayesian-linear-mixed-effects-models.pdf"
+    title: "No class: fall break"
     
     
   - date: "Wed, Oct 6"
