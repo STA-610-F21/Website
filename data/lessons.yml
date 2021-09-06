@@ -95,6 +95,7 @@ lessons:
     slidespdf: "2-5-random-effects-anova-bayesian-estimation-II.pdf"
     
   - title: "Module 2.6: Random effects ANOVA (priors for group-level variance)"
+    #reading: "2-6-reading.html"
     slides: "2-6-random-effects-anova-priors-group-level-variance.html"
     slidespdf: "2-6-random-effects-anova-priors-group-level-variance.pdf"
     
