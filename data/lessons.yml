@@ -30,7 +30,6 @@ lessons:
     slidespdf: "1-5-anova-matrix-formulation.pdf"
     
   - title: "Module 1.6: Review of ANOVA (wrap-up)"
-    #reading: "1-6-reading.html"
     slides: "1-6-anova-linear-combinations.html"
     slidespdf: "1-6-anova-linear-combinations.pdf"
     
