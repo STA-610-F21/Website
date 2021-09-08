@@ -102,8 +102,12 @@ lessons:
   - date: "Wed, Sept 8"
     title: "Module 2.7: Random effects ANCOVA (introduction)"
     reading: "2-7-reading.html"
-    #slides: "2-7-random-effects-ancova-intro.html"
-    #slidespdf: "2-7-random-effects-ancova-intro.pdf"
+    slides: "2-7-random-effects-ancova-intro.html"
+    slidespdf: "2-7-random-effects-ancova-intro.pdf"
+    
+  - title: "Module 2.8: Random effects ANCOVA (cont'd)"
+    slides: "2-8-random-effects-ancova-contd.html"
+    slidespdf: "2-8-random-effects-ancova-contd.pdf"
     
   - date: "DELIVERABLES:"
     title: "Homework 1 due!"
@@ -117,15 +121,12 @@ lessons:
     
   - week: "WEEK 4"
     date: "Mon, Sept 13"
-    title: "Module 2.8: Random effects ANCOVA (cont'd)"
-    #slides: "2-8-random-effects-ancova-contd.html"
-    #slidespdf: "2-8-random-effects-ancova-contd.pdf"
-    
-    
-  - date: "Wed, Sept 15"
     title: "Module 2.9: Random effects ANCOVA (holistic analysis)"
     #slides: "2-9-random-effects-ancova-holistic-analysis.html"
     #slidespdf: "2-9-random-effects-ancova-holistic-analysis.pdf"
+    
+    
+  - date: "Wed, Sept 15"
     
     
   #- title: "Some notes on lme4 and brms: in-class illustration using NELS data"
