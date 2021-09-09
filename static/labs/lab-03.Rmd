@@ -59,7 +59,7 @@ The TA will walk you through how one would approach each of the following.
 
 + Exploratory data analysis investigating the relationship between the response and each predictor.
 + Investigating whether the inclusion of random intercepts and/or random slopes are necessary.
-+ Clear specification of a final model and model fitting in R?
++ Clear specification of a final model and model fitting in R.
 + Basic model assessment (no need to check for leverage or influential points).
 + Uncertainty quantification around effect estimates of interest (no point estimates without uncertainty!).
 + Clear description of results in language accessible to a general scientifically-savvy reader.
