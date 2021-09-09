@@ -69,7 +69,7 @@ Lecture notes and slides, lab exercises and assigned readings will be posted on 
 Monday, August 23	| Fall classes begin
 Friday, September 3	| Drop/Add ends
 Monday, September 6 | Labor day. Classes in session
-Wednesday, September 22 | Exam I (*tentative*)
+Wednesday, September 27 | Exam I (*tentative*)
 Sunday, October 17 | Case Study I reports due (*tentative*)
 Monday, November 15 | Exam II (*tentative*)
 Tuesday, November 23 |	End of semester
