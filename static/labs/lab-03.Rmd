@@ -1,5 +1,5 @@
 ---
-title: "Lab 3: Hospital Rankings (Part I)"
+title: "Lab 3: Hospital Rankings (Part II)"
 author: "Multilevel and hierarchical models"
 output: 
   tufte::tufte_html:
@@ -23,7 +23,7 @@ knitr::opts_chunk$set(eval = FALSE)
 ```
 
 
-**Preliminary report due:**  11:59pm, Tuesday, February 9
+**Full TA Session**
 
 
 # Housekeeping
@@ -32,38 +32,40 @@ knitr::opts_chunk$set(eval = FALSE)
 <!-- You all should have R and RStudio installed on your computers by now. If you do not, first install the latest version of R here: https://cran.rstudio.com (remember to select the right installer for your operating system). Next, install the latest version of RStudio here: https://www.rstudio.com/products/rstudio/download/. Scroll down to the "Installers for Supported Platforms" section and find the right installer for your operating system. -->
 
 
-## Gradescope
-You MUST submit both your .Rmd and .pdf files to the course site on Gradescope here: https://www.gradescope.com/courses/281587/assignments. Do NOT create a zipped folder with the two documents but instead, upload them as two separate documents. Also, be sure to knit to pdf and NOT html; ask the TA about knitting to pdf if you cannot figure it out. Be sure to submit under the right assignment entry. Finally, when submitting your files, please select the corresponding pages for each exercise.
+<!-- ## Gradescope -->
+<!-- You MUST submit both your .Rmd and .pdf files to the course site on Gradescope here: https://www.gradescope.com/courses/281587/assignments. Do NOT create a zipped folder with the two documents but instead, upload them as two separate documents. Also, be sure to knit to pdf and NOT html; ask the TA about knitting to pdf if you cannot figure it out. Be sure to submit under the right assignment entry. Finally, when submitting your files, please select the corresponding pages for each exercise. -->
 
 
 
 # Introduction
-You will analyze this data across two labs. This first lab is an individual lab and each student must submit a separate preliminary report by the due date. In the next lab, you will work within your teams and submit one final report by that due date.
+The goal of this lab is to reinforce concepts we have already covered in class. In class, we skipped through some of the minor details of the hierarchical models we have looked at, such as careful interpretation of results and basic model assessment. In this lab, the TA will walk you through some of those details using the same hospital data you started working on in the previous lab.
 
 
 
 # The Data
 
-We will consider [data  from the Centers for Medicare and Medicaid Services on hospital costs and profit from the 2014 fiscal year](https://sta-610l-s21.github.io/Course-Website/labs/data/hc2014.RData). Our interest is in examining variability of net hospital income across states. 
+We will again consider [data  from the Centers for Medicare and Medicaid Services on hospital costs and profit from the 2014 fiscal year](https://sta-610l-s21.github.io/Course-Website/labs/data/hc2014.RData). 
 
-One primary item of interest is the ranking of states by net income of hospitals. 
+Our interest is in examining variability of net hospital income across states. In particular, we would like to rank the states by net income of hospitals. 
 
 It is important to control for the potential influence of hospital ownership (in the variable called control) and of the number of beds (a proxy for hospital size). The ownership categories include Voluntary Nonprofit-Church, Voluntary Nonprofit-Other, Proprietary-Individual, Proprietary-Corporation, Proprietary-Partnership, Proprietary-Other, Governmental-Federal, Governmental-City-County, Governmental-County, Governmental-State, Governmental-Hospital District, Governmental-City, and Governmental-Other.
 
 
 # Exercises
 
-For this lab, ignore potential effects of number of beds and ownership of the hospital. Develop and fit a random effects anova model for `netincome` (your response variable) using `state` as your grouping variable. Obtain preliminary results on the rankings of the states.
+Describe a frequentist hierarchical normal model for capturing the association between ownership type and income, while controlling for the effect of the number of beds and the hierarchical structure of the data, through the states. 
 
-There will be a page limit on your final report next week but there is NO page limit for this preliminary report. Your preliminary report should include the following.
+The TA will walk you through how one would approach each of the following.
 
-+ Clear specification of your model (using equations and the right notations).
-+ Clearly-labeled tables and graphical displays describing the data and communicating your findings.
++ Exploratory data analysis investigating the relationship between the response and each predictor.
++ Investigating whether the inclusion of random intercepts and/or random slopes are necessary.
++ Clear specification of a final model and model fitting in R?
++ Basic model assessment (no need to check for leverage or influential points).
 + Uncertainty quantification around effect estimates of interest (no point estimates without uncertainty!).
 + Clear description of results in language accessible to a general scientifically-savvy reader.
 
-DO NOT INCLUDE R CODE OR OUTPUT IN YOUR REPORTS. All R outputs should be converted to nicely formatted tables. Feel free to use R packages such as kable, xtable, stargazer, etc.
 
+No submissions are required at the end of this lab.
 
 
 

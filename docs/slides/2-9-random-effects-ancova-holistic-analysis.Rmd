@@ -1,0 +1,569 @@
+---
+title: "STA 610L: Module 2.14"
+subtitle: "Random effects ANCOVA (holistic analysis)"
+author: "Dr. Olanrewaju Michael Akande"
+date: " "
+output:
+  xaringan::moon_reader:
+    css: "slides.css"
+    logo: img/class_logo.png
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  warm = 1
+  )
+# Set dpi and height for images
+library(knitr)
+knitr::opts_chunk$set(fig.height = 2.65, dpi = 300,fig.align='center',fig.show='hold',size='footnotesize', small.mar=TRUE) 
+# For nonsese...
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(rvest)
+library(tufte)
+library(sjPlot)
+library(lme4)
+library(sjstats)
+library(merTools)
+library(lattice)
+```
+
+
+
+## Getting more serious about NELS
+
+Until now, we have used the NELS data to illustrate different aspects of model fitting for the multilevel model.
+
+Now let's step back and think about these data more holistically, as if we're seeing them for the first time.
+
+
+
+---
+## NELS variables
+
+We will consider the following variables of interest in NELS:
+  - Math score (individual-level outcome)
+  - SES (individual-level socio-economic status)
+  - FLP (school level % of kids eligible for free or reduced-price lunch)
+    - 1: 0-5% eligible
+    - 2: 5-30% eligible
+    - 3: >30% eligible
+  - Enrollment (school level # of kids in 10th grade, rounded and measured in hundreds, so 0=<100, 1=around 100, ..., 5=around 500)
+  - Public (school level, takes value 1 if public school and 0 if private school)
+  - Urbanicity (school level factor with levels rural, suburban, and urban )
+
+
+
+---
+## Model selection
+
+As we think about models, we'll keep in mind a couple of methods for comparison.
+
+  - Likelihood ratio test for nested models
+    - For tests involving fixed effects only, we can use a $\chi^2_d$ for testing whether $d$ fixed effects all equal 0 (ML, not ok for REML)
+    
+    - For tests involving random effects only, we can use a 50-50 mixture of $\chi^2_{p-1}$ and $\chi^2_p$, where $p$ is the number of random effect variances in the larger model
+    
+    - Non-nested models or testing both fixed and random effects, not so simple.
+ 
+
+
+---
+## Model selection
+
+  - BIC 
+    - smaller-is-better coding
+    
+    - already adjusted for model complexity
+    
+    - approximation to posterior model probability
+    
+    - model selection consistent
+    
+    - nested models not required
+ 
+ 
+ 
+ 
+
+---
+## Descriptive statistics
+
+```{r echo=FALSE, cache=TRUE}
+load('data/nels.Rdata')
+avmscore.schools <- tapply(nels$mscore,nels$school,mean,na.rm=TRUE)
+id.schools <- names(avmscore.schools)
+m <- length(id.schools)
+nels$sesstd <- nels$ses/sd(nels$ses)
+```
+
+
+```{r boxplots, echo=FALSE, fig.height=5}
+#nels<-nels
+#mpar()
+par(mfrow=c(2,2))
+boxplot(nels$mscore~nels$enroll,col="lightblue",xlab="enroll") 
+boxplot(nels$mscore~nels$flp,col="lightblue",xlab="flp")
+boxplot(nels$mscore~nels$public,col="lightblue",xlab="public")
+boxplot(nels$mscore~nels$urban,col="lightblue",xlab="urbanicity")
+```
+
+
+
+---
+## What's wrong with ANOVA?
+
+Suppose I don't really care about school effects one way or the other. Why not just use ANOVA (or other fixed effects model) here?
+
+Under a fixed effects model, 
+
+<br>
+
+$$\text{Cov}(y_j)=\begin{pmatrix} \sigma^2 & 0 & \ldots & 0 \\ 0 & \sigma^2 & \ldots & 0 \\ \vdots & & \vdots \\ 0 & 0 & \ldots & \sigma^2 \end{pmatrix}$$
+
+
+
+---
+## What's wrong with ANOVA?
+
+Under a random intercepts model, 
+
+<br>
+
+$$\text{Cov}(y_j)=\begin{pmatrix} \sigma^2 +\tau^2 & \tau^2 & \ldots & \tau^2 \\ \tau^2 & \sigma^2 + \tau^2 & \ldots & \tau^2 \\ \vdots & & & \vdots \\ \tau^2 & \tau^2 & \ldots & \sigma^2 + \tau^2 \end{pmatrix},$$ 
+
+and
+
+$Corr(y_{ij},y_{i'j})=\frac{\tau^2}{\tau^2+\sigma^2}$
+  
+We generally don't believe independence within the same school environment holds.
+
+This type of covariance structure is often called *exchangeable* or *compound symmetric*.
+
+
+
+---
+## Other considerations
+
+Why not treat school as a fixed effect?  That should handle the school heterogeneity.
+
+```{r tryall, eval=FALSE}
+m10 <- lm(mscore~school+as.factor(enroll)+as.factor(flp)+as.factor(public)+
+         urbanicity, data=nels)
+#summary(m10)
+coef(m10)[(length(coef(m10))-30):length(coef(m10))]
+```
+
+
+
+---
+## Other considerations
+
+.large[
+```{r tryall2, echo=FALSE,cache=TRUE}
+m10 <- lm(mscore~school+as.factor(enroll)+as.factor(flp)+as.factor(public)+
+         urbanicity, data=nels)
+#summary(m10)
+coef(m10)[(length(coef(m10))-30):length(coef(m10))]
+```
+]
+
+What happened to the estimates for enrollment, eligibility for free lunch, public/private status, and urbanicity? 
+
+
+
+---
+## Other considerations
+
+The school-specific fixed effects explain approximately *all* heterogeneity in means across schools, leaving basically no room for the other factors (which we care more about in terms of learning about patterns in the data) to explain any heterogeneity. 
+
+So this approach does not allow us to evaluate school-level predictors, and it is also very expensive in terms of spending degrees of freedom (estimating a lot of parameters).
+
+This is a relatively common phenomenon when dealing with categorical group-level predictors.
+
+
+
+---
+## Heterogeneity across schools
+
+Let's take a more detailed look at the  heterogeneity across schools and how much of that can be explained by measured school-level factors including urbanicity, public/private status, free lunch percentage, and school size.
+
+In a model with only a random intercept, let's calculate the intraclass correlation -- the correlation between two kids in the same school.
+
+$$y_{ij}=\beta_{0,j}+\varepsilon_{ij}, ~~ \beta_{0,j}\overset{iid}{\sim} N(\beta_0,\tau^2) \perp \varepsilon_{ij}\overset{iid}\sim N(0, \sigma^2)$$
+
+```{r icc1, cache=TRUE}
+fit0 <- lmer(mscore~(1|school),data=nels, REML=FALSE)
+sigma2hat <- sigma(fit0)*sigma(fit0) #pick off estimate of sigma2
+tau2hat <- as.numeric(VarCorr(fit0)$school) #pick off est of tau2
+c(sigma2hat,tau2hat,tau2hat/(tau2hat+sigma2hat)) #show vars and correlation
+```
+
+
+
+---
+## Heterogeneity across schools
+
+How much of the heterogeneity across schools is explained by enrollment?
+
+```{r icc2, cache=TRUE}
+fit1 <- lmer(mscore~as.factor(enroll)+(1|school),data=nels, REML=FALSE)
+sigma2hat <- sigma(fit1)*sigma(fit1) #pick off estimate of sigma2
+tau2hat <- as.numeric(VarCorr(fit1)$school) #pick off est of tau2
+c(sigma2hat,tau2hat,tau2hat/(tau2hat+sigma2hat)) #show vars and correlation
+```
+
+Not much!
+
+
+
+---
+## Heterogeneity across schools
+
+How much of the remaining heterogeneity across schools is explained by the percentage of kids eligible for free or reduced price lunch?
+
+```{r icc3, cache=TRUE}
+fit2=lmer(mscore~as.factor(enroll)+as.factor(flp)+(1|school),
+          data=nels, REML=FALSE)
+sigma2hat <- sigma(fit2)*sigma(fit2) #pick off estimate of sigma2
+tau2hat <- as.numeric(VarCorr(fit2)$school) #pick off est of tau2
+c(sigma2hat,tau2hat,tau2hat/(tau2hat+sigma2hat)) #show vars and correlation
+```
+
+Wow, "school-level SES" explained a lot of that heterogeneity.
+
+
+
+---
+## Heterogeneity across schools
+
+What if we add public/private status?
+
+```{r icc4, cache=TRUE}
+fit3=lmer(mscore~as.factor(enroll)+as.factor(flp)+as.factor(public)+
+            (1|school),data=nels, REML=FALSE)
+sigma2hat=sigma(fit3)*sigma(fit3) #pick off estimate of sigma2
+tau2hat=as.numeric(VarCorr(fit3)$school) #pick off est of tau2
+c(sigma2hat,tau2hat,tau2hat/(tau2hat+sigma2hat)) #show vars and correlation
+```
+
+
+
+---
+## Heterogeneity across schools
+
+Now we add urbanicity.
+
+
+```{r icc5, cache=TRUE}
+fit4=lmer(mscore~as.factor(enroll)+as.factor(flp)+as.factor(public)+
+            urbanicity+(1|school),data=nels, REML=FALSE)
+sigma2hat=sigma(fit4)*sigma(fit4) #pick off estimate of sigma2
+tau2hat=as.numeric(VarCorr(fit4)$school) #pick off est of tau2
+c(sigma2hat,tau2hat,tau2hat/(tau2hat+sigma2hat)) #show vars and correlation
+```
+
+
+
+
+
+
+---
+## Summary
+
+As we add more group-level predictors,
+
+  - $\widehat{\tau}^2$ decreases
+  
+  - $\widehat{\sigma}^2$ stays about the same
+  
+  - the within-group correlation is nonincreasing (and with the addition of some variables decreases substantially)
+  
+
+
+---
+## NELS Data
+
+Let's return to our data from a data analysis perspective (rather than just illustrating aspects of the multi-level model), considering the hypotheses regarding the role of school-specific and individual-specific factors in math test scores.
+
+We'll start with a simple model and build from there, using the BIC as our primary selection criterion.
+
+$$y_{ij}=\beta_{0,j}+\beta_{1,j}\text{ses}_{ij}+ \varepsilon_{ij}, ~~ \beta_{0,j}=\beta_0+b_{0,j} ~~~ \beta_{1,j}=\beta_1+b_{1,j}$$
+
+<br>
+
+$$\begin{pmatrix} b_{0,j} \\ b_{1,j} \end{pmatrix} \sim N \left(\begin{pmatrix} 0 \\ 0 \end{pmatrix}, \begin{pmatrix}\tau_{11} & \tau_{12} \\ \tau_{12} & \tau_{22} \end{pmatrix}\right) ~~~ \varepsilon_{ij}\sim N(0,\sigma^2)$$
+
+This model allows random intercepts and slopes across schools.
+
+
+
+---
+## NELS Data
+
+We saw previously that the random slope did explain additional heterogeneity in a model without school-level predictors.
+
+We'll come back to that question again once we add a few school level predictors to the model. 
+
+Let's first compare our starting model to models that add enrollment to the mix, so that 
+$$\beta_{0,j}=\beta_0+\alpha_{0,k}I(\text{enroll}_j=k)+b_{0,j}$$ $$\beta_{1,j}=\beta_1+\alpha_{1,k}I(\text{enroll}_j=k)+b_{1,j}$$ $$k=1,...,5$$
+
+We'll use ML estimation because we may wish to consider likelihood ratio tests of the mean parameters.
+
+
+
+---
+## NELS Data
+
+First, check out the base model.
+
+.large[
+```{r basemod, cache=TRUE}
+mod1=lmer(mscore~sesstd+(sesstd|school),data=nels, REML=FALSE)
+summary(mod1)
+```
+]
+
+
+
+---
+## NELS Data
+
+.large[
+```{r step1b, cache=TRUE}
+mod2a=lmer(mscore~as.factor(enroll)+sesstd+(sesstd|school),
+           data=nels, REML=FALSE)
+mod2b=lmer(mscore~as.factor(enroll)+sesstd+as.factor(enroll):sesstd+
+             (sesstd|school),data=nels, REML=FALSE)
+anova(mod2b,mod2a)
+anova(mod2a,mod1)
+```
+]
+
+Here we don't see much evidence that enrollment is useful, so we don't need to use it.
+
+
+
+---
+## NELS Data
+
+Next we can consider eligibility for free and reduced lunch, so that 
+
+Here we'll consider a variety of models, including the one above, a model without the interaction with flp, a model that has the flp main effect but drops the SES random effect, and a model that drops all the school random effects given that flp is in the model $(\tau=0)$.
+
+```{r step2, eval=FALSE}
+mod3a=lmer(mscore~as.factor(flp)+sesstd+(sesstd|school),
+           data=nels, REML=FALSE)
+mod3b=lmer(mscore~as.factor(flp)+sesstd+as.factor(flp)*sesstd+
+             (sesstd|school),data=nels, REML=FALSE)
+mod3c=lmer(mscore~as.factor(flp)+sesstd+(1|school),
+           data=nels, REML=FALSE)
+mod3d=lm(mscore~as.factor(flp)+sesstd,data=nels)
+anova(mod3b,mod3a)
+anova(mod3a,mod1)
+anova(mod3c,mod3a) #just look at BIC here
+BIC(mod3d) #check if random intercept needed by comparing to BIC from 3c
+```
+
+
+
+
+---
+## Model selection
+
+```{r step2b, cache=TRUE}
+mod3a=lmer(mscore~as.factor(flp)+sesstd+(sesstd|school),
+           data=nels, REML=FALSE)
+mod3b=lmer(mscore~as.factor(flp)+sesstd+as.factor(flp)*sesstd+(sesstd|school),
+           data=nels, REML=FALSE)
+anova(mod3b,mod3a)
+```
+
+
+
+---
+## Model selection
+
+
+```{r step2c, cache=TRUE}
+anova(mod3a,mod1)
+```
+
+
+
+---
+## Model selection
+
+
+```{r step2d, cache=TRUE}
+mod3c=lmer(mscore~as.factor(flp)+sesstd+(1|school),
+           data=nels, REML=FALSE)
+anova(mod3c,mod3a) #just look at BIC here
+
+mod3d=lm(mscore~as.factor(flp)+sesstd,data=nels)
+BIC(mod3d) #check if random intercept needed by comparing to BIC from 3c
+```
+
+
+
+---
+## Model selection
+
+Note that BIC now likes the model without a random slope -- we evaluated that because we thought that after introducing a school-level SES variable to the model, the importance of the individual-level SES variable may change.
+
+It also prefers a model without an interaction between individual-level SES and school-level SES (measured by flp).
+
+
+---
+## Model selection
+
+Now our model for the coefficients is 
+
+.large[
+```{r modsummary3c}
+summary(mod3c)
+```
+]
+
+
+
+
+
+---
+## Model selection
+
+The more students we have eligible for the free and reduced price lunch program, the lower the math scores.
+
+In addition, the coefficient on individual-level SES did not change much in magnitude -- so SES operates both on the school level and the individual level.
+
+Let's now add the public school indicator.
+
+```{r step3, eval=FALSE}
+mod4a=lmer(mscore~as.factor(flp)+as.factor(public)+sesstd+
+            (1|school),data=nels, REML=FALSE)
+mod4b=lmer(mscore~as.factor(flp)+as.factor(public) +
+             sesstd+as.factor(public)*sesstd+(1|school),
+           data=nels, REML=FALSE)
+anova(mod4b,mod4a)
+anova(mod4b,mod3c)
+#summary(mod4b)
+```
+
+
+
+---
+## Model selection
+
+```{r step3b, cache=TRUE}
+mod4a=lmer(mscore~as.factor(flp)+as.factor(public)+sesstd+(1|school),
+           data=nels, REML=FALSE)
+mod4b=lmer(mscore~as.factor(flp)+as.factor(public) + sesstd+
+             as.factor(public)*sesstd+(1|school),data=nels, REML=FALSE)
+anova(mod4b,mod4a)
+```
+
+
+
+---
+## Model selection
+
+```{r step3c, echo=FALSE, cache=TRUE}
+anova(mod4b,mod3c)
+
+```
+
+
+The BIC suggests leaving public/private out of the model.
+
+
+
+
+---
+## Model selection
+
+Now let's consider urban/suburban/rural status.
+
+```{r step4, eval=FALSE}
+mod5a=lmer(mscore~as.factor(flp)+urbanicity+sesstd+(1|school),
+           data=nels, REML=FALSE)
+mod5b=lmer(mscore~as.factor(flp)+urbanicity+sesstd+
+             urbanicity*sesstd+(1|school),
+           data=nels, REML=FALSE)
+anova(mod5b,mod5a)
+anova(mod5a,mod3c)
+summary(mod5b)
+```
+
+
+
+---
+## Model selection
+
+```{r step4b, cache=TRUE}
+mod5a=lmer(mscore~as.factor(flp)+urbanicity+sesstd+(1|school),
+           data=nels, REML=FALSE)
+mod5b=lmer(mscore~as.factor(flp)+urbanicity+sesstd+
+             urbanicity*sesstd+(1|school),
+           data=nels, REML=FALSE)
+anova(mod5b,mod5a)
+```
+
+
+
+---
+## Model selection
+
+```{r step4c, cache=TRUE}
+anova(mod5a,mod3c)
+```
+
+BIC suggests leaving urbanicity out of the model.
+
+
+---
+## Summary of Selection using BIC
+
+  - Enrollment, urbanicity, and public/private status did not add much to our model using the BIC as our selection criterion
+  - The lower the SES status of the whole school (measured by percent eligible for free and reduced-price lunch), the lower the math scores on average
+  - Having higher individual-level SES was associated with higher math scores regardless of the school environment
+  - A random intercept for school explained significant variability across schools and controlled for lack of independence within schools
+$$y_{ij}=\beta_{0,j}+\beta_{1}\text{ses}_{ij}+ \varepsilon_{ij}$$
+$$\beta_{0,j}=\beta_0+\psi_{0,l}I(\text{flp}_j=l)+b_{0,j}$$
+$$b_{0,j} \sim N \left( 0 ,\tau^2 \right) ~~~ \varepsilon_{ij}\sim N(0,\sigma^2)$$
+
+
+---
+## Final model again
+
+.large[
+```{r}
+summary(mod3c)
+```
+]
+
+
+
+
+
+---
+
+class: center, middle
+
+# What's next?
+
+### Move on to the readings for the next module!
+
+
+
+
