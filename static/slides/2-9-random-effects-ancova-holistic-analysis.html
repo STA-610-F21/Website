@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>STA 610L: Module 2.14</title>
+    <title>STA 610L: Module 2.9</title>
     <meta charset="utf-8" />
     <meta name="author" content="Dr. Olanrewaju Michael Akande" />
     <script src="libs/header-attrs/header-attrs.js"></script>
@@ -13,7 +13,7 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# STA 610L: Module 2.14
+# STA 610L: Module 2.9
 ## Random effects ANCOVA (holistic analysis)
 ### Dr. Olanrewaju Michael Akande
 
@@ -26,21 +26,21 @@ class: center, middle, inverse, title-slide
 
 
 
-## Getting more serious about NELS
+## NELS data: taking a step back
 
 Until now, we have used the NELS data to illustrate different aspects of model fitting for the multilevel model.
 
-Now let's step back and think about these data more holistically, as if we're seeing them for the first time.
+Now let's step back and think about model selection for the data more holistically, as if we're seeing them for the first time (for the most part).
 
 
 
 ---
 ## NELS variables
 
-We will consider the following variables of interest in NELS:
+Here are our variables of interest in the NELS:
   - Math score (individual-level outcome)
   - SES (individual-level socio-economic status)
-  - FLP (school level % of kids eligible for free or reduced-price lunch)
+  - FLP (school level % of kids eligible for free or reduced-price lunch -- think of this as school-level SES)
     - 1: 0-5% eligible
     - 2: 5-30% eligible
     - 3: &gt;30% eligible
@@ -53,7 +53,7 @@ We will consider the following variables of interest in NELS:
 ---
 ## Model selection
 
-As we think about models, we'll keep in mind a couple of methods for comparison.
+As we think about our model selection process, we'll keep in mind a couple of methods for comparison.
 
   - Likelihood ratio test for nested models
     - For tests involving fixed effects only, we can use a `\(\chi^2_d\)` for testing whether `\(d\)` fixed effects all equal 0 (ML, not ok for REML)
@@ -67,26 +67,42 @@ As we think about models, we'll keep in mind a couple of methods for comparison.
 ---
 ## Model selection
 
-  - BIC 
-    - smaller-is-better coding
+One option is to rely on the metrics we already often use for model comparison, like AIC, BIC, etc.
+
+For BIC in particular, we have the following
+
+  - smaller is better
+  
+  - it already adjusts for model complexity
     
-    - already adjusted for model complexity
+  - there is an approximation to posterior model probability
     
-    - approximation to posterior model probability
+  - model selection is consistent
     
-    - model selection consistent
-    
-    - nested models not required
- 
- 
+  - nesting between models is not required
  
  
 
 ---
+## NELS data
+
+
+```r
+load('data/nels.Rdata')
+avmscore.schools &lt;- tapply(nels$mscore,nels$school,mean,na.rm=TRUE)
+id.schools &lt;- names(avmscore.schools)
+m &lt;- length(id.schools)
+nels$sesstd &lt;- nels$ses/sd(nels$ses)
+nels$enroll &lt;- factor(nels$enroll)
+nels$flp &lt;- factor(nels$flp)
+nels$public &lt;- factor(nels$public)
+nels$urban &lt;- factor(nels$urban)
+```
+
+
+
+---
 ## Descriptive statistics
-
-
-
 
 &lt;img src="2-9-random-effects-ancova-holistic-analysis_files/figure-html/boxplots-1.png" style="display: block; margin: auto;" /&gt;
 
@@ -131,7 +147,7 @@ Why not treat school as a fixed effect?  That should handle the school heterogen
 
 
 ```r
-m10 &lt;- lm(mscore~school+as.factor(enroll)+as.factor(flp)+as.factor(public)+
+m10 &lt;- lm(mscore~school+enroll+flp+public+
          urbanicity, data=nels)
 #summary(m10)
 coef(m10)[(length(coef(m10))-30):length(coef(m10))]
@@ -155,11 +171,11 @@ coef(m10)[(length(coef(m10))-30):length(coef(m10))]
 ##          -3.348000           4.821000           9.443250           6.169727 
 ##         school4592         school4601         school4602         school4611 
 ##          12.405182         -13.559667           3.622333           5.820846 
-##         school4612 as.factor(enroll)1 as.factor(enroll)2 as.factor(enroll)3 
+##         school4612            enroll1            enroll2            enroll3 
 ##          -7.980692                 NA                 NA                 NA 
-## as.factor(enroll)4 as.factor(enroll)5    as.factor(flp)2    as.factor(flp)3 
+##            enroll4            enroll5               flp2               flp3 
 ##                 NA                 NA                 NA                 NA 
-## as.factor(public)1 urbanicitysuburban    urbanicityurban 
+##            public1 urbanicitysuburban    urbanicityurban 
 ##                 NA                 NA                 NA
 ```
 ]
@@ -186,7 +202,7 @@ Let's take a more detailed look at the  heterogeneity across schools and how muc
 
 In a model with only a random intercept, let's calculate the intraclass correlation -- the correlation between two kids in the same school.
 
-`$$y_{ij}=\beta_{0,j}+\varepsilon_{ij}, ~~ \beta_{0,j}\overset{iid}{\sim} N(\beta_0,\tau^2) \perp \varepsilon_{ij}\overset{iid}\sim N(0, \sigma^2)$$`
+`$$y_{ij}=\beta_{0j}+\varepsilon_{ij}, ~~ \beta_{0j}\overset{iid}{\sim} N(\beta_0,\tau^2) \perp \varepsilon_{ij}\overset{iid}\sim N(0, \sigma^2)$$`
 
 
 ```r
@@ -209,7 +225,7 @@ How much of the heterogeneity across schools is explained by enrollment?
 
 
 ```r
-fit1 &lt;- lmer(mscore~as.factor(enroll)+(1|school),data=nels, REML=FALSE)
+fit1 &lt;- lmer(mscore~enroll+(1|school),data=nels, REML=FALSE)
 sigma2hat &lt;- sigma(fit1)*sigma(fit1) #pick off estimate of sigma2
 tau2hat &lt;- as.numeric(VarCorr(fit1)$school) #pick off est of tau2
 c(sigma2hat,tau2hat,tau2hat/(tau2hat+sigma2hat)) #show vars and correlation
@@ -230,7 +246,7 @@ How much of the remaining heterogeneity across schools is explained by the perce
 
 
 ```r
-fit2=lmer(mscore~as.factor(enroll)+as.factor(flp)+(1|school),
+fit2=lmer(mscore~enroll+flp+(1|school),
           data=nels, REML=FALSE)
 sigma2hat &lt;- sigma(fit2)*sigma(fit2) #pick off estimate of sigma2
 tau2hat &lt;- as.numeric(VarCorr(fit2)$school) #pick off est of tau2
@@ -252,7 +268,7 @@ What if we add public/private status?
 
 
 ```r
-fit3=lmer(mscore~as.factor(enroll)+as.factor(flp)+as.factor(public)+
+fit3=lmer(mscore~enroll+flp+public+
             (1|school),data=nels, REML=FALSE)
 sigma2hat=sigma(fit3)*sigma(fit3) #pick off estimate of sigma2
 tau2hat=as.numeric(VarCorr(fit3)$school) #pick off est of tau2
@@ -273,7 +289,7 @@ Now we add urbanicity.
 
 
 ```r
-fit4=lmer(mscore~as.factor(enroll)+as.factor(flp)+as.factor(public)+
+fit4=lmer(mscore~enroll+flp+public+
             urbanicity+(1|school),data=nels, REML=FALSE)
 sigma2hat=sigma(fit4)*sigma(fit4) #pick off estimate of sigma2
 tau2hat=as.numeric(VarCorr(fit4)$school) #pick off est of tau2
@@ -309,11 +325,11 @@ Let's return to our data from a data analysis perspective (rather than just illu
 
 We'll start with a simple model and build from there, using the BIC as our primary selection criterion.
 
-`$$y_{ij}=\beta_{0,j}+\beta_{1,j}\text{ses}_{ij}+ \varepsilon_{ij}, ~~ \beta_{0,j}=\beta_0+b_{0,j} ~~~ \beta_{1,j}=\beta_1+b_{1,j}$$`
+`$$y_{ij}=\beta_{0j}+\beta_{1j}\text{ses}_{ij}+ \varepsilon_{ij}, ~~ \beta_{0j}=\beta_0+b_{0j} ~~~ \beta_{1j}=\beta_1+b_{1j}$$`
 
 &lt;br&gt;
 
-`$$\begin{pmatrix} b_{0,j} \\ b_{1,j} \end{pmatrix} \sim N \left(\begin{pmatrix} 0 \\ 0 \end{pmatrix}, \begin{pmatrix}\tau_{11} &amp; \tau_{12} \\ \tau_{12} &amp; \tau_{22} \end{pmatrix}\right) ~~~ \varepsilon_{ij}\sim N(0,\sigma^2)$$`
+`$$\begin{pmatrix} b_{0j} \\ b_{1j} \end{pmatrix} \sim N \left(\begin{pmatrix} 0 \\ 0 \end{pmatrix}, \begin{pmatrix}\tau_{11} &amp; \tau_{12} \\ \tau_{12} &amp; \tau_{22} \end{pmatrix}\right) ~~~ \varepsilon_{ij}\sim N(0,\sigma^2)$$`
 
 This model allows random intercepts and slopes across schools.
 
@@ -327,7 +343,7 @@ We saw previously that the random slope did explain additional heterogeneity in 
 We'll come back to that question again once we add a few school level predictors to the model. 
 
 Let's first compare our starting model to models that add enrollment to the mix, so that 
-`$$\beta_{0,j}=\beta_0+\alpha_{0,k}I(\text{enroll}_j=k)+b_{0,j}$$` `$$\beta_{1,j}=\beta_1+\alpha_{1,k}I(\text{enroll}_j=k)+b_{1,j}$$` `$$k=1,...,5$$`
+`$$\beta_{0j}=\beta_0+\alpha_{0k}I(\text{enroll}_j=k)+b_{0j}$$` `$$\beta_{1j}=\beta_1+\alpha_{1k}I(\text{enroll}_j=k)+b_{1j}$$` `$$k=1,...,5$$`
 
 We'll use ML estimation because we may wish to consider likelihood ratio tests of the mean parameters.
 
@@ -383,9 +399,9 @@ summary(mod1)
 .large[
 
 ```r
-mod2a=lmer(mscore~as.factor(enroll)+sesstd+(sesstd|school),
+mod2a=lmer(mscore~enroll+sesstd+(sesstd|school),
            data=nels, REML=FALSE)
-mod2b=lmer(mscore~as.factor(enroll)+sesstd+as.factor(enroll):sesstd+
+mod2b=lmer(mscore~enroll+sesstd+enroll:sesstd+
              (sesstd|school),data=nels, REML=FALSE)
 anova(mod2b,mod2a)
 ```
@@ -393,8 +409,8 @@ anova(mod2b,mod2a)
 ```
 ## Data: nels
 ## Models:
-## mod2a: mscore ~ as.factor(enroll) + sesstd + (sesstd | school)
-## mod2b: mscore ~ as.factor(enroll) + sesstd + as.factor(enroll):sesstd + (sesstd | school)
+## mod2a: mscore ~ enroll + sesstd + (sesstd | school)
+## mod2b: mscore ~ enroll + sesstd + enroll:sesstd + (sesstd | school)
 ##       npar   AIC   BIC logLik deviance  Chisq Df Pr(&gt;Chisq)
 ## mod2a   11 92557 92639 -46267    92535                     
 ## mod2b   16 92559 92678 -46263    92527 7.9798  5     0.1574
@@ -408,7 +424,7 @@ anova(mod2a,mod1)
 ## Data: nels
 ## Models:
 ## mod1: mscore ~ sesstd + (sesstd | school)
-## mod2a: mscore ~ as.factor(enroll) + sesstd + (sesstd | school)
+## mod2a: mscore ~ enroll + sesstd + (sesstd | school)
 ##       npar   AIC   BIC logLik deviance  Chisq Df Pr(&gt;Chisq)
 ## mod1     6 92553 92598 -46271    92541                     
 ## mod2a   11 92557 92639 -46267    92535 6.1315  5     0.2936
@@ -422,19 +438,19 @@ Here we don't see much evidence that enrollment is useful, so we don't need to u
 ---
 ## NELS Data
 
-Next we can consider eligibility for free and reduced lunch, so that 
+Next we consider eligibility for free and reduced lunch.
 
-Here we'll consider a variety of models, including the one above, a model without the interaction with flp, a model that has the flp main effect but drops the SES random effect, and a model that drops all the school random effects given that flp is in the model `\((\tau=0)\)`.
+Here we'll explore a variety of models, including the one above, a model without the interaction with flp, a model that has the flp main effect but drops the SES random effect, and a model that drops all the school random effects given that flp is in the model `\((\tau=0)\)`.
 
 
 ```r
-mod3a=lmer(mscore~as.factor(flp)+sesstd+(sesstd|school),
+mod3a=lmer(mscore~flp+sesstd+(sesstd|school),
            data=nels, REML=FALSE)
-mod3b=lmer(mscore~as.factor(flp)+sesstd+as.factor(flp)*sesstd+
+mod3b=lmer(mscore~flp+sesstd+flp*sesstd+
              (sesstd|school),data=nels, REML=FALSE)
-mod3c=lmer(mscore~as.factor(flp)+sesstd+(1|school),
+mod3c=lmer(mscore~flp+sesstd+(1|school),
            data=nels, REML=FALSE)
-mod3d=lm(mscore~as.factor(flp)+sesstd,data=nels)
+mod3d=lm(mscore~flp+sesstd,data=nels)
 anova(mod3b,mod3a)
 anova(mod3a,mod1)
 anova(mod3c,mod3a) #just look at BIC here
@@ -449,9 +465,9 @@ BIC(mod3d) #check if random intercept needed by comparing to BIC from 3c
 
 
 ```r
-mod3a=lmer(mscore~as.factor(flp)+sesstd+(sesstd|school),
+mod3a=lmer(mscore~flp+sesstd+(sesstd|school),
            data=nels, REML=FALSE)
-mod3b=lmer(mscore~as.factor(flp)+sesstd+as.factor(flp)*sesstd+(sesstd|school),
+mod3b=lmer(mscore~flp+sesstd+flp*sesstd+(sesstd|school),
            data=nels, REML=FALSE)
 anova(mod3b,mod3a)
 ```
@@ -459,8 +475,8 @@ anova(mod3b,mod3a)
 ```
 ## Data: nels
 ## Models:
-## mod3a: mscore ~ as.factor(flp) + sesstd + (sesstd | school)
-## mod3b: mscore ~ as.factor(flp) + sesstd + as.factor(flp) * sesstd + (sesstd | school)
+## mod3a: mscore ~ flp + sesstd + (sesstd | school)
+## mod3b: mscore ~ flp + sesstd + flp * sesstd + (sesstd | school)
 ##       npar   AIC   BIC logLik deviance  Chisq Df Pr(&gt;Chisq)
 ## mod3a    8 92395 92454 -46189    92379                     
 ## mod3b   10 92384 92459 -46182    92364 14.384  2  0.0007525
@@ -481,7 +497,7 @@ anova(mod3a,mod1)
 ## Data: nels
 ## Models:
 ## mod1: mscore ~ sesstd + (sesstd | school)
-## mod3a: mscore ~ as.factor(flp) + sesstd + (sesstd | school)
+## mod3a: mscore ~ flp + sesstd + (sesstd | school)
 ##       npar   AIC   BIC logLik deviance  Chisq Df Pr(&gt;Chisq)
 ## mod1     6 92553 92598 -46271    92541                     
 ## mod3a    8 92395 92454 -46189    92379 162.51  2  &lt; 2.2e-16
@@ -495,7 +511,7 @@ anova(mod3a,mod1)
 
 
 ```r
-mod3c=lmer(mscore~as.factor(flp)+sesstd+(1|school),
+mod3c=lmer(mscore~flp+sesstd+(1|school),
            data=nels, REML=FALSE)
 anova(mod3c,mod3a) #just look at BIC here
 ```
@@ -503,16 +519,30 @@ anova(mod3c,mod3a) #just look at BIC here
 ```
 ## Data: nels
 ## Models:
-## mod3c: mscore ~ as.factor(flp) + sesstd + (1 | school)
-## mod3a: mscore ~ as.factor(flp) + sesstd + (sesstd | school)
+## mod3c: mscore ~ flp + sesstd + (1 | school)
+## mod3a: mscore ~ flp + sesstd + (sesstd | school)
 ##       npar   AIC   BIC logLik deviance  Chisq Df Pr(&gt;Chisq)
 ## mod3c    6 92404 92449 -46196    92392                     
 ## mod3a    8 92395 92454 -46189    92379 13.371  2   0.001249
 ```
 
 ```r
-mod3d=lm(mscore~as.factor(flp)+sesstd,data=nels)
-BIC(mod3d) #check if random intercept needed by comparing to BIC from 3c
+mod3d=lm(mscore~flp+sesstd,data=nels)
+anova(mod3c,mod3d) #check if random intercept needed by comparing to BIC from 3c
+```
+
+```
+## Data: nels
+## Models:
+## mod3d: mscore ~ flp + sesstd
+## mod3c: mscore ~ flp + sesstd + (1 | school)
+##       npar   AIC   BIC logLik deviance  Chisq Df Pr(&gt;Chisq)
+## mod3d    5 93115 93152 -46552    93105                     
+## mod3c    6 92404 92449 -46196    92392 712.63  1  &lt; 2.2e-16
+```
+
+```r
+BIC(mod3d) #also use BIC
 ```
 
 ```
@@ -542,7 +572,7 @@ summary(mod3c)
 
 ```
 ## Linear mixed model fit by maximum likelihood  ['lmerMod']
-## Formula: mscore ~ as.factor(flp) + sesstd + (1 | school)
+## Formula: mscore ~ flp + sesstd + (1 | school)
 ##    Data: nels
 ## 
 ##      AIC      BIC   logLik deviance df.resid 
@@ -559,17 +589,17 @@ summary(mod3c)
 ## Number of obs: 12974, groups:  school, 684
 ## 
 ## Fixed effects:
-##                 Estimate Std. Error t value
-## (Intercept)     52.84307    0.24462 216.020
-## as.factor(flp)2 -1.87992    0.33042  -5.689
-## as.factor(flp)3 -4.79607    0.36150 -13.267
-## sesstd           3.10819    0.08578  36.233
+##             Estimate Std. Error t value
+## (Intercept) 52.84307    0.24462 216.020
+## flp2        -1.87992    0.33042  -5.689
+## flp3        -4.79607    0.36150 -13.267
+## sesstd       3.10819    0.08578  36.233
 ## 
 ## Correlation of Fixed Effects:
-##             (Intr) as.()2 as.()3
-## as.fctr(f)2 -0.739              
-## as.fctr(f)3 -0.697  0.514       
-## sesstd      -0.202  0.143  0.237
+##        (Intr) flp2   flp3  
+## flp2   -0.739              
+## flp3   -0.697  0.514       
+## sesstd -0.202  0.143  0.237
 ```
 ]
 
@@ -588,10 +618,10 @@ Let's now add the public school indicator.
 
 
 ```r
-mod4a=lmer(mscore~as.factor(flp)+as.factor(public)+sesstd+
+mod4a=lmer(mscore~flp+public+sesstd+
             (1|school),data=nels, REML=FALSE)
-mod4b=lmer(mscore~as.factor(flp)+as.factor(public) +
-             sesstd+as.factor(public)*sesstd+(1|school),
+mod4b=lmer(mscore~flp+public +
+             sesstd+public*sesstd+(1|school),
            data=nels, REML=FALSE)
 anova(mod4b,mod4a)
 anova(mod4b,mod3c)
@@ -605,18 +635,18 @@ anova(mod4b,mod3c)
 
 
 ```r
-mod4a=lmer(mscore~as.factor(flp)+as.factor(public)+sesstd+(1|school),
+mod4a=lmer(mscore~flp+public+sesstd+(1|school),
            data=nels, REML=FALSE)
-mod4b=lmer(mscore~as.factor(flp)+as.factor(public) + sesstd+
-             as.factor(public)*sesstd+(1|school),data=nels, REML=FALSE)
+mod4b=lmer(mscore~flp+public + sesstd+
+             public*sesstd+(1|school),data=nels, REML=FALSE)
 anova(mod4b,mod4a)
 ```
 
 ```
 ## Data: nels
 ## Models:
-## mod4a: mscore ~ as.factor(flp) + as.factor(public) + sesstd + (1 | school)
-## mod4b: mscore ~ as.factor(flp) + as.factor(public) + sesstd + as.factor(public) * sesstd + (1 | school)
+## mod4a: mscore ~ flp + public + sesstd + (1 | school)
+## mod4b: mscore ~ flp + public + sesstd + public * sesstd + (1 | school)
 ##       npar   AIC   BIC logLik deviance  Chisq Df Pr(&gt;Chisq)
 ## mod4a    7 92406 92458 -46196    92392                     
 ## mod4b    8 92396 92456 -46190    92380 11.948  1   0.000547
@@ -628,11 +658,15 @@ anova(mod4b,mod4a)
 ## Model selection
 
 
+```r
+anova(mod4b,mod3c)
+```
+
 ```
 ## Data: nels
 ## Models:
-## mod3c: mscore ~ as.factor(flp) + sesstd + (1 | school)
-## mod4b: mscore ~ as.factor(flp) + as.factor(public) + sesstd + as.factor(public) * sesstd + (1 | school)
+## mod3c: mscore ~ flp + sesstd + (1 | school)
+## mod4b: mscore ~ flp + public + sesstd + public * sesstd + (1 | school)
 ##       npar   AIC   BIC logLik deviance  Chisq Df Pr(&gt;Chisq)
 ## mod3c    6 92404 92449 -46196    92392                     
 ## mod4b    8 92396 92456 -46190    92380 12.081  2   0.002381
@@ -651,9 +685,9 @@ Now let's consider urban/suburban/rural status.
 
 
 ```r
-mod5a=lmer(mscore~as.factor(flp)+urbanicity+sesstd+(1|school),
+mod5a=lmer(mscore~flp+urbanicity+sesstd+(1|school),
            data=nels, REML=FALSE)
-mod5b=lmer(mscore~as.factor(flp)+urbanicity+sesstd+
+mod5b=lmer(mscore~flp+urbanicity+sesstd+
              urbanicity*sesstd+(1|school),
            data=nels, REML=FALSE)
 anova(mod5b,mod5a)
@@ -668,9 +702,9 @@ summary(mod5b)
 
 
 ```r
-mod5a=lmer(mscore~as.factor(flp)+urbanicity+sesstd+(1|school),
+mod5a=lmer(mscore~flp+urbanicity+sesstd+(1|school),
            data=nels, REML=FALSE)
-mod5b=lmer(mscore~as.factor(flp)+urbanicity+sesstd+
+mod5b=lmer(mscore~flp+urbanicity+sesstd+
              urbanicity*sesstd+(1|school),
            data=nels, REML=FALSE)
 anova(mod5b,mod5a)
@@ -679,8 +713,8 @@ anova(mod5b,mod5a)
 ```
 ## Data: nels
 ## Models:
-## mod5a: mscore ~ as.factor(flp) + urbanicity + sesstd + (1 | school)
-## mod5b: mscore ~ as.factor(flp) + urbanicity + sesstd + urbanicity * sesstd + (1 | school)
+## mod5a: mscore ~ flp + urbanicity + sesstd + (1 | school)
+## mod5b: mscore ~ flp + urbanicity + sesstd + urbanicity * sesstd + (1 | school)
 ##       npar   AIC   BIC logLik deviance  Chisq Df Pr(&gt;Chisq)
 ## mod5a    8 92400 92460 -46192    92384                     
 ## mod5b   10 92390 92465 -46185    92370 13.373  2   0.001248
@@ -699,8 +733,8 @@ anova(mod5a,mod3c)
 ```
 ## Data: nels
 ## Models:
-## mod3c: mscore ~ as.factor(flp) + sesstd + (1 | school)
-## mod5a: mscore ~ as.factor(flp) + urbanicity + sesstd + (1 | school)
+## mod3c: mscore ~ flp + sesstd + (1 | school)
+## mod5a: mscore ~ flp + urbanicity + sesstd + (1 | school)
 ##       npar   AIC   BIC logLik deviance  Chisq Df Pr(&gt;Chisq)
 ## mod3c    6 92404 92449 -46196    92392                     
 ## mod5a    8 92400 92460 -46192    92384 8.0578  2    0.01779
@@ -716,9 +750,9 @@ BIC suggests leaving urbanicity out of the model.
   - The lower the SES status of the whole school (measured by percent eligible for free and reduced-price lunch), the lower the math scores on average
   - Having higher individual-level SES was associated with higher math scores regardless of the school environment
   - A random intercept for school explained significant variability across schools and controlled for lack of independence within schools
-`$$y_{ij}=\beta_{0,j}+\beta_{1}\text{ses}_{ij}+ \varepsilon_{ij}$$`
-`$$\beta_{0,j}=\beta_0+\psi_{0,l}I(\text{flp}_j=l)+b_{0,j}$$`
-`$$b_{0,j} \sim N \left( 0 ,\tau^2 \right) ~~~ \varepsilon_{ij}\sim N(0,\sigma^2)$$`
+`$$y_{ij}=\beta_{0j}+\beta_{1}\text{ses}_{ij}+ \varepsilon_{ij}$$`
+`$$\beta_{0j}=\beta_0+\psi_{0l}I(\text{flp}_j=l)+b_{0j}$$`
+`$$b_{0j} \sim N \left( 0 ,\tau^2 \right) ~~~ \varepsilon_{ij}\sim N(0,\sigma^2)$$`
 
 
 ---
@@ -732,7 +766,7 @@ summary(mod3c)
 
 ```
 ## Linear mixed model fit by maximum likelihood  ['lmerMod']
-## Formula: mscore ~ as.factor(flp) + sesstd + (1 | school)
+## Formula: mscore ~ flp + sesstd + (1 | school)
 ##    Data: nels
 ## 
 ##      AIC      BIC   logLik deviance df.resid 
@@ -749,17 +783,17 @@ summary(mod3c)
 ## Number of obs: 12974, groups:  school, 684
 ## 
 ## Fixed effects:
-##                 Estimate Std. Error t value
-## (Intercept)     52.84307    0.24462 216.020
-## as.factor(flp)2 -1.87992    0.33042  -5.689
-## as.factor(flp)3 -4.79607    0.36150 -13.267
-## sesstd           3.10819    0.08578  36.233
+##             Estimate Std. Error t value
+## (Intercept) 52.84307    0.24462 216.020
+## flp2        -1.87992    0.33042  -5.689
+## flp3        -4.79607    0.36150 -13.267
+## sesstd       3.10819    0.08578  36.233
 ## 
 ## Correlation of Fixed Effects:
-##             (Intr) as.()2 as.()3
-## as.fctr(f)2 -0.739              
-## as.fctr(f)3 -0.697  0.514       
-## sesstd      -0.202  0.143  0.237
+##        (Intr) flp2   flp3  
+## flp2   -0.739              
+## flp3   -0.697  0.514       
+## sesstd -0.202  0.143  0.237
 ```
 ]
 

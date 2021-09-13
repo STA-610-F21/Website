@@ -122,11 +122,20 @@ lessons:
   - week: "WEEK 4"
     date: "Mon, Sept 13"
     title: "Module 2.9: Random effects ANCOVA (holistic analysis)"
-    #slides: "2-9-random-effects-ancova-holistic-analysis.html"
-    #slidespdf: "2-9-random-effects-ancova-holistic-analysis.pdf"
+    slides: "2-9-random-effects-ancova-holistic-analysis.html"
+    slidespdf: "2-9-random-effects-ancova-holistic-analysis.pdf"
+    
+    
+  - title: " " 
+  - title: "MODULE 3: GENERALIZED LINEAR MIXED EFFECTS MODELS"
+  - title: " " 
     
     
   - date: "Wed, Sept 15"
+    title: "Module 3.1: Linear mixed effects models"
+    reading: "3-1-reading.html"
+    slides: "3-1-linear-mixed-effects-models.html"
+    slidespdf: "3-1-linear-mixed-effects-models.pdf"
     
     
   #- title: "Some notes on lme4 and brms: in-class illustration using NELS data"
@@ -141,18 +150,10 @@ lessons:
     title: "Lab 4: Hospital Rankings (Part III)"
     #lab: "lab-04.html"
     
-    
-  - title: " " 
-  - title: "MODULE 3: GENERALIZED LINEAR MIXED EFFECTS MODELS"
-  - title: " " 
-    
   
   - week: "WEEK 5"
     date: "Mon, Sept 20"
-    title: "Module 3.1: Linear mixed effects models"
-    #reading: "3-1-reading.html"
-    #slides: "3-1-linear-mixed-effects-models.html"
-    #slidespdf: "3-1-linear-mixed-effects-models.pdf"
+    
     
   - title: "Module 3.2: Linear mixed effects models (influence measures)"
     ##reading: "3-2-reading.html"
