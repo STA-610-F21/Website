@@ -143,7 +143,7 @@ lessons:
     
   - date: "NEW ASSIGNMENT:"
     title: "Homework 2"
-    #hw: "hw-02.html"
+    hw: "hw-02.html"
     
     
   - date: "Fri, Sept 17"
@@ -153,12 +153,10 @@ lessons:
   
   - week: "WEEK 5"
     date: "Mon, Sept 20"
-    
-    
-  - title: "Module 3.2: Linear mixed effects models (influence measures)"
-    ##reading: "3-2-reading.html"
-    #slides: "3-2-linear-mixed-effects-models-diagnostics.html"
-    #slidespdf: "3-2-linear-mixed-effects-models-diagnostics.pdf"
+    title: "Module 3.2: Linear mixed effects models (influence measures)"
+    #reading: "3-2-reading.html"
+    slides: "3-2-linear-mixed-effects-models-diagnostics.html"
+    slidespdf: "3-2-linear-mixed-effects-models-diagnostics.pdf"
     
   
   - date: "Tue, Sept 21 | NEW ASSIGNMENT:"

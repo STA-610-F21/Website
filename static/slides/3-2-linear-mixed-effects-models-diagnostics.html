@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>STA 610L: Module 3.2</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Olanrewaju Michael Akande" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# STA 610L: Module 3.2
+## Linear mixed effects models (influence measures)
+### Dr. Olanrewaju Michael Akande
+
+---
+
+
+
+
+
+
+
+
+## Residuals
+
+Residual analysis and diagnostic methods are well developed for linear regression models (c.f., Cook and Weisberg, 1982), but they are somewhat less developed for mixed effects models.
+
+&lt;br&gt;
+
+The following slides are based on [Nieuwenhuis et al](https://journal.r-project.org/archive/2012-2/RJournal_2012-2_Nieuwenhuis~et~al.pdf).
+
+
+
+---
+## Example: Orthodontics Data
+
+Consider the dental data with model
+
+`$$Y_{ij}=\beta_0+\beta_1I(\text{male})_i+\beta_2t_j+\beta_3I(\text{male})_it_j + b_{0i} + b_{1i}t_j + \varepsilon_{ij},$$` 
+
+where
+`$$\begin{pmatrix} b_{0i} \\ b_{1i} \end{pmatrix} \overset{iid}\sim N\left(0,\begin{pmatrix}d_{11} &amp; d_{12} \\ d_{12} &amp; d_{22}\end{pmatrix}\right) \perp \varepsilon_{ij} \overset{iid}\sim N(0,\sigma^2),$$`
+for illustration.
+
+
+
+---
+## Residuals
+
+Generally, the .hlight[residuals] `\(y_{ij}-\widehat{y}_{ij}\)` can be helpful in flagging outliers and in assessing the adequacy of most fitted models.
+
+However, the definition of residuals is not always consistent in the case of mixed effects or hierarchical models:
+
+  - Many texts define residuals for subject/group `\(i\)` as `\(Y_i-X_i\widehat{\beta}\)`. 
+  
+  - Many software implementations define residuals as `\(Y_i-X_i\widehat{\beta}-Z_i\widehat{b}_i\)` (nice because these can then be analyzed using standard methods)
+  
+These are easy to compute and we already did the later in a previous module.
+
+
+---
+## Review: residual analysis
+
+That said, in any case, residual analysis is not always a great tool for detecting .hlight[influential] cases:
+
+  - Cases with high residuals or high standardized residuals are called .hlight[outliers]
+  
+  - Outliers may or may not be influential in the model fit
+  
+  - An influential case may dominate the regression model so that the line is drawn more closely towards the case (making it an .hlight[inlier])
+
+
+
+---
+## Review: influence
+
+We hope that all data points have some amount of influence on our parameter estimates. 
+
+However, we may be concerned if a single case has disproportionate influence on model results. 
+
+If so, one observation or group of observations may pull the estimated regression line towards the group. 
+
+In such a case, excluding a single group might have a substantial effect on estimates. 
+
+This idea is behind the development of many popular influence diagnostics, often termed .hlight[deletion diagnostics].
+
+
+
+
+
+---
+## Review: leverage
+
+The degree to which an observation has the *potential* to be influential is closely related to the .hlight[leverage] of the case, which is a measure of how extreme the case is in the `\(X\)` space.
+
+Leverage is not simply defined as an outlying value in `\(X\)` space of a single variable but also in a multivariate sense.
+
+For example, in a study of pregnancy outcomes, it may be relatively common to have mothers who are 40, or fathers who are 20, but babies who have a 40 year old mother and a 20 year old father may be fairly uncommon.
+
+As you should already know, the leverage score for an observation `\(i\)` is the `\(i\)`th diagonal element of the projection or hat matrix.
+
+
+
+---
+## Influence
+
+It is not necessarily the case that outliers or cases with high leverage are influential.
+
+So, how do we detect influential cases?
+
+One popular approach is to use the principle that when a single case is removed from the data entirely, we would like for models based on the data not to give vastly different conclusions.
+
+If parameter estimates change a lot after a single individual is excluded, then the individual may be considered .hlight[influential].
+
+
+
+---
+## Multi-level influence
+
+Mixed effects and multilevel models estimate effects of lower-level and higher-level variables.
+
+It is thus possible that in some cases a higher-level group is influential (more likely when you don't have very many groups), while in others, a single observation within a group is influential.
+
+We will examine influence at both levels.
+
+
+
+---
+## Influence of higher-Level observations
+
+.hlight[DFBETAS] (standardized difference of the beta) measures the level of influence observations have on single parameter estimates.
+
+It is calculated as the difference in magnitude of the parameter estimate between the model including and the model excluding the group (or individual in a longitudinal study), standardized by dividing by the standard error of the estimate that excludes the group (to prevent variance inflation from masking the level of influence).  
+
+For group `\(i\)` and parameter `\(k\)`,
+`$$\text{DFBETAS}_{ik}=\frac{\widehat{\gamma}_k-\widehat{\gamma}_{k(-i)}}{se(\widehat{\gamma}_{k(-i)})},$$`
+
+where `\(\widehat{\gamma}_k\)` is the original estimate of the `\(k\)`th parameter, and `\(\widehat{\gamma}_{k(-i)}\)` is the estimate of the same parameter after group `\(i\)` has been excluded from the data.
+
+
+
+---
+## DFBETAS
+
+Belsley (1980) recommends a cutoff of `\(\frac{2}{\sqrt{n}}\)` for identifying overly influential observations.
+
+Here `\(n\)` is defined as the number of groups at the level of removal `\((-i)\)` for the calculation.
+
+(For the dental data we have 27 kids and 4 observations per kid, so at the group level `\(n=27\)`.)
+
+
+
+
+
+```r
+library(influence.ME)
+m1.inf &lt;- influence(m1,"Subject")
+#use obs argument for observation-level deletion
+print(2/sqrt(length(unique(Orthodont$Subject))))
+dfbetas(m1.inf)
+#note that there can be issues with singularity when we start removing groups
+```
+
+
+
+---
+## DFBETAS
+
+.small[
+
+```r
+m1.inf &lt;- influence(m1,"Subject"); print(2/sqrt(length(unique(Orthodont$Subject))))
+```
+
+```
+## [1] 0.3849002
+```
+
+```r
+round(dfbetas(m1.inf),4)
+```
+
+```
+##     (Intercept) SexMale     age SexMale:age
+## M16      0.0000  0.0247  0.0000     -0.1134
+## M05      0.0000 -0.1111  0.0000      0.0317
+## M02      0.0000 -0.0604  0.0000     -0.0045
+## M11      0.0000  0.1525  0.0000     -0.2286
+## M07      0.0000 -0.0563  0.0000      0.0075
+## M08      0.0000  0.1414  0.0000     -0.2038
+## M03      0.0000 -0.0138  0.0000     -0.0164
+## M12      0.0000 -0.1264  0.0000      0.1040
+## M13      0.0000 -0.6841  0.0000      0.6999
+## M14      0.0000  0.1129  0.0000     -0.1259
+## M09      0.0000 -0.0788  0.0000      0.0918
+## M15      0.0000 -0.1159  0.0000      0.1664
+## M06      0.0000  0.1061  0.0000     -0.0523
+## M04      0.0000  0.3728  0.0000     -0.3132
+## M01      0.0000  0.0388  0.0000      0.0796
+## M10      0.0000  0.2047  0.0000     -0.0164
+## F10     -0.2965  0.2326 -0.0266      0.0209
+## F09      0.0554 -0.0434 -0.1858      0.1457
+## F06     -0.0284  0.0222 -0.0944      0.0740
+## F01     -0.0093  0.0073 -0.0943      0.0740
+## F05      0.1702 -0.1335 -0.1854      0.1455
+## F07     -0.0322  0.0253  0.0636     -0.0499
+## F02     -0.2446  0.1919  0.2943     -0.2309
+## F08      0.3171 -0.2488 -0.2792      0.2190
+## F03     -0.2287  0.1794  0.3425     -0.2687
+## F04      0.1744 -0.1368 -0.0041      0.0032
+## F11      0.1204 -0.0944  0.1773     -0.1391
+```
+]
+
+Here we see that M04 and M13 are somewhat influential on some of our estimates. What did these kids look like?
+
+
+
+---
+## DFBETAS
+
+
+```r
+plot(m1.inf,which="dfbetas",xlab="DFBETAS",ylab="Student")
+```
+
+&lt;img src="3-2-linear-mixed-effects-models-diagnostics_files/figure-html/plotdfbetas-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+## DFBETAS
+
+
+```r
+plot(m1, distance ~ fitted(.) | Subject, abline = c(0,1))
+```
+
+&lt;img src="3-2-linear-mixed-effects-models-diagnostics_files/figure-html/m0413-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+
+---
+## DFBETAS
+
+
+```r
+Orthodont$distance[Orthodont$Subject=="M04"]
+```
+
+```
+## [1] 25.5 27.5 26.5 27.0
+```
+
+```r
+Orthodont$distance[Orthodont$Subject=="M13"]
+```
+
+```
+## [1] 17.0 24.5 26.0 29.5
+```
+
+M04 had large measurements without a lot of growth over time -- pulling him out of the model reduced the intercept for boys and also decreased their slope.
+  
+M13 had a small measure at age 8 and then grew substantially. Leaving him out of the model changed the estimates significantly, greatly increasing the intercept for boys and also reducing the slope among boys.
+  
+
+
+
+---
+## Cook's distance
+
+When the number of observations or predictors is large, it may take a while to get through all the DFBETAS.
+
+.hlight[Cook's distance] gives us a summary measure for influence on all parameter estimates.
+
+It is defined as
+`$$C_i=\frac{1}{p}(\widehat{\gamma}-\widehat{\gamma}_{(-i)})'\widehat{\Sigma}_{(-i)}^{-1}(\widehat{\gamma}-\widehat{\gamma}_{(-i)})$$`
+where `\(p\)` is the length of `\(\beta\)`, and `\(\widehat{\Sigma}_{(-i)}\)` is the covariance matrix of the parameter estimates excluding group `\(i\)`.
+
+Van der Meer et al (2010) recommends a cutoff of `\(\frac{4}{n}\)` where again `\(n\)` is the number of groups in the grouping factor being evaluated.
+
+If there is just one parameter in the model, then Cook's distance is the DFBETAS squared for that parameter.
+
+
+
+---
+## Cook's distance
+
+.large[
+
+```r
+print(4/length(unique(Orthodont$Subject)))
+```
+
+```
+## [1] 0.1481481
+```
+
+```r
+cooks.distance(m1.inf,sort=TRUE)
+```
+
+```
+##            [,1]
+## F07 0.001636431
+## M03 0.002263374
+## M09 0.004987931
+## M07 0.006595594
+## F05 0.008652440
+## M14 0.009388496
+## M12 0.009564971
+## M02 0.011126080
+## M06 0.011154742
+## F01 0.011906428
+## F06 0.016424195
+## M15 0.018727158
+## M05 0.018869728
+## F02 0.021849514
+## F09 0.022005758
+## M16 0.023158496
+## F08 0.025147749
+## M08 0.027996778
+## F04 0.033898438
+## F03 0.035015311
+## M11 0.036805752
+## M01 0.038081771
+## M04 0.082233065
+## F11 0.110084164
+## M10 0.116300386
+## F10 0.137275747
+## M13 0.312749412
+```
+]
+
+
+---
+## Cook's distance
+
+
+```r
+plot(m1.inf,which="cook",cutoff=4/length(unique(Orthodont$Subject)), 
+     sort=TRUE,xlab="Cook's D",ylab="Subject")
+```
+
+&lt;img src="3-2-linear-mixed-effects-models-diagnostics_files/figure-html/cd3-1.png" style="display: block; margin: auto;" /&gt;
+
+It's M13 again.
+
+
+
+---
+## Other metrics
+
+There are many other metrics we could use.
+
+One option is the .hlight[percentile change], which is defined as
+`$$\frac{\widehat{\gamma}-\widehat{\gamma}_{(-i)}}{\widehat{\gamma}}\times 100%$$`
+
+
+
+---
+## Other metrics
+
+
+```r
+plot(m1.inf,which="pchange",xlab="percentile change",ylab="Student")
+```
+
+&lt;img src="3-2-linear-mixed-effects-models-diagnostics_files/figure-html/pchange-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+
+---
+## Other metrics
+
+Another metric is the .hlight[changes in significance].
+
+Basically, we evaluate whether excluding a group changes the statistical significance of any of the estimates in the model.
+
+The user sets the critical value, and estimates that did not exceed it but do so when the group is removed, or *vice versa*, are flagged.
+
+See the .hlight[sigtest] function.
+
+
+---
+## Influence of lower-Level observations
+
+We can also look at the influence of single lower-level observations.
+
+They could be impactful in longitudinal data for example, when we have relatively few observations per individual.
+
+Note however that the computational complexity of these deletion diagnostics will be increased in this case.
+
+Here we look at Cook's Distance for the dental data on the individual observation level:
+
+
+```r
+m1.inf.indiv &lt;- influence(m1,obs=TRUE)
+m1.cook &lt;- cooks.distance(m1.inf.indiv)
+infindiv &lt;- m1.cook&gt;4/length(Orthodont$distance)
+```
+
+
+
+---
+## Influence of lower-Level observations
+
+.small[
+
+```r
+data.frame(Orthodont$Subject,m1.cook,infindiv)[1:35,]
+```
+
+```
+##    Orthodont.Subject      m1.cook infindiv
+## 1                M01 1.169367e-02    FALSE
+## 2                M01 2.774379e-03    FALSE
+## 3                M01 4.697088e-04    FALSE
+## 4                M01 7.815680e-03    FALSE
+## 5                M02 4.198348e-04    FALSE
+## 6                M02 9.929760e-05    FALSE
+## 7                M02 1.636939e-03    FALSE
+## 8                M02 3.592284e-03    FALSE
+## 9                M03 7.489140e-03    FALSE
+## 10               M03 1.259384e-03    FALSE
+## 11               M03 1.122001e-03    FALSE
+## 12               M03 6.194450e-03    FALSE
+## 13               M04 1.190275e-02    FALSE
+## 14               M04 3.784757e-03    FALSE
+## 15               M04 2.816516e-04    FALSE
+## 16               M04 1.718032e-02    FALSE
+## 17               M05 6.509131e-03    FALSE
+## 18               M05 1.211973e-03    FALSE
+## 19               M05 2.141689e-03    FALSE
+## 20               M05 1.591287e-03    FALSE
+## 21               M06 2.957091e-03    FALSE
+## 22               M06 6.019963e-06    FALSE
+## 23               M06 4.049744e-07    FALSE
+## 24               M06 6.023652e-06    FALSE
+## 25               M07 1.482976e-03    FALSE
+## 26               M07 1.400801e-03    FALSE
+## 27               M07 2.536361e-05    FALSE
+## 28               M07 6.789981e-04    FALSE
+## 29               M08 3.310020e-02    FALSE
+## 30               M08 3.653701e-03    FALSE
+## 31               M08 1.862281e-05    FALSE
+## 32               M08 1.793122e-03    FALSE
+## 33               M09 1.297874e-03    FALSE
+## 34               M09 1.601423e-02    FALSE
+## 35               M09 2.421178e-02    FALSE
+```
+]
+
+
+---
+## Influence of lower-Level observations
+
+.small[
+
+```r
+data.frame(Orthodont$Subject,m1.cook,infindiv)[36:72,]
+```
+
+```
+##    Orthodont.Subject      m1.cook infindiv
+## 36               M09 2.566986e-02    FALSE
+## 37               M10 1.065729e-02    FALSE
+## 38               M10 2.170243e-05    FALSE
+## 39               M10 1.415284e-03    FALSE
+## 40               M10 1.932585e-06    FALSE
+## 41               M11 1.177022e-02    FALSE
+## 42               M11 1.173807e-05    FALSE
+## 43               M11 7.834679e-04    FALSE
+## 44               M11 4.160895e-03    FALSE
+## 45               M12 9.450493e-04    FALSE
+## 46               M12 5.036144e-07    FALSE
+## 47               M12 1.293549e-03    FALSE
+## 48               M12 1.054221e-02    FALSE
+## 49               M13 2.259216e-01     TRUE
+## 50               M13 1.799954e-03    FALSE
+## 51               M13 2.852317e-04    FALSE
+## 52               M13 5.468146e-02     TRUE
+## 53               M14 4.642457e-04    FALSE
+## 54               M14 2.006172e-03    FALSE
+## 55               M14 6.714294e-06    FALSE
+## 56               M14 7.969978e-03    FALSE
+## 57               M15 1.286213e-04    FALSE
+## 58               M15 1.853975e-04    FALSE
+## 59               M15 4.313165e-04    FALSE
+## 60               M15 1.916918e-02    FALSE
+## 61               M16 6.287876e-03    FALSE
+## 62               M16 1.146909e-03    FALSE
+## 63               M16 1.611651e-04    FALSE
+## 64               M16 7.207025e-04    FALSE
+## 65               F01 7.368422e-03    FALSE
+## 66               F01 1.881906e-03    FALSE
+## 67               F01 2.798211e-04    FALSE
+## 68               F01 4.101701e-04    FALSE
+## 69               F02 8.531024e-04    FALSE
+## 70               F02 1.330744e-03    FALSE
+## 71               F02 2.818954e-04    FALSE
+## 72               F02 7.739192e-03    FALSE
+```
+]
+
+
+
+---
+## Influence of lower-Level observations
+
+.small[
+
+```r
+data.frame(Orthodont$Subject,m1.cook,infindiv)[73:108,]
+```
+
+```
+##     Orthodont.Subject      m1.cook infindiv
+## 73                F03 2.241371e-02    FALSE
+## 74                F03 1.442777e-03    FALSE
+## 75                F03 9.758752e-05    FALSE
+## 76                F03 4.093299e-03    FALSE
+## 77                F04 1.943475e-03    FALSE
+## 78                F04 2.522817e-04    FALSE
+## 79                F04 2.100052e-05    FALSE
+## 80                F04 1.540649e-03    FALSE
+## 81                F05 2.795751e-04    FALSE
+## 82                F05 1.065318e-03    FALSE
+## 83                F05 3.979447e-04    FALSE
+## 84                F05 1.723717e-03    FALSE
+## 85                F06 3.054052e-08    FALSE
+## 86                F06 3.035559e-05    FALSE
+## 87                F06 7.255276e-04    FALSE
+## 88                F06 8.462638e-05    FALSE
+## 89                F07 2.439715e-05    FALSE
+## 90                F07 2.393374e-06    FALSE
+## 91                F07 2.942438e-04    FALSE
+## 92                F07 3.162853e-03    FALSE
+## 93                F08 1.036493e-02    FALSE
+## 94                F08 3.252463e-05    FALSE
+## 95                F08 4.482505e-05    FALSE
+## 96                F08 2.786362e-03    FALSE
+## 97                F09 6.698547e-05    FALSE
+## 98                F09 2.252798e-05    FALSE
+## 99                F09 1.276697e-04    FALSE
+## 100               F09 1.178778e-02    FALSE
+## 101               F10 2.092103e-02    FALSE
+## 102               F10 3.245675e-04    FALSE
+## 103               F10 2.257775e-04    FALSE
+## 104               F10 7.369325e-03    FALSE
+## 105               F11 1.083676e-03    FALSE
+## 106               F11 2.344728e-04    FALSE
+## 107               F11 3.109466e-03    FALSE
+## 108               F11 1.202342e-03    FALSE
+```
+]
+
+M13 once again!
+
+
+
+
+---
+## Dealing with influential data
+
+What to do with influential data is a much harder problem.
+
+Reasonable strategies may include the following.
+
+  - Verify data recorded correctly
+  
+  - Consider robust models
+  
+  - Determine whether any lurking predictors should be added to the model
+  
+  - Report results with and without overly influential results
+  
+
+
+---
+
+class: center, middle
+
+# What's next?
+
+### Move on to the readings for the next module!
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

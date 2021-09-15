@@ -14,7 +14,7 @@ output:
 
 ## Instructions
 
-Please make sure your final output file is a pdf document. You can submit handwritten solutions for non-programming exercises or type them using R Markdown, LaTeX or any other word processor. All programming exercises must be done in R, typed up clearly and with ALL code attached as an appendix. Submissions should be made on gradescope: go to Assignments $\rightarrow$ Homework 1.
+Please make sure your final output file is a pdf document. You can submit handwritten solutions for non-programming exercises or type them using R Markdown, LaTeX or any other word processor. All programming exercises must be done in R, typed up clearly and with ALL code attached as an appendix. Submissions should be made on Gradescope: go to Assignments $\rightarrow$ Homework 1.
 
 ## Questions
   

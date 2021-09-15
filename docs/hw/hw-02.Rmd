@@ -1,0 +1,119 @@
+---
+title: "Homework 2"
+date: "Due: 11:59pm, Wednesday, September 22"
+output: 
+  html_document: 
+    css: hw.css
+    theme: yeti
+    toc: true
+    fig_caption: false
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+---
+
+## Instructions
+
+Please make sure your final output file is a pdf document. You can submit handwritten solutions for non-programming exercises or type them using R Markdown, LaTeX or any other word processor. All programming exercises must be done in R, typed up clearly and with ALL code attached as an appendix. Submissions should be made on Gradescope: go to Assignments $\rightarrow$ Homework 2.
+
+## Questions
+  
+1. <font color="green">Bayesian Hierarchical Normal Model</font> <font color="blue">**(10 points)**</font>
+
+    Recall the following hierarchical normal model specification from class:
+$$
+\begin{split}
+y_{ij} | \mu_j, \sigma^2_j & \sim \mathcal{N} \left( \mu_j, \sigma^2_j \right); \ \ \ i = 1,\ldots, n_j; \ \ \ j = 1, \ldots, J\\
+\mu_j | \mu, \tau^2 & \sim \mathcal{N} \left( \mu, \tau^2 \right); \ \ \ j = 1, \ldots, J\\
+\sigma^2_1, \ldots, \sigma^2_J | \nu_0, \sigma_0^2 & \sim \mathcal{IG} \left(\dfrac{\nu_0}{2}, \dfrac{\nu_0\sigma_0^2}{2}\right); \ \ \ j = 1, \ldots, J.\\
+\end{split}
+$$
+We used the following priors for the remaining unknown parameters:
+$$
+\begin{split}
+\mu & \sim \mathcal{N}\left(\mu_0, \gamma^2_0\right)\\
+\tau^2 & \sim \mathcal{IG} \left(\dfrac{\eta_0}{2}, \dfrac{\eta_0\tau_0^2}{2}\right)\\
+\pi(\nu_0) & \propto e^{-\alpha \nu_0} \\
+\sigma_0^2 & \sim \mathcal{Ga} \left(a,b\right).\\
+\end{split}
+$$
+It is common practice to replace
+$$\mu \sim \mathcal{N}\left(\mu_0, \gamma^2_0\right)$$
+in that prior specification with
+$$\mu \sim \mathcal{N}\left(\mu_0, \frac{\tau^2}{\kappa_0} \right).$$
+Usually, this has the benefit of not having to specify $\gamma^2_0$ and we instead specify $\kappa_0$, which is often thought of as a "prior sample size". Derive the full conditional posterior distributions under this slightly modified prior distribution.
+
+    <font color="red">*You should start by figuring out the full conditionals that need to change based on this minor modification and ONLY derive those. For the remaining full conditionals, just write them out from the slides. Note that you cannot just set $\gamma^2_0 = \frac{\tau^2}{\kappa_0}$ in the final forms of the full conditionals and be done. You have to leverage what you have learned about posterior derivations from STA 360/601/602.*</font>
+    
+    Modify the Gibbs sampler from the last few slides of Module 2.5 to incorporate the changes from Question 1 above. Make your updated sampler into an R function which takes the data, hyperparameters for the priors, and MCMC parameters (such as number of iterations) as arguments and returns posterior samples of all parameters.
+    
+    Now, Use this R function to explore whether there is evidence of heterogeneous error variances across counties in the Minnesota radon data from Module 2.8. Set the hyperparameters to be relatively uninformative. Try a few different choices to see how your choices affect the overall conclusions. Be sure to include reproducible code with your submission. There is no need to include predictors in this model -- the focus is just on county-to-county heterogeneity.
+    
+    You can find the dataset on Sakai. Go to Resources $\rightarrow$ Data $\rightarrow$ Slides $\rightarrow$ Radon.txt.
+    
+    
+2. <font color="green">Bayesian Mixed Effects ANCOVA</font> <font color="blue">**(6 points)**</font>
+
+    Consider the following mixed effects ANCOVA model
+$$
+\begin{split}
+y_{ij} & = \beta_{0j} + \beta_{1j} x_{ij} + \epsilon_{ij} \\
+\beta_{0j}  & = \beta_{0} + b_{0j}\\
+\beta_{1j} & = \beta_{1} + b_{1j} \\
+\left(\begin{array}{c}
+				b_{0j}\\
+				b_{1j}
+			\end{array}\right) & \overset{iid}{\sim} 
+			\mathcal{N}_2 \left( \boldsymbol{0}, \boldsymbol{D} \right)	\\
+			(b_{0j}, b_{1j})^T &\perp \varepsilon_{ij}  \overset{iid}{\sim} N(0,\sigma^2),\\
+\end{split}
+$$
+with $i = 1,\ldots, n_j$ and $j = 1, \ldots, J$. Suppose we have the following prior specification on the remaining unknown parameters:
+$$
+\begin{split}
+\left(\begin{array}{c}
+				\beta_0\\
+				\beta_1
+			\end{array}\right) & \sim
+			\mathcal{N}_2 \left( \boldsymbol{\mu}_0, \boldsymbol{\Lambda} \right)	\\
+			\boldsymbol{D} & \sim \mathcal{IW}_2(\eta_0, \boldsymbol{S}_0),\\
+\sigma^2 & \sim \mathcal{IG} \left(\dfrac{\nu_0}{2}, \dfrac{\nu_0\sigma_0^2}{2}\right),\\
+\end{split}
+$$
+where $\mathcal{IW}_2(\eta_0, S_0)$ is the Inverse-Wishart distribution with parameters $\eta_0$ (degrees of freedom) and $\boldsymbol{S}_0$ ($2 \times 2$ positive definite matrix). 
+
+    What are the full conditional distributions of $\boldsymbol{\beta} = (\beta_{0}, \beta_{1})^T$ and each $\boldsymbol{b}_j = (b_{0j}, b_{1j})^T$? You MUST show all work to receive full points. That said, you do not have to start each derivation from scratch and can leverage existing results from STA 360/601/602.
+
+    You may want to consider rewriting the model in the linear mixed effects form (basically, the matrix representation in terms of the data for each group):
+$$Y_j = X_j \boldsymbol{\beta} + X_j \boldsymbol{b}_j + \boldsymbol{\epsilon}_j,$$
+when deriving the full conditional for each $\boldsymbol{b}_j$, and also consider rewriting the distribution of the random effects as
+$$
+\left(\begin{array}{c}
+				\beta_{0j}\\
+				\beta_{1j}
+			\end{array}\right) \overset{iid}{\sim} 
+			\mathcal{N}_2 \left( \left(\begin{array}{c}
+				\beta_0\\
+				\beta_1
+			\end{array}\right),
+			\boldsymbol{D} \right),\\
+$$
+when deriving the full conditional for $\boldsymbol{\beta}$.
+
+    <font color="red">*This is meant to be a mini-review of posterior derivations you did for the nultivariate normal normal model, as well as for linear regression, from STA 360/601/602.*</font>
+    
+
+  
+3. <font color="green">Correlation One</font> <font color="blue">**(4 points)**</font>
+
+    Correlation One is a company that works with organizations of all types to evaluate and retain data science talent. Based on tests given to over 50,000 students at over 200 universities, they have ranked the participating universities according to the quality of their students in the data science job market (based entirely upon the exam scores). While some universities train large numbers of students in the data sciences who end up taking a Correlation One assessment, other universities train a small number of students who take the assessment.
+    
+    Assuming that the test scores are approximately normally distributed, propose a hierarchical model for test scores that can be used to obtain a ranking of universities and describe how one would quantify uncertainty around the estimated ranking.  Clearly specify the model you propose, any assumptions, and any prior distributions. In addition, comment specifically on how the ranking from your model might or might not differ from a ranking based entirely on observed mean test scores for each university.
+
+
+## Grading
+
+Total: 20 points.
+  
+  
+  

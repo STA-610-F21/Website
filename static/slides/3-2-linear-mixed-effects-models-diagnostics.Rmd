@@ -1,0 +1,394 @@
+---
+title: "STA 610L: Module 3.2"
+subtitle: "Linear mixed effects models (influence measures)"
+author: "Dr. Olanrewaju Michael Akande"
+date: " "
+output:
+  xaringan::moon_reader:
+    css: "slides.css"
+    logo: img/class_logo.png
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  warm = 1
+  )
+# Set dpi and height for images
+library(knitr)
+knitr::opts_chunk$set(fig.height = 2.65, dpi = 300,fig.align='center',fig.show='hold',size='footnotesize', small.mar=TRUE) 
+# For nonsese...
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(rvest)
+#library(tufte)
+#library(sjPlot)
+library(lme4)
+#library(sjstats)
+#library(merTools)
+#library(lattice)
+library(ggplot2)
+library(lattice)
+library(influence.ME)
+```
+
+
+
+## Residuals
+
+Residual analysis and diagnostic methods are well developed for linear regression models (c.f., Cook and Weisberg, 1982), but they are somewhat less developed for mixed effects models.
+
+<br>
+
+The following slides are based on [Nieuwenhuis et al](https://journal.r-project.org/archive/2012-2/RJournal_2012-2_Nieuwenhuis~et~al.pdf).
+
+
+
+---
+## Example: Orthodontics Data
+
+Consider the dental data with model
+
+$$Y_{ij}=\beta_0+\beta_1I(\text{male})_i+\beta_2t_j+\beta_3I(\text{male})_it_j + b_{0i} + b_{1i}t_j + \varepsilon_{ij},$$ 
+
+where
+$$\begin{pmatrix} b_{0i} \\ b_{1i} \end{pmatrix} \overset{iid}\sim N\left(0,\begin{pmatrix}d_{11} & d_{12} \\ d_{12} & d_{22}\end{pmatrix}\right) \perp \varepsilon_{ij} \overset{iid}\sim N(0,\sigma^2),$$
+for illustration.
+
+
+
+---
+## Residuals
+
+Generally, the .hlight[residuals] $y_{ij}-\widehat{y}_{ij}$ can be helpful in flagging outliers and in assessing the adequacy of most fitted models.
+
+However, the definition of residuals is not always consistent in the case of mixed effects or hierarchical models:
+
+  - Many texts define residuals for subject/group $i$ as $Y_i-X_i\widehat{\beta}$. 
+  
+  - Many software implementations define residuals as $Y_i-X_i\widehat{\beta}-Z_i\widehat{b}_i$ (nice because these can then be analyzed using standard methods)
+  
+These are easy to compute and we already did the later in a previous module.
+
+
+---
+## Review: residual analysis
+
+That said, in any case, residual analysis is not always a great tool for detecting .hlight[influential] cases:
+
+  - Cases with high residuals or high standardized residuals are called .hlight[outliers]
+  
+  - Outliers may or may not be influential in the model fit
+  
+  - An influential case may dominate the regression model so that the line is drawn more closely towards the case (making it an .hlight[inlier])
+
+
+
+---
+## Review: influence
+
+We hope that all data points have some amount of influence on our parameter estimates. 
+
+However, we may be concerned if a single case has disproportionate influence on model results. 
+
+If so, one observation or group of observations may pull the estimated regression line towards the group. 
+
+In such a case, excluding a single group might have a substantial effect on estimates. 
+
+This idea is behind the development of many popular influence diagnostics, often termed .hlight[deletion diagnostics].
+
+
+
+
+
+---
+## Review: leverage
+
+The degree to which an observation has the *potential* to be influential is closely related to the .hlight[leverage] of the case, which is a measure of how extreme the case is in the $X$ space.
+
+Leverage is not simply defined as an outlying value in $X$ space of a single variable but also in a multivariate sense.
+
+For example, in a study of pregnancy outcomes, it may be relatively common to have mothers who are 40, or fathers who are 20, but babies who have a 40 year old mother and a 20 year old father may be fairly uncommon.
+
+As you should already know, the leverage score for an observation $i$ is the $i$th diagonal element of the projection or hat matrix.
+
+
+
+---
+## Influence
+
+It is not necessarily the case that outliers or cases with high leverage are influential.
+
+So, how do we detect influential cases?
+
+One popular approach is to use the principle that when a single case is removed from the data entirely, we would like for models based on the data not to give vastly different conclusions.
+
+If parameter estimates change a lot after a single individual is excluded, then the individual may be considered .hlight[influential].
+
+
+
+---
+## Multi-level influence
+
+Mixed effects and multilevel models estimate effects of lower-level and higher-level variables.
+
+It is thus possible that in some cases a higher-level group is influential (more likely when you don't have very many groups), while in others, a single observation within a group is influential.
+
+We will examine influence at both levels.
+
+
+
+---
+## Influence of higher-Level observations
+
+.hlight[DFBETAS] (standardized difference of the beta) measures the level of influence observations have on single parameter estimates.
+
+It is calculated as the difference in magnitude of the parameter estimate between the model including and the model excluding the group (or individual in a longitudinal study), standardized by dividing by the standard error of the estimate that excludes the group (to prevent variance inflation from masking the level of influence).  
+
+For group $i$ and parameter $k$,
+$$\text{DFBETAS}_{ik}=\frac{\widehat{\gamma}_k-\widehat{\gamma}_{k(-i)}}{se(\widehat{\gamma}_{k(-i)})},$$
+
+where $\widehat{\gamma}_k$ is the original estimate of the $k$th parameter, and $\widehat{\gamma}_{k(-i)}$ is the estimate of the same parameter after group $i$ has been excluded from the data.
+
+
+
+---
+## DFBETAS
+
+Belsley (1980) recommends a cutoff of $\frac{2}{\sqrt{n}}$ for identifying overly influential observations.
+
+Here $n$ is defined as the number of groups at the level of removal $(-i)$ for the calculation.
+
+(For the dental data we have 27 kids and 4 observations per kid, so at the group level $n=27$.)
+
+```{r echo=FALSE}
+data(Orthodont,package="nlme")
+Orthodont$Sex=relevel(Orthodont$Sex,ref="Female")
+m1 <- lmer(distance~Sex+age+age*Sex+(1+age|Subject),data=Orthodont)
+```
+
+
+```{r eval=FALSE}
+library(influence.ME)
+m1.inf <- influence(m1,"Subject")
+#use obs argument for observation-level deletion
+print(2/sqrt(length(unique(Orthodont$Subject))))
+dfbetas(m1.inf)
+#note that there can be issues with singularity when we start removing groups
+```
+
+
+
+---
+## DFBETAS
+
+.small[
+```{r dfbetas2,warning=FALSE,message=FALSE}
+m1.inf <- influence(m1,"Subject"); print(2/sqrt(length(unique(Orthodont$Subject))))
+round(dfbetas(m1.inf),4)
+```
+]
+
+Here we see that M04 and M13 are somewhat influential on some of our estimates. What did these kids look like?
+
+
+
+---
+## DFBETAS
+
+```{r plotdfbetas, fig.height=4.7}
+plot(m1.inf,which="dfbetas",xlab="DFBETAS",ylab="Student")
+```
+
+
+
+---
+## DFBETAS
+
+```{r m0413,fig.height=4.5,message=FALSE,warning=FALSE}
+plot(m1, distance ~ fitted(.) | Subject, abline = c(0,1))
+```
+
+
+
+
+---
+## DFBETAS
+
+```{r reminder}
+Orthodont$distance[Orthodont$Subject=="M04"]
+Orthodont$distance[Orthodont$Subject=="M13"]
+```
+
+M04 had large measurements without a lot of growth over time -- pulling him out of the model reduced the intercept for boys and also decreased their slope.
+  
+M13 had a small measure at age 8 and then grew substantially. Leaving him out of the model changed the estimates significantly, greatly increasing the intercept for boys and also reducing the slope among boys.
+  
+
+
+
+---
+## Cook's distance
+
+When the number of observations or predictors is large, it may take a while to get through all the DFBETAS.
+
+.hlight[Cook's distance] gives us a summary measure for influence on all parameter estimates.
+
+It is defined as
+$$C_i=\frac{1}{p}(\widehat{\gamma}-\widehat{\gamma}_{(-i)})'\widehat{\Sigma}_{(-i)}^{-1}(\widehat{\gamma}-\widehat{\gamma}_{(-i)})$$
+where $p$ is the length of $\beta$, and $\widehat{\Sigma}_{(-i)}$ is the covariance matrix of the parameter estimates excluding group $i$.
+
+Van der Meer et al (2010) recommends a cutoff of $\frac{4}{n}$ where again $n$ is the number of groups in the grouping factor being evaluated.
+
+If there is just one parameter in the model, then Cook's distance is the DFBETAS squared for that parameter.
+
+
+
+---
+## Cook's distance
+
+.large[
+```{r cd}
+print(4/length(unique(Orthodont$Subject)))
+cooks.distance(m1.inf,sort=TRUE)
+```
+]
+
+
+---
+## Cook's distance
+
+```{r cd3, fig.height=4}
+plot(m1.inf,which="cook",cutoff=4/length(unique(Orthodont$Subject)), 
+     sort=TRUE,xlab="Cook's D",ylab="Subject")
+```
+
+It's M13 again.
+
+
+
+---
+## Other metrics
+
+There are many other metrics we could use.
+
+One option is the .hlight[percentile change], which is defined as
+$$\frac{\widehat{\gamma}-\widehat{\gamma}_{(-i)}}{\widehat{\gamma}}\times 100%$$
+
+
+
+---
+## Other metrics
+
+```{r pchange, fig.height=4.5}
+plot(m1.inf,which="pchange",xlab="percentile change",ylab="Student")
+
+```
+
+
+
+
+---
+## Other metrics
+
+Another metric is the .hlight[changes in significance].
+
+Basically, we evaluate whether excluding a group changes the statistical significance of any of the estimates in the model.
+
+The user sets the critical value, and estimates that did not exceed it but do so when the group is removed, or *vice versa*, are flagged.
+
+See the .hlight[sigtest] function.
+
+
+---
+## Influence of lower-Level observations
+
+We can also look at the influence of single lower-level observations.
+
+They could be impactful in longitudinal data for example, when we have relatively few observations per individual.
+
+Note however that the computational complexity of these deletion diagnostics will be increased in this case.
+
+Here we look at Cook's Distance for the dental data on the individual observation level:
+
+```{r cookindiv, message=FALSE,warning=FALSE}
+m1.inf.indiv <- influence(m1,obs=TRUE)
+m1.cook <- cooks.distance(m1.inf.indiv)
+infindiv <- m1.cook>4/length(Orthodont$distance)
+```
+
+
+
+---
+## Influence of lower-Level observations
+
+.small[
+```{r cookindiv2,message=FALSE,warning=FALSE}
+data.frame(Orthodont$Subject,m1.cook,infindiv)[1:35,]
+```
+]
+
+
+---
+## Influence of lower-Level observations
+
+.small[
+```{r cookindiv3,message=FALSE,warning=FALSE}
+data.frame(Orthodont$Subject,m1.cook,infindiv)[36:72,]
+```
+]
+
+
+
+---
+## Influence of lower-Level observations
+
+.small[
+```{r cookindiv4,message=FALSE,warning=FALSE}
+data.frame(Orthodont$Subject,m1.cook,infindiv)[73:108,]
+```
+]
+
+M13 once again!
+
+
+
+
+---
+## Dealing with influential data
+
+What to do with influential data is a much harder problem.
+
+Reasonable strategies may include the following.
+
+  - Verify data recorded correctly
+  
+  - Consider robust models
+  
+  - Determine whether any lurking predictors should be added to the model
+  
+  - Report results with and without overly influential results
+  
+
+
+---
+
+class: center, middle
+
+# What's next?
+
+### Move on to the readings for the next module!
+
+
+
+
