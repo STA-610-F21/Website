@@ -41,11 +41,13 @@ It is common practice to replace
 $$\mu \sim \mathcal{N}\left(\mu_0, \gamma^2_0\right)$$
 in that prior specification with
 $$\mu \sim \mathcal{N}\left(\mu_0, \frac{\tau^2}{\kappa_0} \right).$$
-Usually, this has the benefit of not having to specify $\gamma^2_0$ and we instead specify $\kappa_0$, which is often thought of as a "prior sample size". Derive the full conditional posterior distributions under this slightly modified prior distribution.
+Usually, this has the benefit of not having to specify $\gamma^2_0$ and we instead specify $\kappa_0$, which is often thought of as a "prior sample size". 
 
+    Derive the full conditional posterior distributions under this slightly modified prior distribution.
+    
     <font color="red">*You should start by figuring out the full conditionals that need to change based on this minor modification and ONLY derive those. For the remaining full conditionals, just write them out from the slides. Note that you cannot just set $\gamma^2_0 = \frac{\tau^2}{\kappa_0}$ in the final forms of the full conditionals and be done. You have to leverage what you have learned about posterior derivations from STA 360/601/602.*</font>
     
-    Modify the Gibbs sampler from the last few slides of Module 2.5 to incorporate the changes from Question 1 above. Make your updated sampler into an R function which takes the data, hyperparameters for the priors, and MCMC parameters (such as number of iterations) as arguments and returns posterior samples of all parameters.
+    Modify the Gibbs sampler from the last few slides of Module 2.5 to incorporate the changes from above. Make your updated sampler into an R function which takes the data, hyperparameters for the priors, and MCMC parameters (such as number of iterations) as arguments and returns posterior samples of all parameters.
     
     Now, Use this R function to explore whether there is evidence of heterogeneous error variances across counties in the Minnesota radon data from Module 2.8. Set the hyperparameters to be relatively uninformative. Try a few different choices to see how your choices affect the overall conclusions. Be sure to include reproducible code with your submission. There is no need to include predictors in this model -- the focus is just on county-to-county heterogeneity.
     
