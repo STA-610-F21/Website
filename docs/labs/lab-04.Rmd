@@ -1,0 +1,72 @@
+---
+title: "Lab 4: Hospital Rankings (Part III)"
+author: "Multilevel and hierarchical models"
+output: 
+  tufte::tufte_html:
+    tufte_variant: "envisioned"
+    highlight: pygments
+    css: "lab.css"
+    toc: true
+link-citations: yes
+---
+
+```{r include=FALSE}
+library(tidyverse)
+library(tufte)
+library(knitr)
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  digits = 2
+  )
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+
+**Due:**  11:59pm, Sunday, September 19
+
+
+# Housekeeping
+
+<!-- ## R/RStudio -->
+<!-- You all should have R and RStudio installed on your computers by now. If you do not, first install the latest version of R here: https://cran.rstudio.com (remember to select the right installer for your operating system). Next, install the latest version of RStudio here: https://www.rstudio.com/products/rstudio/download/. Scroll down to the "Installers for Supported Platforms" section and find the right installer for your operating system. -->
+
+
+## Gradescope
+You MUST submit both your .Rmd and .pdf files to the course site on Gradescope here: https://www.gradescope.com/courses/281587/assignments. Do NOT create a zipped folder with the two documents but instead, upload them as two separate documents. Also, be sure to knit to pdf and NOT html; ask the TA about knitting to pdf if you cannot figure it out. Be sure to submit under the right assignment entry. Finally, when submitting your files, please select the corresponding pages for each exercise.
+
+
+
+# Introduction
+For this lab, you will work within your pre-assigned teams to wrap up the analysis from the two previous labs. Each team should submit ONLY ONE report for this exercise. You must write the names of all team members at the top of the report containing your responses. Gradescope will let you select your team mates when submitting, so make sure to do so. Only one person needs to submit the sheet on Gradescope.
+
+
+
+# The Data
+
+We will again consider [data  from the Centers for Medicare and Medicaid Services on hospital costs and profit from the 2014 fiscal year](data/hc2014.RData). 
+
+Our interest is in examining variability of net hospital income across states. In particular, we would like to rank the states by net income of hospitals. 
+
+It is important to control for the potential influence of hospital ownership (in the variable called control) and of the number of beds (a proxy for hospital size). The ownership categories include Voluntary Nonprofit-Church, Voluntary Nonprofit-Other, Proprietary-Individual, Proprietary-Corporation, Proprietary-Partnership, Proprietary-Other, Governmental-Federal, Governmental-City-County, Governmental-County, Governmental-State, Governmental-Hospital District, Governmental-City, and Governmental-Other.
+
+
+# Exercises
+
+Prepare a written report (maximum of 5 pages) that describes a Bayesian hierarchical model (linear mixed effects model) for capturing the association between ownership type and income, while controlling for the effect of the number of beds and the hierarchical structure of the data, through the states. You MUST justify your choice of priors and hyper-parameters. Your report should also describe variability in net income across states and provide information about the ranking of states with respect to net income. Ranking information should include not only an estimated ranking but also some characterization of uncertainty. Your report should also include the following.
+
++ Exploratory data analysis and well written justifications for any transformations.
++ Clear specification of your model (using equations and the right notations).
++ Clearly-labeled tables and graphical displays describing the data and communicating your findings.
++ Uncertainty quantification around effect estimates of interest (no point estimates without uncertainty!).
++ Clear description of results in language accessible to a general scientifically-savvy reader.
+
+DO NOT INCLUDE R CODE OR OUTPUT IN YOUR REPORTS. All R outputs should be converted to nicely formatted tables. Feel free to use R packages such as kable, xtable, stargazer, etc.
+
+
+
+## Grading
+
+Total: 20 points.
+
+

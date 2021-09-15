@@ -44,7 +44,7 @@ The goal of this lab is to reinforce concepts we have already covered in class. 
 
 # The Data
 
-We will again consider [data  from the Centers for Medicare and Medicaid Services on hospital costs and profit from the 2014 fiscal year](https://sta-610l-s21.github.io/Course-Website/labs/data/hc2014.RData). 
+We will again consider [data  from the Centers for Medicare and Medicaid Services on hospital costs and profit from the 2014 fiscal year](data/hc2014.RData). 
 
 Our interest is in examining variability of net hospital income across states. In particular, we would like to rank the states by net income of hospitals. 
 
