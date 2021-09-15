@@ -148,7 +148,7 @@ lessons:
     
   - date: "Fri, Sept 17"
     title: "Lab 4: Hospital Rankings (Part III)"
-    #lab: "lab-04.html"
+    lab: "lab-04.html"
     
   
   - week: "WEEK 5"
