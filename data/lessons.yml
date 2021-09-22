@@ -161,7 +161,7 @@ lessons:
   
   - date: "Tue, Sept 21 | NEW ASSIGNMENT:"
     title: "Case Study I"
-    #project: "case-study-I.html"
+    project: "case-study-I.html"
     
     
   - date: "Wed, Sept 22"
