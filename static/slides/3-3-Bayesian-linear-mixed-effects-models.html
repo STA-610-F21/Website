@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>STA 610L: Module 3.3</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Olanrewaju Michael Akande" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# STA 610L: Module 3.3
+## Bayesian linear mixed effects models
+### Dr. Olanrewaju Michael Akande
+
+---
+
+
+
+
+
+
+
+
+## Linear mixed effects model
+
+Recall the standard representation of the linear mixed effects model is
+$$
+`\begin{split}
+Y_i &amp; = X_i\beta+Z_ib_i+\varepsilon_i; \ \ \ i=1,\ldots, m \\
+b_i &amp; \perp \varepsilon_i \ \ \ \ \ b_i \sim N_q(0,D)  \ \ \ \ \ \varepsilon_i \sim N_{n_i}(0,R_i),
+\end{split}`
+$$
+where
+  - `\(Y_i\)` is a `\(n_i \times 1\)` vector of outcomes for subject `\(i\)`
+  - `\(X_i\)` is a `\(n_i \times p\)` design matrix of predictor variables corresponding to each outcome measurement occasion for subject `\(i\)` 
+  - `\(Z_i\)` is a `\(n_i \times q\)` design matrix corresponding to the random effects for subject `\(i\)`
+  - `\(\beta\)` is a `\(p \times 1\)` vector of regression coefficients (fixed effects)
+  - `\(b_i\)` is a `\(q \times 1\)` vector of random effects for subject `\(i\)`
+  - `\(\varepsilon_{i}\)` is a `\(n_i \times 1\)` vector of errors for subject `\(i\)`
+
+
+
+
+---
+## Bayesian inference for the linear mixed effects model
+
+Given our discussions on how complicated specifying `\(D\)` and `\(R_i\)` can be, it will be very convenient to start with a simplified version of this model as we try to understand our options.
+
+Specifically, we will start by assuming that `\(X_i\)` and `\(Z_i\)` are the same, and also that `\(R_i = \sigma^2I_{n_i}\)`, so that we can focus on `\(D\)`.
+
+Thus, we write
+`$$Y_{ij}=X_{ij}\beta_i+\varepsilon_{ij} ,\ \ \ \ \ \beta_i = \beta+b_i,$$`
+
+where `\(\varepsilon_{ij} \overset{iid}{\sim} N(0,\sigma^2) \perp b_i \overset{iid}{\sim} N(0,D)\)`. So that `\(\beta_i \mid \beta \sim N(\beta, D)\)`.
+
+Here, `\(i=1,\ldots, m\)` index groups, with group `\(i\)` having `\(n_i\)` observations, so that the parameters `\(\beta\)` are fixed effects and the parameters `\(b_i\)` are random effects.
+
+
+
+
+---
+## Priors
+
+To make differentiating between `\(\beta_i\)` and `\(\beta\)` a bit less confusing, we will write `\(\theta = \beta\)`.
+
+That is, we have  `\(\beta_i \mid \theta \sim N(\theta, D)\)`.
+
+We already know that a conditionally-conjugate prior specification for two of the parameters is given by
+
+`$$\theta \sim N(\mu_0,\Lambda_0),$$`
+
+
+`$$\sigma^2 \sim \mathcal{IG} \left(\frac{\nu_0}{2},\frac{\nu_0\sigma_0^2}{2}\right).$$`
+
+How about `\(D\)`?
+
+One complication of course is that the `\(D\)` must be **positive definite and symmetric**.
+
+
+
+---
+## Review: positive definite and symmetric
+
+"Positive definite" means that for all `\(x \in \mathcal{R}^p\)`, `\(x^T D x &gt; 0\)`.
+
+Basically ensures that the diagonal elements of `\(D\)` (corresponding to the marginal variances) are positive.
+
+Also, ensures that the correlation coefficients for each pair of variables are between -1 and 1.
+
+Our prior for `\(D\)` should thus assign probability one to set of positive definite matrices.
+
+Analogous to the univariate case, the .hlight[inverse-Wishart distribution] is the corresponding conditionally conjugate prior for `\(D\)` (multivariate generalization of the inverse-gamma).
+
+The STA 360/601/602 Hoff textbook covers the construction of Wishart and inverse-Wishart random variables. We will skip the actual development.
+
+
+
+---
+## Review: Inverse-Wishart distribution
+
+A random variable `\(\Sigma \sim \textrm{IW}_p(\eta_0, \boldsymbol{S}_0)\)`, where `\(\Sigma\)` is positive definite and `\(p \times p\)`, has pdf
+$$
+`\begin{split}
+p(\Sigma) \ \propto \ \left|\Sigma\right|^{\frac{-(\eta_0 + p + 1)}{2}} \textrm{exp} \left\{-\dfrac{1}{2} \text{tr}(\boldsymbol{S}_0\Sigma^{-1}) \right\},
+\end{split}`
+$$
+
+where
+- `\(\eta_0 &gt; p - 1\)` is the "degrees of freedom", and 
+
+- `\(\boldsymbol{S}_0\)` is a `\(p \times p\)` positive definite matrix.
+
+For this distribution, `\(\mathbb{E}[\Sigma] = \dfrac{1}{\eta_0 - p - 1} \boldsymbol{S}_0\)`, for `\(\eta_0 &gt; p + 1\)`.
+
+Hence, `\(\boldsymbol{S}_0\)` is the scaled mean of the `\(\textrm{IW}_p(\eta_0, \boldsymbol{S}_0)\)`.
+
+
+
+
+---
+## Review: Inverse-Wishart distribution
+
+If we are very confident in a prior guess `\(\Sigma_0\)`, for `\(\Sigma\)`, then we might set
+  + `\(\eta_0\)`, the degrees of freedom to be very large, and
+  + `\(\boldsymbol{S}_0 = (\eta_0 - p - 1)\Sigma_0\)`. 
+  
+In this case, `\(\mathbb{E}[\Sigma] = \dfrac{1}{\eta_0 - p - 1} \boldsymbol{S}_0 = \dfrac{1}{\eta_0 - p - 1}(\eta_0 - p - 1)\Sigma_0 = \Sigma_0\)`, and `\(\Sigma\)` is tightly (depending on the value of `\(\eta_0\)`) centered around `\(\Sigma_0\)`.
+  
+If we are not at all confident but we still have a prior guess `\(\Sigma_0\)`, we might set
+  + `\(\eta_0 = p + 2\)`, so that the `\(\mathbb{E}[\Sigma] = \dfrac{1}{\eta_0 - p - 1} \boldsymbol{S}_0\)` is finite.
+  + `\(\boldsymbol{S}_0 = \Sigma_0\)`
+  
+Here, `\(\mathbb{E}[\Sigma] = \Sigma_0\)` as before, but `\(\Sigma\)` is only loosely centered around `\(\Sigma_0\)`.
+  
+  
+
+---
+## Review: Wishart distribution
+
+Just as we had with the gamma and inverse-gamma relationship in the univariate case, we can also work in terms of the .hlight[Wishart distribution] (multivariate generalization of the gamma) instead.
+
+The .hlight[Wishart distribution] provides a conditionally-conjugate prior for the precision matrix `\(\Sigma^{-1}\)` in a multivariate normal model.
+
+Specifically, if `\(\Sigma \sim \textrm{IW}_p(\eta_0, \boldsymbol{S}_0)\)`, then `\(\Phi = \Sigma^{-1} \sim \textrm{W}_p(\eta_0, \boldsymbol{S}_0^{-1})\)`.
+
+A random variable `\(\Phi \sim \textrm{W}_p(\eta_0, \boldsymbol{S}_0^{-1})\)`, where `\(\Phi\)` has dimension `\((p \times p)\)`, has pdf
+$$
+`\begin{split}
+f(\Phi) \ \propto \ \left|\Phi\right|^{\frac{\eta_0 - p - 1}{2}} \textrm{exp} \left\{-\dfrac{1}{2} \text{tr}(\boldsymbol{S}_0\Phi) \right\}.
+\end{split}`
+$$
+
+Here, `\(\mathbb{E}[\Phi] = \eta_0 \boldsymbol{S}_0\)`.
+
+Note that the STA 360/601/602 Hoff textbook writes the inverse-Wishart as `\(\textrm{IW}_p(\eta_0, \boldsymbol{S}_0^{-1})\)`. I prefer `\(\textrm{IW}_p(\eta_0, \boldsymbol{S}_0)\)` instead. Feel free to use either notation but try not to get confused.
+
+
+
+
+---
+## Back to the priors
+
+For the full prior specification, we can then write
+
+`$$\theta \sim N(\mu_0,\Lambda_0),$$`
+`$$D \sim\text{inverse-Wishart}(\eta_0, S_0),$$`
+
+and 
+`$$\sigma^2 \sim \text{inverse-gamma}\left(\frac{\nu_0}{2},\frac{\nu_0\sigma_0^2}{2}\right),$$`
+
+
+so that a simple Gibbs sampler can be used for posterior computation.
+
+We will mostly rely on the .hlight[brms] package for simple specifications but it is relatively easy to write your own Gibbs sampler here.
+
+The following full conditionals should look very similar to those from the homework.
+
+
+
+---
+## Full conditionals
+
+`$$\beta_i \mid y_i, X_i, \theta, D, \sigma^2 \sim N(\mu_{\beta_i}, \Sigma_{\beta_i}),$$`
+
+where 
+`$$\Sigma_{\beta_i}=\left(D^{-1}+  \frac{1}{\sigma^2} X_i'X_i \right)^{-1},$$`
+
+and
+`$$\mu_{\beta_i}= \Sigma_{\beta_i} \left(D^{-1}\theta+\frac{1}{\sigma^2} X_i'y_i\right).$$`
+
+
+
+---
+## Full conditionals
+
+`$$\theta \mid \beta_1, \ldots, \beta_m, D \sim N(\mu_\theta, \Lambda_\theta),$$`
+
+where 
+`$$\Lambda_\theta=\left(\Lambda_0^{-1}+mD^{-1}\right)^{-1},$$`
+
+`$$\mu_\theta = \Lambda_\theta\left(\Lambda_0^{-1}\mu_0+mD^{-1}\bar{\beta}\right),$$`
+
+and
+`\(\bar{\beta}\)` is the vector average `\(\frac{1}{m}\sum \beta_i\)`.
+
+
+
+
+---
+## Full conditionals
+
+`$$D \mid \theta, \beta_1, \ldots, \beta_m \sim \textrm{IW} \left(\eta_D, S_D \right),$$`
+where
+`$$\eta_D = \eta_0+m; \ \ \ S_D = S_0+S_\theta,$$`
+with
+`$$S_\theta=\sum_{i=1}^m (\beta_i-\theta)(\beta_i-\theta)'$$`
+
+
+
+
+
+---
+## Full conditionals
+
+`$$\sigma^2 \mid \beta_1, \ldots, \beta_m \sim \mathcal{IG} \left(\frac{\nu_n}{2}, \frac{\nu_n\sigma_n^2}{2}\right),$$`
+where
+`$$\nu_n =  \nu_0+\sum n_i; \ \ \ \sigma_n^2 = \frac{1}{\nu_n} \left[  \nu_0\sigma_0^2+SSR \right],$$`
+with
+`$$SSR=\sum_{i=1}^m \sum_{j=1}^{n_i} (y_{ij}-x_{ij}\beta_i)^2.$$`
+
+
+
+---
+## Motivation for other covariance priors
+
+While the inverse Wishart is a nice prior for symmetric matrices, computation can be a challenge, expecially as the covariance matrix becomes large.
+
+Why is modeling a covariance matrix difficult?
+
+  - number of parameters may be quite large
+  
+  - matrix constrained to be nonnegative definite
+  
+
+
+
+---
+## Motivation for other covariance priors
+
+Another down side of the Wishart is that we must use the same df for all elements, though in practice, we may have more information about some components than others.
+
+For example, we may believe in advance that the regression coefficients for one predictor are fairly similar across groups, while we may have little knowledge about similarity of coefficients for another predictor.
+
+We cannot express these prior beliefs using the inverse Wishart distribution.
+
+
+
+
+---
+## Other covariance priors
+
+A popular alternative approach is to decompose an arbitrary covariance matrix `\(\Sigma\)` into a correlation matrix and a diagonal matrix of standard deviations:  `$$\Sigma=\begin{pmatrix} \tau_{1} &amp; 0 &amp; \cdots &amp; 0 \\ 0 &amp; \tau_2 &amp; \cdots &amp; 0 \\ 0 &amp; \vdots &amp; \cdots &amp; \vdots \\ 0 &amp; \cdots &amp; \cdots &amp; \tau_K \end{pmatrix} \Omega \begin{pmatrix} \tau_{1} &amp; 0 &amp; \cdots &amp; 0 \\ 0 &amp; \tau_2 &amp; \cdots &amp; 0 \\ 0 &amp; \vdots &amp; \cdots &amp; \vdots \\ 0 &amp; \cdots &amp; \cdots &amp; \tau_K \end{pmatrix},$$` 
+where `\(\tau_k=\sqrt{\Sigma_{k,k}}\)` and `\(\Omega_{i,j}=\frac{\Sigma_{i,j}}{\tau_i\tau_j}\)`.
+
+
+
+---
+## Other covariance priors
+
+This separation strategy yields nice interpretations for components, as researchers are often more used to thinking of the standard deviations and correlations than of covariances.
+
+Typically, the priors on `\(\tau_k\)` are assumed to be independent of the prior on `\(\Omega\)`, though this could be incorporated through a prior on `\(\Omega \mid \tau\)`.
+
+
+
+---
+## Other covariance priors
+
+In this parameterization, any reasonable prior for scale parameters can be given to the components of the scale vector `\(\tau\)`.
+
+Popular choices include half-Cauchy or half-normal distributions, but log normal or inverse gamma priors might also be used.
+
+This approach is particularly attractive relative to the inverse Wishart, which requires us to use the same df for all elements, though in practice, we may wish to have more flexibility in dealing with tails of individual variance components.
+
+
+
+
+---
+## LKJ prior
+
+A nice choice for the correlation matrix is the LKJ (Lewandowski-Kurowicka-Joe) prior, which is like an extension of the beta distribution.
+
+The LKJ distribution is commonly used for positive definite correlation matrices, or equivalently for their Cholesky factors.
+
+
+This prior is `$$\text{LkjCorr}(\Omega \mid \eta) \propto |\Omega|^{\eta-1},$$`
+
+which for `\(\eta=1\)` is the joint uniform distribution (note the marginals here are not uniform but favor more mass around 0).
+
+For `\(\eta&gt;1\)`, the density concentrates increasing mass around the identiy (favoring lower correlation), and for `\(\eta&lt;1\)`, mass is increasingly spread towards more extreme values.
+
+For more information on the LKJ prior, see [here](https://distribution-explorer.github.io/multivariate_continuous/lkj.html).
+
+
+
+
+---
+## LKJ prior
+
+Lets look at the LKJ density for a for a variety of values of the shape parameter `\(\eta\)` (positive scalar).
+
+First, some code for a bunch of colors.
+
+
+```r
+#ok, McElreath has a thing for colors, so here's his choice of color library
+# devtools::install_github("EdwinTh/dutchmasters")
+#library(dutchmasters)
+theme_pearl_earring &lt;-
+  theme(text       = element_text(color = "#E8DCCF", family = "Courier"),
+        strip.text = element_text(color = "#E8DCCF", family = "Courier"),
+        axis.text  = element_text(color = "#E8DCCF"),
+        axis.ticks = element_line(color = "#E8DCCF"),
+        line       = element_line(color = "#E8DCCF"),
+        plot.background   = element_rect(fill = "#100F14", color = "transparent"),
+        panel.background  = element_rect(fill = "#100F14", color = "#E8DCCF"),
+        strip.background  = element_rect(fill = "#100F14", color = "transparent"),
+        panel.grid = element_blank(),
+        legend.background = element_rect(fill = "#100F14", color = "transparent"),
+        legend.key        = element_rect(fill = "#100F14", color = "transparent"),
+        axis.line = element_blank())
+```
+
+
+
+---
+## LKJ prior
+
+Now, the actual code for the densities.
+
+
+```r
+#library(rethinking)
+n_sim &lt;- 1e5
+set.seed(13)
+
+r_1 &lt;- rlkjcorr(n_sim, K = 2, eta = 1) %&gt;%
+  as_tibble()
+r_2 &lt;- rlkjcorr(n_sim, K = 2, eta = 2) %&gt;%
+  as_tibble()
+r_4 &lt;- rlkjcorr(n_sim, K = 2, eta = 4) %&gt;%
+  as_tibble()
+
+ggplot(data = r_1, aes(x = V2)) +
+  geom_density(color = "transparent", fill = "#DCA258", alpha = 2/3) +
+  geom_density(data = r_2,
+               color = "transparent", fill = "#FCF9F0", alpha = 2/3) +
+  geom_density(data = r_4,
+               color = "transparent", fill = "#394165", alpha = 2/3) +
+  geom_text(data = tibble(x     = c(.83, .62, .46),
+                          y     = c(.54, .74, 1),
+                          label = c("eta = 1", "eta = 2", "eta = 4")),
+            aes(x = x, y = y, label = label),
+            color = "#A65141", family = "Courier") +
+  scale_y_continuous(NULL, breaks = NULL) +
+  xlab("correlation") +
+  theme_pearl_earring
+```
+
+
+
+---
+## LKJ prior
+
+&lt;img src="3-3-Bayesian-linear-mixed-effects-models_files/figure-html/upprior2-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+
+
+---
+## Example: coffee robot
+
+We use an example from McElreath's book *Statistical Rethinking* about a coffee robot.
+
+While these are simulated data, they provide an interesting application as well as great code should you need to simulate hierarchical data in the future!
+
+Suppose we have a coffee-making robot that moves among cafes to order coffee and record the wait time.
+
+The robot also records the time of day of the visit because the average wait time in the morning tends to be longer than in the afternoon due to the fact that the cafes are busier in the mornings.
+
+The robot learns more efficiently about wait times when it pools information across different cafes.
+
+
+
+---
+## Example: coffee robot
+
+  - We can use varying intercepts to pool information across coffee shops.
+  
+  - Coffee shops vary in average wait times due to a number of factors (e.g., barista skill, number of baristas).
+  
+  - Coffee shops also vary in differences between morning and afternoon.
+  
+  - Varying intercepts for cafes and "slopes" for the afternoon effect make for a reasonable model.
+  
+  - In this example we focus on the cafe as a grouping factor.
+  
+
+
+
+---
+## Example: coffee robot
+  
+Model:
+`$$y_{ij}=\beta_{0,i}+\beta_{1,i}A_{ij}+\varepsilon_{ij}$$`
+
+`$$\beta_{0,i}=\beta_0+b_{0,i} ~~~ \beta_{1,i}=\beta_1+b_{1,i}$$`
+
+`$$\varepsilon_i \overset{iid}\sim N(0,\sigma^2I)~~\perp~~b_i \overset{iid}\sim N(0,D),~~~D=\begin{pmatrix} \tau_0 &amp; 0 \\ 0 &amp; \tau_1 \end{pmatrix}\Upsilon\begin{pmatrix} \tau_0 &amp; 0 \\ 0 &amp; \tau_1 \end{pmatrix}$$`
+
+
+
+
+---
+## Example: coffee robot
+
+Priors:
+  - `\(\beta_0 \sim N(0,10) ~~~~~~~ \beta_1 \sim N(0,10)\)`
+  
+  - `\(\sigma \sim \text{Half Cauchy}(0,1)\)`
+  
+  - `\(\tau_0 \sim \text{Half Cauchy}(0,1) ~~~~ \tau_1 \sim \text{Half Cauchy}(0,1)\)`
+  
+  - `\(\Upsilon = \begin{pmatrix} 1 &amp; \upsilon \\ \upsilon &amp; 1 \end{pmatrix} \sim LKJcorr(2)\)`
+  
+ 
+
+
+---
+## Data
+
+
+```r
+#library(tidyverse)
+#library(brms)
+#example from McElreath with thanks to Solomon Kurz for the BRMS translation
+a       &lt;-  3.5  # average morning wait time
+b       &lt;- -1    # average difference afternoon wait time
+sigma_a &lt;-  1    # std dev in intercepts
+sigma_b &lt;-  0.5  # std dev in slopes
+rho     &lt;- -0.7   # correlation between intercepts and slopes
+
+# combine the terms above
+mu     &lt;- c(a, b)
+sigmas &lt;- c(sigma_a, sigma_b)          # standard deviations
+rho    &lt;- matrix(c(1, rho,             # correlation matrix
+                   rho, 1), nrow = 2)
+
+# now matrix multiply to get covariance matrix
+sigma &lt;- diag(sigmas) %*% rho %*% diag(sigmas)
+```
+
+
+
+---
+## Data
+
+
+```r
+# how many cafes would you like?
+n_cafes &lt;- 20
+
+set.seed(13)  # used to replicate example
+vary_effects &lt;- 
+  MASS::mvrnorm(n_cafes, mu, sigma) %&gt;% 
+  data.frame() %&gt;% 
+  set_names("a_cafe", "b_cafe")
+
+head(vary_effects)
+```
+
+```
+##     a_cafe     b_cafe
+## 1 2.917639 -0.8649154
+## 2 3.552770 -1.6814372
+## 3 1.694390 -0.4168858
+## 4 3.442417 -0.6011724
+## 5 2.289988 -0.7461953
+## 6 3.069283 -0.8839639
+```
+
+
+
+```r
+#plot of cafe-specific intercepts and slopes
+vary_effects %&gt;% 
+  ggplot(aes(x = a_cafe, y = b_cafe)) +
+  geom_point(color = "#80A0C7") +
+  geom_rug(color = "#8B9DAF", size = 1/7) +
+  theme_pearl_earring
+```
+
+
+---
+## Data
+
+Here we see a negative correlation in our intercepts and slopes. Remember these are the "true" parameters rather than our data.
+
+&lt;img src="3-3-Bayesian-linear-mixed-effects-models_files/figure-html/plotintslope-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+## Data
+
+
+```r
+n_visits &lt;- 10
+sigma    &lt;-  0.5  # std dev within cafes
+
+set.seed(13)  # used to replicate example
+d &lt;-
+  vary_effects %&gt;% 
+  mutate(cafe      = 1:n_cafes) %&gt;% 
+  expand(nesting(cafe, a_cafe, b_cafe), visit = 1:n_visits) %&gt;% 
+  mutate(afternoon = rep(0:1, times = n() / 2)) %&gt;% 
+  mutate(mu        = a_cafe + b_cafe * afternoon) %&gt;% 
+  mutate(wait      = rnorm(n = n(), mean = mu, sd = sigma))
+d %&gt;%
+  head()
+```
+
+```
+## # A tibble: 6 × 7
+##    cafe a_cafe b_cafe visit afternoon    mu  wait
+##   &lt;int&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;int&gt;     &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1     1   2.92 -0.865     1         0  2.92  3.19
+## 2     1   2.92 -0.865     2         1  2.05  1.91
+## 3     1   2.92 -0.865     3         0  2.92  3.81
+## 4     1   2.92 -0.865     4         1  2.05  2.15
+## 5     1   2.92 -0.865     5         0  2.92  3.49
+## 6     1   2.92 -0.865     6         1  2.05  2.26
+```
+
+
+---
+## Model
+
+Now we switch to the brms package and fit the model.
+
+
+```r
+detach(package:rethinking, unload = T)
+#library(brms)
+
+ b13.1 &lt;- 
+  brm(data = d, family = gaussian,
+      wait ~ 1 + afternoon + (1 + afternoon | cafe),
+      prior = c(prior(normal(0, 10), class = Intercept),
+                prior(normal(0, 10), class = b),
+                prior(cauchy(0, 1), class = sd),
+                prior(cauchy(0, 1), class = sigma),
+                prior(lkj(2), class = cor)),
+      iter = 5000, warmup = 2000, chains = 2, cores = 2,
+      seed = 13)
+```
+
+
+
+---
+## Posterior summaries
+
+Let's compare posterior correlation of random effects to the prior.
+
+
+```r
+post &lt;- posterior_samples(b13.1)
+
+post %&gt;%
+  ggplot(aes(x = cor_cafe__Intercept__afternoon)) +
+  geom_density(data = r_2, aes(x = V2),
+               color = "transparent", fill = "#EEDA9D", alpha = 3/4) +
+  geom_density(color = "transparent", fill = "#A65141", alpha = 9/10) +
+  annotate("text", label = "posterior", 
+           x = -0.35, y = 2.2, 
+           color = "#A65141", family = "Courier") +
+  annotate("text", label = "prior", 
+           x = 0, y = 0.9, 
+           color = "#EEDA9D", alpha = 2/3, family = "Courier") +
+  scale_y_continuous(NULL, breaks = NULL) +
+  xlab("correlation") +
+  theme_pearl_earring
+```
+
+
+
+---
+## Posterior summaries
+
+&lt;img src="3-3-Bayesian-linear-mixed-effects-models_files/figure-html/postre2-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+## Posterior summaries
+
+It takes a lot of code to generate the following figures, which illustrate shrinkage in this model.
+
+If you're interested, let me know and I can make it available to you, or the McElreath book, or [Solomon's website](https://bookdown.org/ajkurz/Statistical_Rethinking_recoded/adventures-in-covariance.html#varying-slopes-by-construction).
+
+&lt;br&gt;
+
+These figures examine random intercepts vs random slopes as well as the morning and afternoon wait times on the original scale (minutes).
+
+&lt;br&gt;
+
+- Blue dot: unpooled estimate
+- Red dot: pooled estimate
+
+Note shrinkage is toward the center of the ellipse.
+
+
+
+---
+## Posterior summaries
+
+&lt;img src="3-3-Bayesian-linear-mixed-effects-models_files/figure-html/genfigures-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+## Posterior summaries
+
+&lt;img src="3-3-Bayesian-linear-mixed-effects-models_files/figure-html/fig135b-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+
+
+---
+
+class: center, middle
+
+# What's next?
+
+### Move on to the readings for the next module!
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

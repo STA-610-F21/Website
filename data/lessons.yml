@@ -184,9 +184,8 @@ lessons:
     
   - date: "Wed, Sept 29"
     title: "Module 3.3: Bayesian linear mixed effects models"
-    #slides: "3-3-Bayesian-linear-mixed-effects-models.html"
-    #slidespdf: "3-3-Bayesian-linear-mixed-effects-models.pdf"
-    
+    slides: "3-3-Bayesian-linear-mixed-effects-models.html"
+    slidespdf: "3-3-Bayesian-linear-mixed-effects-models.pdf"
     
     
   - date: "Fri, Oct 1"
@@ -201,7 +200,7 @@ lessons:
     
   - date: "Wed, Oct 6"
     title: "Module 3.4: Nested vs non-nested random effects"
-    #reading: "3-4-reading.html"
+    reading: "3-4-reading.html"
     #slides: "3-4-nested-vs-nonnested-random-effects.html"
     #slidespdf: "3-4-nested-vs-nonnested-random-effects.pdf"
     
@@ -286,7 +285,7 @@ lessons:
     
   - date: "Fri, Oct 29"
     title: "Lab 9: Badgered by Badgers"
-    #lab: "lab-06.html"
+    #lab: "lab-09.html"
     
     
     
@@ -308,7 +307,7 @@ lessons:
     
     
   - date: "Fri, Nov 5"
-    title: "Lab 8: Hands on with Stan (Part III)"
+    title: "Lab 10: Hands on with Stan (Part III)"
     
     
     

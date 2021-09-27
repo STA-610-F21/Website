@@ -1,0 +1,791 @@
+---
+title: "STA 610L: Module 3.3"
+subtitle: "Bayesian linear mixed effects models"
+author: "Dr. Olanrewaju Michael Akande"
+date: " "
+output:
+  xaringan::moon_reader:
+    css: "slides.css"
+    logo: img/class_logo.png
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  warm = 1
+  )
+# Set dpi and height for images
+library(knitr)
+knitr::opts_chunk$set(fig.height = 2.65, dpi = 300,fig.align='center',fig.show='hold',size='footnotesize', small.mar=TRUE) 
+# For nonsese...
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(rvest)
+#library(tufte)
+#library(sjPlot)
+library(lme4)
+#library(sjstats)
+#library(merTools)
+#library(lattice)
+library(ggplot2)
+library(brms)
+library(dutchmasters)
+library(tidyverse)
+library(rethinking)
+```
+
+
+
+## Linear mixed effects model
+
+Recall the standard representation of the linear mixed effects model is
+$$
+\begin{split}
+Y_i & = X_i\beta+Z_ib_i+\varepsilon_i; \ \ \ i=1,\ldots, m \\
+b_i & \perp \varepsilon_i \ \ \ \ \ b_i \sim N_q(0,D)  \ \ \ \ \ \varepsilon_i \sim N_{n_i}(0,R_i),
+\end{split}
+$$
+where
+  - $Y_i$ is a $n_i \times 1$ vector of outcomes for subject $i$
+  - $X_i$ is a $n_i \times p$ design matrix of predictor variables corresponding to each outcome measurement occasion for subject $i$ 
+  - $Z_i$ is a $n_i \times q$ design matrix corresponding to the random effects for subject $i$
+  - $\beta$ is a $p \times 1$ vector of regression coefficients (fixed effects)
+  - $b_i$ is a $q \times 1$ vector of random effects for subject $i$
+  - $\varepsilon_{i}$ is a $n_i \times 1$ vector of errors for subject $i$
+
+
+
+
+---
+## Bayesian inference for the linear mixed effects model
+
+Given our discussions on how complicated specifying $D$ and $R_i$ can be, it will be very convenient to start with a simplified version of this model as we try to understand our options.
+
+Specifically, we will start by assuming that $X_i$ and $Z_i$ are the same, and also that $R_i = \sigma^2I_{n_i}$, so that we can focus on $D$.
+
+Thus, we write
+$$Y_{ij}=X_{ij}\beta_i+\varepsilon_{ij} ,\ \ \ \ \ \beta_i = \beta+b_i,$$
+
+where $\varepsilon_{ij} \overset{iid}{\sim} N(0,\sigma^2) \perp b_i \overset{iid}{\sim} N(0,D)$. So that $\beta_i \mid \beta \sim N(\beta, D)$.
+
+Here, $i=1,\ldots, m$ index groups, with group $i$ having $n_i$ observations, so that the parameters $\beta$ are fixed effects and the parameters $b_i$ are random effects.
+
+
+
+
+---
+## Priors
+
+To make differentiating between $\beta_i$ and $\beta$ a bit less confusing, we will write $\theta = \beta$.
+
+That is, we have  $\beta_i \mid \theta \sim N(\theta, D)$.
+
+We already know that a conditionally-conjugate prior specification for two of the parameters is given by
+
+$$\theta \sim N(\mu_0,\Lambda_0),$$
+
+
+$$\sigma^2 \sim \mathcal{IG} \left(\frac{\nu_0}{2},\frac{\nu_0\sigma_0^2}{2}\right).$$
+
+How about $D$?
+
+One complication of course is that the $D$ must be **positive definite and symmetric**.
+
+
+
+---
+## Review: positive definite and symmetric
+
+"Positive definite" means that for all $x \in \mathcal{R}^p$, $x^T D x > 0$.
+
+Basically ensures that the diagonal elements of $D$ (corresponding to the marginal variances) are positive.
+
+Also, ensures that the correlation coefficients for each pair of variables are between -1 and 1.
+
+Our prior for $D$ should thus assign probability one to set of positive definite matrices.
+
+Analogous to the univariate case, the .hlight[inverse-Wishart distribution] is the corresponding conditionally conjugate prior for $D$ (multivariate generalization of the inverse-gamma).
+
+The STA 360/601/602 Hoff textbook covers the construction of Wishart and inverse-Wishart random variables. We will skip the actual development.
+
+
+
+---
+## Review: Inverse-Wishart distribution
+
+A random variable $\Sigma \sim \textrm{IW}_p(\eta_0, \boldsymbol{S}_0)$, where $\Sigma$ is positive definite and $p \times p$, has pdf
+$$
+\begin{split}
+p(\Sigma) \ \propto \ \left|\Sigma\right|^{\frac{-(\eta_0 + p + 1)}{2}} \textrm{exp} \left\{-\dfrac{1}{2} \text{tr}(\boldsymbol{S}_0\Sigma^{-1}) \right\},
+\end{split}
+$$
+
+where
+- $\eta_0 > p - 1$ is the "degrees of freedom", and 
+
+- $\boldsymbol{S}_0$ is a $p \times p$ positive definite matrix.
+
+For this distribution, $\mathbb{E}[\Sigma] = \dfrac{1}{\eta_0 - p - 1} \boldsymbol{S}_0$, for $\eta_0 > p + 1$.
+
+Hence, $\boldsymbol{S}_0$ is the scaled mean of the $\textrm{IW}_p(\eta_0, \boldsymbol{S}_0)$.
+
+
+
+
+---
+## Review: Inverse-Wishart distribution
+
+If we are very confident in a prior guess $\Sigma_0$, for $\Sigma$, then we might set
+  + $\eta_0$, the degrees of freedom to be very large, and
+  + $\boldsymbol{S}_0 = (\eta_0 - p - 1)\Sigma_0$. 
+  
+In this case, $\mathbb{E}[\Sigma] = \dfrac{1}{\eta_0 - p - 1} \boldsymbol{S}_0 = \dfrac{1}{\eta_0 - p - 1}(\eta_0 - p - 1)\Sigma_0 = \Sigma_0$, and $\Sigma$ is tightly (depending on the value of $\eta_0$) centered around $\Sigma_0$.
+  
+If we are not at all confident but we still have a prior guess $\Sigma_0$, we might set
+  + $\eta_0 = p + 2$, so that the $\mathbb{E}[\Sigma] = \dfrac{1}{\eta_0 - p - 1} \boldsymbol{S}_0$ is finite.
+  + $\boldsymbol{S}_0 = \Sigma_0$
+  
+Here, $\mathbb{E}[\Sigma] = \Sigma_0$ as before, but $\Sigma$ is only loosely centered around $\Sigma_0$.
+  
+  
+
+---
+## Review: Wishart distribution
+
+Just as we had with the gamma and inverse-gamma relationship in the univariate case, we can also work in terms of the .hlight[Wishart distribution] (multivariate generalization of the gamma) instead.
+
+The .hlight[Wishart distribution] provides a conditionally-conjugate prior for the precision matrix $\Sigma^{-1}$ in a multivariate normal model.
+
+Specifically, if $\Sigma \sim \textrm{IW}_p(\eta_0, \boldsymbol{S}_0)$, then $\Phi = \Sigma^{-1} \sim \textrm{W}_p(\eta_0, \boldsymbol{S}_0^{-1})$.
+
+A random variable $\Phi \sim \textrm{W}_p(\eta_0, \boldsymbol{S}_0^{-1})$, where $\Phi$ has dimension $(p \times p)$, has pdf
+$$
+\begin{split}
+f(\Phi) \ \propto \ \left|\Phi\right|^{\frac{\eta_0 - p - 1}{2}} \textrm{exp} \left\{-\dfrac{1}{2} \text{tr}(\boldsymbol{S}_0\Phi) \right\}.
+\end{split}
+$$
+
+Here, $\mathbb{E}[\Phi] = \eta_0 \boldsymbol{S}_0$.
+
+Note that the STA 360/601/602 Hoff textbook writes the inverse-Wishart as $\textrm{IW}_p(\eta_0, \boldsymbol{S}_0^{-1})$. I prefer $\textrm{IW}_p(\eta_0, \boldsymbol{S}_0)$ instead. Feel free to use either notation but try not to get confused.
+
+
+
+
+---
+## Back to the priors
+
+For the full prior specification, we can then write
+
+$$\theta \sim N(\mu_0,\Lambda_0),$$
+$$D \sim\text{inverse-Wishart}(\eta_0, S_0),$$
+
+and 
+$$\sigma^2 \sim \text{inverse-gamma}\left(\frac{\nu_0}{2},\frac{\nu_0\sigma_0^2}{2}\right),$$
+
+
+so that a simple Gibbs sampler can be used for posterior computation.
+
+We will mostly rely on the .hlight[brms] package for simple specifications but it is relatively easy to write your own Gibbs sampler here.
+
+The following full conditionals should look very similar to those from the homework.
+
+
+
+---
+## Full conditionals
+
+$$\beta_i \mid y_i, X_i, \theta, D, \sigma^2 \sim N(\mu_{\beta_i}, \Sigma_{\beta_i}),$$
+
+where 
+$$\Sigma_{\beta_i}=\left(D^{-1}+  \frac{1}{\sigma^2} X_i'X_i \right)^{-1},$$
+
+and
+$$\mu_{\beta_i}= \Sigma_{\beta_i} \left(D^{-1}\theta+\frac{1}{\sigma^2} X_i'y_i\right).$$
+
+
+
+---
+## Full conditionals
+
+$$\theta \mid \beta_1, \ldots, \beta_m, D \sim N(\mu_\theta, \Lambda_\theta),$$
+
+where 
+$$\Lambda_\theta=\left(\Lambda_0^{-1}+mD^{-1}\right)^{-1},$$
+
+$$\mu_\theta = \Lambda_\theta\left(\Lambda_0^{-1}\mu_0+mD^{-1}\bar{\beta}\right),$$
+
+and
+$\bar{\beta}$ is the vector average $\frac{1}{m}\sum \beta_i$.
+
+
+
+
+---
+## Full conditionals
+
+$$D \mid \theta, \beta_1, \ldots, \beta_m \sim \textrm{IW} \left(\eta_D, S_D \right),$$
+where
+$$\eta_D = \eta_0+m; \ \ \ S_D = S_0+S_\theta,$$
+with
+$$S_\theta=\sum_{i=1}^m (\beta_i-\theta)(\beta_i-\theta)'$$
+
+
+
+
+
+---
+## Full conditionals
+
+$$\sigma^2 \mid \beta_1, \ldots, \beta_m \sim \mathcal{IG} \left(\frac{\nu_n}{2}, \frac{\nu_n\sigma_n^2}{2}\right),$$
+where
+$$\nu_n =  \nu_0+\sum n_i; \ \ \ \sigma_n^2 = \frac{1}{\nu_n} \left[  \nu_0\sigma_0^2+SSR \right],$$
+with
+$$SSR=\sum_{i=1}^m \sum_{j=1}^{n_i} (y_{ij}-x_{ij}\beta_i)^2.$$
+
+
+
+---
+## Motivation for other covariance priors
+
+While the inverse Wishart is a nice prior for symmetric matrices, computation can be a challenge, expecially as the covariance matrix becomes large.
+
+Why is modeling a covariance matrix difficult?
+
+  - number of parameters may be quite large
+  
+  - matrix constrained to be nonnegative definite
+  
+
+
+
+---
+## Motivation for other covariance priors
+
+Another down side of the Wishart is that we must use the same df for all elements, though in practice, we may have more information about some components than others.
+
+For example, we may believe in advance that the regression coefficients for one predictor are fairly similar across groups, while we may have little knowledge about similarity of coefficients for another predictor.
+
+We cannot express these prior beliefs using the inverse Wishart distribution.
+
+
+
+
+---
+## Other covariance priors
+
+A popular alternative approach is to decompose an arbitrary covariance matrix $\Sigma$ into a correlation matrix and a diagonal matrix of standard deviations:  $$\Sigma=\begin{pmatrix} \tau_{1} & 0 & \cdots & 0 \\ 0 & \tau_2 & \cdots & 0 \\ 0 & \vdots & \cdots & \vdots \\ 0 & \cdots & \cdots & \tau_K \end{pmatrix} \Omega \begin{pmatrix} \tau_{1} & 0 & \cdots & 0 \\ 0 & \tau_2 & \cdots & 0 \\ 0 & \vdots & \cdots & \vdots \\ 0 & \cdots & \cdots & \tau_K \end{pmatrix},$$ 
+where $\tau_k=\sqrt{\Sigma_{k,k}}$ and $\Omega_{i,j}=\frac{\Sigma_{i,j}}{\tau_i\tau_j}$.
+
+
+
+---
+## Other covariance priors
+
+This separation strategy yields nice interpretations for components, as researchers are often more used to thinking of the standard deviations and correlations than of covariances.
+
+Typically, the priors on $\tau_k$ are assumed to be independent of the prior on $\Omega$, though this could be incorporated through a prior on $\Omega \mid \tau$.
+
+
+
+---
+## Other covariance priors
+
+In this parameterization, any reasonable prior for scale parameters can be given to the components of the scale vector $\tau$.
+
+Popular choices include half-Cauchy or half-normal distributions, but log normal or inverse gamma priors might also be used.
+
+This approach is particularly attractive relative to the inverse Wishart, which requires us to use the same df for all elements, though in practice, we may wish to have more flexibility in dealing with tails of individual variance components.
+
+
+
+
+---
+## LKJ prior
+
+A nice choice for the correlation matrix is the LKJ (Lewandowski-Kurowicka-Joe) prior, which is like an extension of the beta distribution.
+
+The LKJ distribution is commonly used for positive definite correlation matrices, or equivalently for their Cholesky factors.
+
+
+This prior is $$\text{LkjCorr}(\Omega \mid \eta) \propto |\Omega|^{\eta-1},$$
+
+which for $\eta=1$ is the joint uniform distribution (note the marginals here are not uniform but favor more mass around 0).
+
+For $\eta>1$, the density concentrates increasing mass around the identiy (favoring lower correlation), and for $\eta<1$, mass is increasingly spread towards more extreme values.
+
+For more information on the LKJ prior, see [here](https://distribution-explorer.github.io/multivariate_continuous/lkj.html).
+
+
+
+
+---
+## LKJ prior
+
+Lets look at the LKJ density for a for a variety of values of the shape parameter $\eta$ (positive scalar).
+
+First, some code for a bunch of colors.
+
+```{r rethinkingtangent}
+#ok, McElreath has a thing for colors, so here's his choice of color library
+# devtools::install_github("EdwinTh/dutchmasters")
+#library(dutchmasters)
+theme_pearl_earring <-
+  theme(text       = element_text(color = "#E8DCCF", family = "Courier"),
+        strip.text = element_text(color = "#E8DCCF", family = "Courier"),
+        axis.text  = element_text(color = "#E8DCCF"),
+        axis.ticks = element_line(color = "#E8DCCF"),
+        line       = element_line(color = "#E8DCCF"),
+        plot.background   = element_rect(fill = "#100F14", color = "transparent"),
+        panel.background  = element_rect(fill = "#100F14", color = "#E8DCCF"),
+        strip.background  = element_rect(fill = "#100F14", color = "transparent"),
+        panel.grid = element_blank(),
+        legend.background = element_rect(fill = "#100F14", color = "transparent"),
+        legend.key        = element_rect(fill = "#100F14", color = "transparent"),
+        axis.line = element_blank())
+```
+
+
+
+---
+## LKJ prior
+
+Now, the actual code for the densities.
+
+```{r upprior, eval=FALSE}
+#library(rethinking)
+n_sim <- 1e5
+set.seed(13)
+
+r_1 <- rlkjcorr(n_sim, K = 2, eta = 1) %>%
+  as_tibble()
+r_2 <- rlkjcorr(n_sim, K = 2, eta = 2) %>%
+  as_tibble()
+r_4 <- rlkjcorr(n_sim, K = 2, eta = 4) %>%
+  as_tibble()
+
+ggplot(data = r_1, aes(x = V2)) +
+  geom_density(color = "transparent", fill = "#DCA258", alpha = 2/3) +
+  geom_density(data = r_2,
+               color = "transparent", fill = "#FCF9F0", alpha = 2/3) +
+  geom_density(data = r_4,
+               color = "transparent", fill = "#394165", alpha = 2/3) +
+  geom_text(data = tibble(x     = c(.83, .62, .46),
+                          y     = c(.54, .74, 1),
+                          label = c("eta = 1", "eta = 2", "eta = 4")),
+            aes(x = x, y = y, label = label),
+            color = "#A65141", family = "Courier") +
+  scale_y_continuous(NULL, breaks = NULL) +
+  xlab("correlation") +
+  theme_pearl_earring
+```
+
+
+
+---
+## LKJ prior
+
+```{r upprior2, echo=FALSE,warning=FALSE,message=FALSE, fig.height= 4}
+n_sim <- 1e5
+set.seed(13)
+r_1 <- 
+  rlkjcorr(n_sim, K = 2, eta = 1) %>%
+  as_tibble()
+
+r_2 <- 
+  rlkjcorr(n_sim, K = 2, eta = 2) %>%
+  as_tibble()
+
+r_4 <- 
+  rlkjcorr(n_sim, K = 2, eta = 4) %>%
+  as_tibble()
+
+ggplot(data = r_1, aes(x = V2)) +
+  geom_density(color = "transparent", fill = "#DCA258", alpha = 2/3) +
+  geom_density(data = r_2,
+               color = "transparent", fill = "#FCF9F0", alpha = 2/3) +
+  geom_density(data = r_4,
+               color = "transparent", fill = "#394165", alpha = 2/3) +
+  geom_text(data = tibble(x     = c(.83, .62, .46),
+                          y     = c(.54, .74, 1),
+                          label = c("eta = 1", "eta = 2", "eta = 4")),
+            aes(x = x, y = y, label = label),
+            color = "#A65141", family = "Courier") +
+  scale_y_continuous(NULL, breaks = NULL) +
+  xlab("correlation") +
+  theme_pearl_earring
+```
+
+
+
+
+
+---
+## Example: coffee robot
+
+We use an example from McElreath's book *Statistical Rethinking* about a coffee robot.
+
+While these are simulated data, they provide an interesting application as well as great code should you need to simulate hierarchical data in the future!
+
+Suppose we have a coffee-making robot that moves among cafes to order coffee and record the wait time.
+
+The robot also records the time of day of the visit because the average wait time in the morning tends to be longer than in the afternoon due to the fact that the cafes are busier in the mornings.
+
+The robot learns more efficiently about wait times when it pools information across different cafes.
+
+
+
+---
+## Example: coffee robot
+
+  - We can use varying intercepts to pool information across coffee shops.
+  
+  - Coffee shops vary in average wait times due to a number of factors (e.g., barista skill, number of baristas).
+  
+  - Coffee shops also vary in differences between morning and afternoon.
+  
+  - Varying intercepts for cafes and "slopes" for the afternoon effect make for a reasonable model.
+  
+  - In this example we focus on the cafe as a grouping factor.
+  
+
+
+
+---
+## Example: coffee robot
+  
+Model:
+$$y_{ij}=\beta_{0,i}+\beta_{1,i}A_{ij}+\varepsilon_{ij}$$
+
+$$\beta_{0,i}=\beta_0+b_{0,i} ~~~ \beta_{1,i}=\beta_1+b_{1,i}$$
+
+$$\varepsilon_i \overset{iid}\sim N(0,\sigma^2I)~~\perp~~b_i \overset{iid}\sim N(0,D),~~~D=\begin{pmatrix} \tau_0 & 0 \\ 0 & \tau_1 \end{pmatrix}\Upsilon\begin{pmatrix} \tau_0 & 0 \\ 0 & \tau_1 \end{pmatrix}$$
+
+
+
+
+---
+## Example: coffee robot
+
+Priors:
+  - $\beta_0 \sim N(0,10) ~~~~~~~ \beta_1 \sim N(0,10)$
+  
+  - $\sigma \sim \text{Half Cauchy}(0,1)$
+  
+  - $\tau_0 \sim \text{Half Cauchy}(0,1) ~~~~ \tau_1 \sim \text{Half Cauchy}(0,1)$
+  
+  - $\Upsilon = \begin{pmatrix} 1 & \upsilon \\ \upsilon & 1 \end{pmatrix} \sim LKJcorr(2)$
+  
+ 
+
+
+---
+## Data
+
+```{r simsetup}
+#library(tidyverse)
+#library(brms)
+#example from McElreath with thanks to Solomon Kurz for the BRMS translation
+a       <-  3.5  # average morning wait time
+b       <- -1    # average difference afternoon wait time
+sigma_a <-  1    # std dev in intercepts
+sigma_b <-  0.5  # std dev in slopes
+rho     <- -0.7   # correlation between intercepts and slopes
+
+# combine the terms above
+mu     <- c(a, b)
+sigmas <- c(sigma_a, sigma_b)          # standard deviations
+rho    <- matrix(c(1, rho,             # correlation matrix
+                   rho, 1), nrow = 2)
+
+# now matrix multiply to get covariance matrix
+sigma <- diag(sigmas) %*% rho %*% diag(sigmas)
+```
+
+
+
+---
+## Data
+
+```{r simdata, warning=FALSE, message=FALSE}
+# how many cafes would you like?
+n_cafes <- 20
+
+set.seed(13)  # used to replicate example
+vary_effects <- 
+  MASS::mvrnorm(n_cafes, mu, sigma) %>% 
+  data.frame() %>% 
+  set_names("a_cafe", "b_cafe")
+
+head(vary_effects)
+```
+
+
+```{r eval=F}
+#plot of cafe-specific intercepts and slopes
+vary_effects %>% 
+  ggplot(aes(x = a_cafe, y = b_cafe)) +
+  geom_point(color = "#80A0C7") +
+  geom_rug(color = "#8B9DAF", size = 1/7) +
+  theme_pearl_earring
+```
+
+
+---
+## Data
+
+Here we see a negative correlation in our intercepts and slopes. Remember these are the "true" parameters rather than our data.
+
+```{r plotintslope, echo=F, fig.height= 4}
+vary_effects %>% 
+  ggplot(aes(x = a_cafe, y = b_cafe)) +
+  geom_point(color = "#80A0C7") +
+  geom_rug(color = "#8B9DAF", size = 1/7) +
+  theme_pearl_earring
+```
+
+
+
+---
+## Data
+
+```{r simulatedata}
+n_visits <- 10
+sigma    <-  0.5  # std dev within cafes
+
+set.seed(13)  # used to replicate example
+d <-
+  vary_effects %>% 
+  mutate(cafe      = 1:n_cafes) %>% 
+  expand(nesting(cafe, a_cafe, b_cafe), visit = 1:n_visits) %>% 
+  mutate(afternoon = rep(0:1, times = n() / 2)) %>% 
+  mutate(mu        = a_cafe + b_cafe * afternoon) %>% 
+  mutate(wait      = rnorm(n = n(), mean = mu, sd = sigma))
+d %>%
+  head()
+```
+
+
+---
+## Model
+
+Now we switch to the brms package and fit the model.
+
+```{r intslope, cache=TRUE,message=FALSE,warning=FALSE}
+detach(package:rethinking, unload = T)
+#library(brms)
+
+ b13.1 <- 
+  brm(data = d, family = gaussian,
+      wait ~ 1 + afternoon + (1 + afternoon | cafe),
+      prior = c(prior(normal(0, 10), class = Intercept),
+                prior(normal(0, 10), class = b),
+                prior(cauchy(0, 1), class = sd),
+                prior(cauchy(0, 1), class = sigma),
+                prior(lkj(2), class = cor)),
+      iter = 5000, warmup = 2000, chains = 2, cores = 2,
+      seed = 13)
+```
+
+
+
+---
+## Posterior summaries
+
+Let's compare posterior correlation of random effects to the prior.
+
+```{r postre, eval=FALSE}
+post <- posterior_samples(b13.1)
+
+post %>%
+  ggplot(aes(x = cor_cafe__Intercept__afternoon)) +
+  geom_density(data = r_2, aes(x = V2),
+               color = "transparent", fill = "#EEDA9D", alpha = 3/4) +
+  geom_density(color = "transparent", fill = "#A65141", alpha = 9/10) +
+  annotate("text", label = "posterior", 
+           x = -0.35, y = 2.2, 
+           color = "#A65141", family = "Courier") +
+  annotate("text", label = "prior", 
+           x = 0, y = 0.9, 
+           color = "#EEDA9D", alpha = 2/3, family = "Courier") +
+  scale_y_continuous(NULL, breaks = NULL) +
+  xlab("correlation") +
+  theme_pearl_earring
+```
+
+
+
+---
+## Posterior summaries
+
+```{r postre2, echo=FALSE, cache=TRUE, fig.height= 4.5, message=F, warning=F}
+post <- posterior_samples(b13.1)
+
+post %>%
+  ggplot(aes(x = cor_cafe__Intercept__afternoon)) +
+  geom_density(data = r_2, aes(x = V2),
+               color = "transparent", fill = "#EEDA9D", alpha = 3/4) +
+  geom_density(color = "transparent", fill = "#A65141", alpha = 9/10) +
+  annotate("text", label = "posterior", 
+           x = -0.35, y = 2.2, 
+           color = "#A65141", family = "Courier") +
+  annotate("text", label = "prior", 
+           x = 0, y = 0.9, 
+           color = "#EEDA9D", alpha = 2/3, family = "Courier") +
+  scale_y_continuous(NULL, breaks = NULL) +
+  xlab("correlation") +
+  theme_pearl_earring
+```
+
+
+
+---
+## Posterior summaries
+
+It takes a lot of code to generate the following figures, which illustrate shrinkage in this model.
+
+If you're interested, let me know and I can make it available to you, or the McElreath book, or [Solomon's website](https://bookdown.org/ajkurz/Statistical_Rethinking_recoded/adventures-in-covariance.html#varying-slopes-by-construction).
+
+<br>
+
+These figures examine random intercepts vs random slopes as well as the morning and afternoon wait times on the original scale (minutes).
+
+<br>
+
+- Blue dot: unpooled estimate
+- Red dot: pooled estimate
+
+Note shrinkage is toward the center of the ellipse.
+
+
+
+---
+## Posterior summaries
+
+```{r genfigures, echo=FALSE,warning=FALSE,message=FALSE,cache=TRUE, fig.height= 4.5}
+partially_pooled_params <-
+  # with this line we select each of the 20 cafes posterior mean (i.e., Estimate)
+  # for both `Intercept` and `afternoon`
+  coef(b13.1)$cafe[ , 1, 1:2] %>%
+  as_tibble() %>%               # convert the two vectors to a tibble
+  rename(Slope = afternoon) %>%
+  mutate(cafe = 1:nrow(.)) %>%  # add the `cafe` index
+  select(cafe, everything())    # simply moving `cafe` to the leftmost position
+# compute unpooled estimates directly from data
+un_pooled_params <-
+  d %>%
+  # with these two lines, we compute the mean value for each cafe's wait time 
+  # in the morning and then the afternoon
+  group_by(afternoon, cafe) %>%
+  summarise(mean = mean(wait)) %>%
+  ungroup() %>%  # ungrouping allows us to alter afternoon, one of the grouping variables
+  mutate(afternoon = ifelse(afternoon == 0, "Intercept", "Slope")) %>%
+  spread(key = afternoon, value = mean) %>%  # use `spread()` just as in the previous block
+  mutate(Slope = Slope - Intercept)          # finally, here's our slope!
+
+# here we combine the partially-pooled and unpooled means into a single data object, 
+# which will make plotting easier.
+params <-
+  # `bind_rows()` will stack the second tibble below the first
+  bind_rows(partially_pooled_params, un_pooled_params) %>%
+  # index whether the estimates are pooled
+  mutate(pooled = rep(c("partially", "not"), each = nrow(.)/2)) 
+ggplot(data = params, aes(x = Intercept, y = Slope)) +
+  stat_ellipse(geom = "polygon", type = "norm", level = 1/10, size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  stat_ellipse(geom = "polygon", type = "norm", level = 2/10, size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  stat_ellipse(geom = "polygon", type = "norm", level = 3/10, size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  stat_ellipse(geom = "polygon", type = "norm", level = 4/10, size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  stat_ellipse(geom = "polygon", type = "norm", level = 5/10, size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  stat_ellipse(geom = "polygon", type = "norm", level = 6/10, size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  stat_ellipse(geom = "polygon", type = "norm", level = 7/10, size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  stat_ellipse(geom = "polygon", type = "norm", level = 8/10, size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  stat_ellipse(geom = "polygon", type = "norm", level = 9/10, size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  stat_ellipse(geom = "polygon", type = "norm", level = .99,  size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  geom_point(aes(group = cafe, color = pooled)) +
+  geom_line(aes(group = cafe), size = 1/4) +
+  scale_color_manual("Pooled?",
+                     values = c("#80A0C7", "#A65141")) +
+  coord_cartesian(xlim = range(params$Intercept),
+                  ylim = range(params$Slope)) +
+  theme_pearl_earring
+```
+
+
+
+---
+## Posterior summaries
+
+```{r fig135b,echo=FALSE, warning=FALSE,message=FALSE, fig.height= 4.5}
+partially_pooled_estimates <-
+  coef(b13.1)$cafe[ , 1, 1:2] %>%
+  # convert the two vectors to a tibble
+  as_tibble() %>%
+  # the Intercept is the wait time for morning (i.e., `afternoon == 0`)
+  rename(morning = Intercept) %>%
+  # `afternoon` wait time is the `morning` wait time plus the afternoon slope
+  mutate(afternoon = morning + afternoon,
+         cafe      = 1:n()) %>%  # add the `cafe` index
+  select(cafe, everything()) 
+
+# compute unpooled estimates directly from data
+un_pooled_estimates <-
+  d %>%
+  # as above, with these two lines, we compute each cafe's mean wait value by time of day
+  group_by(afternoon, cafe) %>% 
+  summarise(mean = mean(wait)) %>%
+  # ungrouping allows us to alter the grouping variable, afternoon
+  ungroup() %>% 
+  mutate(afternoon = ifelse(afternoon == 0, "morning", "afternoon")) %>%
+  # this seperates out the values into morning and afternoon columns
+  spread(key = afternoon, value = mean)
+
+estimates <-
+  bind_rows(partially_pooled_estimates, un_pooled_estimates) %>%
+  mutate(pooled = rep(c("partially", "not"), each = n() / 2))
+
+ggplot(data = estimates, aes(x = morning, y = afternoon)) +
+  # nesting `stat_ellipse()` within `mapply()` is a less redundant way to produce the 
+  # ten-layered semitransparent ellipses we did with ten lines of `stat_ellipse()` 
+  # functions in the previous plot
+  mapply(function(level) {
+    stat_ellipse(geom  = "polygon", type = "norm",
+                 size  = 0, alpha = 1/20, fill = "#E7CDC2",
+                 level = level)
+    }, 
+    # Enter the levels here
+    level = c(seq(from = 1/10, to = 9/10, by = 1/10), .99)) +
+  geom_point(aes(group = cafe, color = pooled)) +
+  geom_line(aes(group = cafe), size = 1/4) +
+  scale_color_manual("Pooled?",
+                     values = c("#80A0C7", "#A65141")) +
+  coord_cartesian(xlim = range(estimates$morning),
+                  ylim = range(estimates$afternoon)) +
+  labs(x = "morning wait (mins)",
+       y = "afternoon wait (mins)") +
+  theme_pearl_earring
+```
+
+
+
+
+
+---
+
+class: center, middle
+
+# What's next?
+
+### Move on to the readings for the next module!
+
+
+
+
