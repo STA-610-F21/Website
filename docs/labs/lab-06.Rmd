@@ -89,15 +89,15 @@ Treat the variable `eval` (or a transformed version if needed) as the response v
 
 3. Using the model from question 2 above, how does the variation in average ratings across professors compare to the variation in ratings for the same professor? Which is higher, and what does that mean in context of the question? You should factor in the posterior distribution of each corresponding parameter.
 
-4. Identify three instructor-level predictors excluding `beauty` (with `profnumber` being the instructor-level identifier)  that you think we should control for based on EDA. Write down and fit a varying/random intercepts model for the data grouped by `profnumber`, and include `beauty`, plus the other three variables you have identified as potential predictors. 
+4. Identify three instructor-level predictors excluding `beauty` (with `profnumber` being the instructor-level identifier)  that you think we should control for based on EDA. Write down and fit a Bayesian varying/random intercepts model for the data (using the default prior options in `brms`) grouped by `profnumber`, and include `beauty`, plus the other three variables you have identified as potential predictors. 
 
 5. Interpret the results of the new model in the context of the question. Factor in the posterior distribution of the parameters.
 
-6. For the model from question 4, try out a few other choices for the default hyper-priors. That is, fit the model again using your own choices for the parameters of the prior distributions and report your findings. Did any of the estimates change? If yes, how?
+6. For the model from question 4, try out a few other choices for the default hyper-priors. That is, fit the model again using your own choices for the parameters of the prior distributions and report your findings. Did any of the estimates change? If yes, which and how much?
 
-7. We will cover how to incorporate additional grouping variables in more detail soon but for now, extend the model from question 4 to allow for varying/random intercepts by `CourseID` and varying/random slopes for `beauty` by `CourseID`. To implement this in `R`, just add "`+ (beauty | CourseID)`" to your existing formula.
+7. We will cover how to incorporate additional grouping variables in more detail soon but here you will start with a relatively simple introduction. Extend the model from question 4 to allow for varying/random intercepts by `CourseID` and varying/random slopes for `beauty` by `CourseID`. To implement this in `R`, just add "`+ (beauty | CourseID)`" to the formula from your existing model.
 
-8. Fit the model using the default prior options in `brms`. Did any of the results for the fixed effects change? If yes, why do you think that is?
+8. Fit the model using the default prior options in `brms`. Did any of the results for the fixed effects change? If yes, comment on the changes.
 
 <!-- 8. Did any of the results for the fixed effects change? If yes, why do you think that is? What are your most interesting or surprising findings, especially by `profnumber` and `CourseID`? -->
 
