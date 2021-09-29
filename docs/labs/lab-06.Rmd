@@ -1,5 +1,5 @@
 ---
-title: "Lab 5: Do more beautiful professors get higher evaluations? (Part I)"
+title: "Do more beautiful professors get higher evaluations? (Part II)"
 author: "Multilevel and hierarchical models"
 output: 
   tufte::tufte_html:
@@ -23,7 +23,7 @@ knitr::opts_chunk$set(eval = FALSE)
 ```
 
 
-**Full TA Session**
+**Due:**  11:59pm, Thursday, October 7
 
 
 <!-- # Housekeeping -->
@@ -32,12 +32,14 @@ knitr::opts_chunk$set(eval = FALSE)
 <!-- You all should have R and RStudio installed on your computers by now. If you do not, first install the latest version of R here: https://cran.rstudio.com (remember to select the right installer for your operating system). Next, install the latest version of RStudio here: https://www.rstudio.com/products/rstudio/download/. Scroll down to the "Installers for Supported Platforms" section and find the right installer for your operating system. -->
 
 
-<!-- ## Gradescope -->
-<!-- You MUST submit both your .Rmd and .pdf files to the course site on Gradescope here: https://www.gradescope.com/courses/224715/assignments. Do NOT create a zipped folder with the two documents but instead, upload them as two separate documents. Also, be sure to knit to pdf and NOT html; ask the TA about knitting to pdf if you cannot figure it out. Be sure to submit under the right assignment entry. Finally, when submitting your files, please select the corresponding pages for each exercise. -->
+## Gradescope
+You MUST submit both your .Rmd and .pdf files to the course site on Gradescope here: https://www.gradescope.com/courses/281587/assignments. Do NOT create a zipped folder with the two documents but instead, upload them as two separate documents. Also, be sure to knit to pdf and NOT html; ask the TA about knitting to pdf if you cannot figure it out. Be sure to submit under the right assignment entry. Finally, when submitting your files, please select the corresponding pages for each exercise.
 
 
 
 # Introduction
+
+This is an individual lab and each student must submit a separate solution by the due date.
 
 This lab is based on Exercise 6 of Section 12.11 of [Data Analysis Using Regression and Multilevel/Hierarchical Models](https://www.amazon.com/gp/product/052168689X/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=052168689X&linkCode=as2&tag=andrsblog0f-20&linkId=PX5B5V6ZPCT2UIYV) by Gelman A., and Hill, J. The data is from the following article:  
 [Hamermesh, D. S. and Parker, A. (2005), "Beauty in the classroom: instructors' pulchritude and putative pedagogical productivity", *Economics of Education Review*, v. 24 (4), pp. 369-376](https://www.sciencedirect.com/science/article/pii/S0272775704001165). 
@@ -50,7 +52,7 @@ The data contains information about student evaluations of instructor's beauty a
 
 # The Data
 
-Download the data [here](https://sta-610l-s21.github.io/Course-Website/labs/data/Beauty.txt). The code book is given below:
+Download the data [here](data/Beauty.txt). The code book is given below:
 
 Variable       | Description
 :------------- | :------------ 
@@ -74,33 +76,40 @@ students  |  Class enrollment
 tenuretrack  | Is the professor tenure track faculty? 1 = yes, 0 = no
 
 
+
 # Exercises
 
-The TA will walk you through how one would approach each of the following.
+You do not need to write a full report for the exercises below. You can simply answer/address each question directly. You should be able to leverage ideas and techniques from the TA's session for the previous lab. 
 
-Treat the variable `eval` as the response variable and the other variables as potential predictors.
+Treat the variable `eval` (or a transformed version if needed) as the response variable and the other variables as potential predictors.
 
-1. Is the marginal distribution of `eval` visibly skewed? If it is, try the log transformation. Does that look more "normal"? If you think the log transformation does not help, what other transformation(s) do you think might work? Examine and describe the distribution(s) for the transformation(s).  
-    *Note that for linear models and linear mixed effects models, the main normality assumption is actually a conditional assumption on the response variable and not a marginal one, so we should really be assessing the validity of the assumption via the residuals (since the normality assumption is a marginal assumption on the errors). That said, whenever the marginal distribution of your response is quite visibly skewed, the skew will often carry over to the errors anyway, so that we can start to think about potential transformations during EDA. Please note: best practice is to rely on the residual plots to be sure any transformations are needed.*
+1. Write down a Bayesian random intercepts model for `eval` (or the transformed version) as the response, grouped by `profnumber`, with `beauty` as the only predictor. Write down a version you can fit using the `brms` package (meaning for example that you won't be able to specify a multivariate normal prior for your vector of fixed effects).
 
-2. Describe the overall relationship between `eval` (or the transformed version) and `beauty`. 
+2. Fit the model using the default prior options in `brms` and interpret the results in the context of the question.
 
-3. Examine the relationship between `eval` (or the transformed version) and `beauty`, by `CourseID`. Are there any courses for which the relationship between `eval` and `beauty` looks potentially different than others?  
-    *There are 31 levels of `CourseID` in all, which might be tough to explore graphically, so it might be a good idea to take a look at a random sample of say 7 classes plus class `CourseID` == 0, making a total of 8 classes. Note that level `CourseID` == 0 actually includes so many other classes which were not identified in the data. For the purposes of this lab, we treat that class as one single popular class.*
-    
-4. Do you think it is meaningful to fit a multilevel linear model that includes varying slopes for `beauty` by `profnumber`? Why or why not?
+3. Using the model from question 2 above, how does the variation in average ratings across professors compare to the variation in ratings for the same professor? Which is higher, and what does that mean in context of the question? You should factor in the posterior distribution of each corresponding parameter.
 
-5.  Now, explore the relationship between `eval` and the other potential predictors, excluding `profnumber`, `profevaluation`, and `CourseID`. Describe the most interesting relationships. Note that we should not include `profevaluation` as a predictor for `eval`. Why is that?
+4. Identify three instructor-level predictors excluding `beauty` (with `profnumber` being the instructor-level identifier)  that you think we should control for based on EDA. Write down and fit a varying/random intercepts model for the data grouped by `profnumber`, and include `beauty`, plus the other three variables you have identified as potential predictors. 
 
-6. Write down a frequentist random intercepts model for `eval` (or the transformed version) as the response, grouped by `profnumber`, with `beauty` as the only predictor. Fit the model and interpret the results in the context of the question.
+5. Interpret the results of the new model in the context of the question. Factor in the posterior distribution of the parameters.
 
-7. Using the model from question 6 above, how does the variation in average ratings across professors compare to the variation in ratings for the same professor? Which is higher, and what does that mean in context of the question?
+6. For the model from question 4, try out a few other choices for the default hyper-priors. That is, fit the model again using your own choices for the parameters of the prior distributions and report your findings. Did any of the estimates change? If yes, how?
 
-8. Identify three instructor-level predictors excluding `beauty` (with `profnumber` being the instructor-level identifier)  that you think we should control for based on the EDA. Write down and fit a varying-intercept model for the data grouped by `profnumber`, and include `beauty`, plus the other three variables you have identified as potential predictors. Interpret the results in the context of the question.
+7. We will cover how to incorporate additional grouping variables in more detail soon but for now, extend the model from question 4 to allow for varying/random intercepts by `CourseID` and varying/random slopes for `beauty` by `CourseID`. To implement this in `R`, just add "`+ (beauty | CourseID)`" to your existing formula.
 
-<!-- 8. Extend the model from question 6 by also allowing for random slopes for `beauty` by `CourseID`. Compare the two models using a metric or test of your choice. What can you conclude from your comparison? If you find that including the random slopes is necessary, interpret the results of the new model: the fixed effect estimates and the estimated standard deviations.  -->
+8. Fit the model using the default prior options in `brms`. Did any of the results for the fixed effects change? If yes, why do you think that is?
 
-No submissions are required at the end of this lab.
+<!-- 8. Did any of the results for the fixed effects change? If yes, why do you think that is? What are your most interesting or surprising findings, especially by `profnumber` and `CourseID`? -->
+
+<!-- 9. Identify one course-level predictor (with `CourseID` being the course-level identifier) that you think we should control for in the model. Include it as a "fixed" predictor in the model from Question 1. Is the variable significant? If yes, interpret the coefficient. -->
+
+<!-- 10. Also, investigate a few other prior specifications and report your findings. Did any of the estimates change? If yes, how and why do you think that is? -->
+
+
+
+## Grading
+
+Total: 20 points.
 
 
 
