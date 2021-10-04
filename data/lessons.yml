@@ -201,12 +201,15 @@ lessons:
   - date: "Wed, Oct 6"
     title: "Module 3.4: Nested vs non-nested random effects"
     reading: "3-4-reading.html"
-    #slides: "3-4-nested-vs-nonnested-random-effects.html"
-    #slidespdf: "3-4-nested-vs-nonnested-random-effects.pdf"
+    slides: "3-4-nested-vs-nonnested-random-effects.html"
+    slidespdf: "3-4-nested-vs-nonnested-random-effects.pdf"
+    
+    
+  - title: "Module 3.5a: Review of GLMs"
     
     
   - date: "Fri, Oct 8"
-    title: "Lab: Help, I’m Behind! Hands-on Analysis and Q&A"
+    title: "Lab: Help, my team needs help with Case Study I + general Q&A session with TA"
     
    
    
@@ -214,11 +217,11 @@ lessons:
     date: "Mon, Oct 11"
     title: "Case Study I Presentations"
     
-  
+    
   - date: "Wed, Oct 13"
-    title: "Module 3.5: Logistic mixed effects model (Part I)"
-    #slides: "3-5-logistic-mixed-effects-model-I.html"
-    #slidespdf: "3-5-logistic-mixed-effects-model-I.pdf"
+    title: "Module 3.5b: Logistic mixed effects model (Part I)"
+    slides: "3-5-logistic-mixed-effects-model-I.html"
+    slidespdf: "3-5-logistic-mixed-effects-model-I.pdf"
     
   
   - date: "Fri, Oct 15"

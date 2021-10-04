@@ -1,0 +1,937 @@
+---
+title: "STA 610L: Module 3.7"
+subtitle: "Logistic mixed effects model (Part III)"
+author: "Dr. Olanrewaju Michael Akande"
+date: " "
+output:
+  xaringan::moon_reader:
+    css: "slides.css"
+    logo: img/class_logo.png
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  warm = 1
+  )
+# Set dpi and height for images
+library(knitr)
+knitr::opts_chunk$set(fig.height = 2.65, dpi = 300,fig.align='center',fig.show='hold',size='footnotesize', small.mar=TRUE) 
+# For nonsese...
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(rvest)
+#library(tufte)
+#library(sjPlot)
+library(lme4)
+#library(sjstats)
+#library(merTools)
+#library(lattice)
+#library(ggplot2)
+#library(brms)
+#library(dutchmasters)
+library(tidyverse)
+#library(rethinking)
+library(stargazer)
+library(arm)
+library(wesanderson)
+library(dutchmasters)
+library(ggplot2)
+```
+
+
+
+
+## 1988 elections analysis
+
+The dataset includes 2193 observations from one of eight surveys (the most recent CBS News survey right before the election) in the original full data.
+
+.small[
+Variable    | Description
+:------------- | :------------
+org | cbsnyt = CBS/NYT
+.hlight[bush] | .hlight[1 = preference for Bush Sr., 0 = otherwise]
+state | 1-51: 50 states including DC (number 9)
+edu | education: 1=No HS, 2=HS, 3=Some College, 4=College Grad
+age | 1=18-29, 2=30-44, 3=45-64, 4=65+
+female | 1=female, 0=male
+black | 1=black, 0=otherwise
+region | 1=NE, 2=S, 3=N, 4=W, 5=DC
+v_prev | average Republican vote share in the three previous elections (adjusted for home-state and home-region effects in the previous elections)
+]
+
+Given that the data has a natural multilevel structure (through `state` and `region`), it makes sense to explore hierarchical models for this data.
+
+
+
+---
+## 1988 elections analysis
+
+Both voting turnout and preferences often depend on a complex combination of demographic factors.
+
+In our example dataset, we have demographic factors such as biological sex, race, age, education, which we may all want to look at by state, resulting in $2 \times 2 \times 4 \times 4 \times 51 = 3264$ potential categories of respondents.
+
+We may even want to control for `region`, adding to the number of categories.
+
+Clearly, without a very large survey (most political survey poll around 1000 people), we will need to make assumptions in order to even obtain estimates in each category.
+
+We usually cannot include all interactions; we should therefore select those to explore (through EDA and background knowledge).
+
+The data is in the file `polls_subset.txt` on Sakai.
+
+
+
+---
+## 1988 elections analysis
+
+```{r}
+###### Load the data
+polls_subset <- read.table("data/polls_subset.txt",header=TRUE)
+str(polls_subset)
+head(polls_subset)
+```
+
+
+---
+## 1988 elections analysis
+
+```{r}
+summary(polls_subset)
+```
+
+
+
+---
+## 1988 elections analysis
+
+```{r}
+polls_subset$v_prev <- polls_subset$v_prev*100 #rescale 
+polls_subset$region_label <- factor(polls_subset$region,levels=1:5,
+                                    labels=c("NE","S","N","W","DC"))
+#we consider DC as a separate region due to its distinctive voting patterns
+polls_subset$edu_label <- factor(polls_subset$edu,levels=1:4,
+                                 labels=c("No HS","HS","Some College","College Grad"))
+polls_subset$age_label <- factor(polls_subset$age,levels=1:4,
+                                 labels=c("18-29","30-44","45-64","65+"))
+#the data includes states but without the names, which we will need, 
+#so let's grab that from R datasets
+data(state) 
+#"state" is an R data file (type ?state from the R command window for info)
+state.abb #does not include DC, so we will create ours
+#In the polls data, DC is the 9th "state" in alphabetical order
+state_abbr <- c (state.abb[1:8], "DC", state.abb[9:50])
+polls_subset$state_label <- factor(polls_subset$state,levels=1:51,labels=state_abbr)
+rm(list = ls(pattern = "state")) #remove unnecessary values in the environment
+```
+
+
+
+---
+## 1988 elections analysis
+
+```{r}
+###### View properties of the data  
+head(polls_subset)
+dim(polls_subset)
+```
+
+
+
+---
+## 1988 elections analysis
+
+```{r}
+###### View properties of the data  
+str(polls_subset)
+```
+
+
+
+
+---
+## 1988 elections analysis
+
+I will not do any meaningful EDA here.
+
+I expect you to be able to do this yourself.
+
+Let's just take a look at the amount of data we have for "bush" and the age:edu interaction.
+
+```{r}
+###### Exploratory data analysis
+table(polls_subset$bush) #well split by the two values
+table(polls_subset$edu,polls_subset$age)
+```
+
+
+---
+## 1988 elections analysis
+
+As a start, we will consider a simple model with fixed effects of race and sex and a random effect for state (50 states + the District of Columbia).
+$$
+\begin{split}
+\textrm{bush}_{ij} | \boldsymbol{x}_{ij} & \sim \textrm{Bernoulli}(\pi_{ij}); \ \ \ i = 1, \ldots, n; \ \ \ j = 1, \ldots, J=51; \\
+\textrm{log}\left(\dfrac{\pi_{ij}}{1-\pi_{ij}}\right) & = \beta_{0} + b_{0j} + \beta_1 \textrm{female}_{ij} + \beta_2 \textrm{black}_{ij}; \\
+b_{0j} & \sim N(0, \sigma^2).
+\end{split}
+$$
+
+In `R`, we have
+```{r results = 'hide'}
+#library(lme4)
+model1 <- glmer(bush ~ black+female+(1|state_label),
+                family=binomial(link="logit"),
+                data=polls_subset)
+summary(model1)
+```
+
+
+
+---
+## 1988 elections analysis
+```{r echo=F}
+summary(model1)
+```
+
+
+---
+## 1988 elections analysis
+
+Looks like we dropped some NAs.
+```{r}
+c(sum(complete.cases(polls_subset)),sum(!complete.cases(polls_subset)))
+```
+
+Not ideal; we'll learn about methods for dealing with missing data soon.
+
+Interpretation of results:
+  + For a fixed state (or across all states), a non-black male respondent has odds of $e^{0.45}=1.57$ of supporting Bush.
+
+  + For a fixed state and sex, a black respondent as $e^{-1.74}=0.18$ times (an 82% decrease)  the odds of supporting Bush as a non-black respondent; you are much less likely to support Bush if your race is black compared to being non-black.
+  
+  + For a given state and race, a female respondent has $e^{-0.10}=0.91$ (a 9% decrease)  times the odds of supporting Bush as a male respondent. However, this effect is not actually statistically significant!
+
+
+
+---
+## 1988 elections analysis
+
+The state-level standard deviation is estimated at 0.41, so that the states do vary some, but not so much.
+
+I expect that you will be able to interpret the corresponding confidence intervals.
+```{r echo=F}
+confint(model1)
+```
+
+
+---
+## 1988 elections analysis
+
+We can definitely fit a more sophisticated model that includes other relevant survey factors, such as
+
+  + region
+  
+  + prior vote history (note that this is a state-level predictor),
+  
+  + age, education, and the interaction between them.
+
+Given the structure of the data, it makes sense to include region as a second grouping variable.
+
+We are yet to discuss that, so I will return to this later.
+
+
+
+---
+## 1988 elections analysis
+
+For now, let's just fit two models, one with the main effects for age and education, and the second with the interaction between them.
+
+.small[
+```{r, cache=T, echo=F}
+model2 <- glmer(bush ~ black + female + edu_label + age_label +(1|state_label),
+                family=binomial(link="logit"),data=polls_subset)
+print(summary(model2),correlation = FALSE)
+```
+]
+
+Can you interpret the results?
+
+
+
+---
+## 1988 elections analysis
+
+```{r, cache=T, results = 'hide'}
+model3 <- glmer(bush ~ black + female + edu_label*age_label + (1|state_label),
+                family=binomial(link="logit"),data=polls_subset)
+```
+
+We have a rank deficient model. Also, it looks like we have a convergence issue.
+
+These issues can happen. We have so many parameters to estimate from the interaction terms `edu_label*age_label` (16 actually), and it looks like that's causing a problem.
+
+
+
+
+
+---
+## Note on estimation
+
+ML estimation is carried out typically using adaptive Gaussian quadrature.
+
+To improve accuracy over many package defaults (Laplace approximation), increase the number of quadrature points to be greater than one.
+
+Note that some software packages (including the .hlight[glmer] function in the .hlight[lme4] package) require Laplace approximation with Gaussian quadrature if the number of random effects is more than 1 for the sake of computational efficiency.
+
+It is possible to tweak the optimizer in the .hlight[glmer] function in particular. Read more about the [BOBYQA](https://en.wikipedia.org/wiki/BOBYQA) optimizer at your leisure.
+
+
+
+
+---
+## 1988 elections analysis
+
+Let’s fit a more sophisticated model that includes other relevant survey factors, such as 
+
++ region (note here that states are nested within regions)
+  
++ prior vote history (note that this is a state-level predictor),
+  
++ age, education, and the interaction between them.
+
+We can start with
+```{r results = 'hide',cache=T}
+model2 <- glmer(bush ~ black + female + v_prev + edu_label + age_label +
+                (1|state_label) + (1|region_label),
+                family=binomial(link="logit"),data=polls_subset)
+```
+
+
+
+---
+## 1988 elections analysis
+
+From the statement of the problem, we also would like to include the interaction between `edu_label` and `age_label`.
+
+However, recall we had the convergence issues because there are so many parameters to estimate from the interaction terms (16 actually).
+
+Could be that we have too many $\textrm{bush}_i = 1$ or $0$ values for certain combinations? You should check!
+
+Let's also treat those as varying effects instead. That is,
+```{r results = 'hide',cache=T}
+model3 <- glmer(bush ~ black + female + v_prev + 
+                  (1|state_label) + (1|region_label) + 
+                  (1|edu_label:age_label),
+                family=binomial(link="logit"),data=polls_subset)
+```
+
+
+This seems to run fine; we are able to borrow information which helps.
+
+
+
+---
+## 1988 elections analysis
+
+.small[
+```{r echo=F}
+summary(model3)
+```
+]
+
+
+
+---
+## 1988 elections analysis
+
+Remember that in the first model, the state-level standard deviation was estimated as 0.41. Looks like we are now able to separate that (for the most part) into state and region effects.
+
+Interpretation of results:
+
++ For a fixed state, education and age bracket, a non-black male respondent with zero prior average Republican vote share, has odds of $e^{-3.51}=0.03$ of supporting Bush (no one really has 0 value for `v_prev`).
+  
++ For a fixed state, sex, education level, age bracket and zero prior average Republican vote share, a black respondent has $e^{-1.75}=0.17$ times (an 83% decrease) the odds of supporting Bush as a non-black respondent, which is about the same as before.
+  
++ For each percentage point increase in prior average Republican vote share, residents of a given state, race, sex, education level  age bracket have $e^{0.07}=1.07$ times the odds of supporting Bush.
+
+
+
+
+---
+## Quick review: aggregated binary outcomes
+
+In the context of logistic regression (and the mixed effect versions), we often observe the binary outcomes for each observation, that is, each $y_i \in \{0,1\}$. 
+
+Of course this is not always the case. Sometimes, we get an aggregated version, with the outcome summed up by combinations of other variables. For example, suppose we had
+
+```{r results ='asis',message = FALSE,echo=F}
+set.seed(10); n <- 100; y <- sample(c(0,1),n,replace=T); x <- factor(sample(c(1:3),n,replace=T))
+Data <- data.frame(response=y,predictor=x);
+stargazer(Data[1:25,],type = "html", summary=FALSE, colnames=FALSE, rownames=T,flip=TRUE)
+```
+
+where .hlight[predictor] is a factor variable with 3 levels: 1,2,3.
+
+
+
+---
+## Quick review: aggregated binary outcomes
+
+The aggregated version of the same data could look then like
+
+```{r results ='asis',message = FALSE,echo=F}
+Data_agg <- aggregate(Data$response,by=list(Data$predictor),FUN=sum)
+colnames(Data_agg) <- c("predictor","successes")
+Data_agg$n <- aggregate(Data$response,by=list(Data$predictor),FUN=length)$x
+stargazer(Data_agg[,c("predictor","n","successes")],type = "html", summary=FALSE, rownames=F)
+```
+
+
+
+---
+## Quick review: aggregated binary outcomes
+
+Recall that if $Y \sim \textrm{Bin}(n,p)$ (that is, $Y$ is a random variable that follows a binomial distribution with parameters $n$ and $p$), then $Y$ follows a $\textrm{Bernoulli}(p)$ distribution  when $n = 1$.
+
+Alternatively, we also have that if $Z_1, \ldots, Z_n \sim \textrm{Bernoulli}(p)$, then $Y = \sum_i^n Z_i \sim \textrm{Bin}(n,p)$.
+
+That is, the sum of $n$ "iid" $\textrm{Bernoulli}(p)$ random variables gives a random variable with the $\textrm{Bin}(n,p)$ distribution.
+
+
+
+---
+## Quick review: aggregated binary outcomes
+
+The logistic regression model can be used either for Bernoulli data (as we have done so far) or for data summarized as binomial counts (that is, aggregated counts).
+
+In the aggregated form, the model is a .hlight[Binomial logistic regression]:
+$$y_i | x_i \sim \textrm{Bin}(n_i,\pi_i); \ \ \ \textrm{log}\left(\dfrac{\pi_i}{1-\pi_i}\right) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \ldots + \beta_p x_{ip}.$$
+
+
+---
+## Quick review: Bernoulli versus binomial outcomes
+
+Normally, for individual-level data, we would have
+.small[
+```{r echo=F}
+head(Data)
+```
+]
+
+.small[
+```{r}
+M1 <- glm(response~predictor,data=Data,family=binomial)
+summary(M1)
+```
+]
+
+
+---
+## Quick review: Bernoulli versus binomial outcomes
+
+But we could also do the following with the aggregate level data instead
+.small[
+```{r}
+M2 <- glm(cbind(successes,n-successes)~predictor,data=Data_agg,family=binomial)
+summary(M2)
+```
+]
+
+Same results overall! Deviance and AIC are different because of the slightly different likelihood functions.
+
+Note that some glm functions use .hlight[n] in the formula instead of .hlight[n-successes].
+
+
+
+
+
+---
+## Another example: Berkeley admissions
+
+With that in mind, we can move forward to our next example.
+
+We will use this next example to also start to illustrate how to fit Bayesian versions of generalized linear mixed effects models.
+
+However, note that we can fit the frequentist versions of the same models using the .hlight[lme4] package.
+
+In fall 1973, the University of California, Berkeley's graduate division admitted 44% of male applicants and 35% of female applicants. 
+
+School administrators were concerned about the potential for bias (and lawsuits!) and asked statistics professor Peter Bickel to examine the data more carefully.
+
+We have a subset of the admissions data for 6 departments. 
+
+
+
+---
+## Berkeley admissions
+
+```{r loaddata,message=FALSE,warning=FALSE}
+library(rethinking)
+data(UCBadmit)
+d <- UCBadmit
+detach(package:rethinking,unload=T)
+library(brms)
+d <-
+  d%>%
+  mutate(male=ifelse(applicant.gender=="male",1,0),
+         dept_id = rep(1:6, each = 2))
+d$successrate=d$admit/d$applications
+sum(d$admit[d$male==1])/sum(d$applications[d$male==1])
+sum(d$admit[d$male==0])/sum(d$applications[d$male==0])
+```
+
+We see in this subset of departments that roughly 45% of male applicants were admitted, while only 30% of female applicants were admitted.
+
+
+
+
+---
+## Berkeley admissions
+
+Because admissions decisions for graduate school are made on a departmental level (not at the school level), it makes sense to examine results of applications by department.
+
+```{r explore}
+d[,c(1,2,3,4,7)]
+```
+
+Hmm, what's going on here?
+
+
+
+
+---
+## Berkeley admissions
+
+Following McElreath's analysis in *Statistical Rethinking*, we start fitting a simple logistic regression model and examine diagnostic measures.
+
+The model for department $i$ and gender $j$ with $n_{admit,ij}$ of $n_{ij}$ applicants admitted is given as:
+
+$$
+\begin{split}
+n_{admit,ij} & \sim \text{Binomial}(n_{ij},\pi_{ij})\\
+\text{logit}(\pi_{ij}) & = \alpha+\beta\text{male}_{ij},
+\end{split}
+$$
+
+where $\alpha \sim N(0,10)$ and $\beta \sim N(0,1)$.
+
+
+
+
+---
+## Another example: 
+
+```{r logreg,cache=TRUE,message=FALSE}
+adm1 <-
+  brm(data = d, family = binomial,
+      admit | trials(applications) ~ 1 + male ,
+      prior = c(prior(normal(0, 10), class = Intercept),
+                prior(normal(0, 1), class = b)),
+      iter = 2500, warmup = 500, cores = 2, chains = 2,
+      seed = 10)
+summary(adm1)
+```
+
+Here it appears male applicants have $e^{0.61}=1.8$ (95% credible interval (1.6, 2.1)) times the odds of admission as female applicants.
+
+
+
+
+
+---
+## Another example: 
+
+We can also put this on the probability scale.
+
+```{r probscale,cache=TRUE}
+post <- posterior_samples(adm1)
+
+post %>%
+  mutate(p_admit_male   = inv_logit_scaled(b_Intercept + b_male),
+         p_admit_female = inv_logit_scaled(b_Intercept),
+         diff_admit     = p_admit_male - p_admit_female) %>%
+  summarise(`2.5%`  = quantile(diff_admit, probs = .025),
+            `50%`   = median(diff_admit),
+            `97.5%` = quantile(diff_admit, probs = .975))
+```
+
+Overall it appears the median probability of admission was 14 percentage points higher for males.
+
+
+
+---
+## Model Checking
+
+Here we take some posterior predictions and plot against the observed proportions in the data. 
+
+Here's the code to do that:
+
+```{r eval=FALSE}
+library(wesanderson)
+library(dutchmasters)
+library(ggplot2)
+d <-
+  d %>%
+  mutate(case = factor(1:12))
+
+p <- 
+  predict(adm1) %>% 
+  as_tibble() %>% 
+  bind_cols(d)
+
+d_text <-
+  d %>%
+  group_by(dept) %>%
+  summarise(case  = mean(as.numeric(case)),
+            admit = mean(admit / applications) + .05)
+```
+
+
+
+
+---
+## Model Checking
+
+..and the rest of the code:
+
+```{r eval=FALSE}
+ggplot(data = d, aes(x = case, y = admit / applications)) +
+  geom_pointrange(data = p, 
+                  aes(y    = Estimate / applications,
+                      ymin = Q2.5     / applications ,
+                      ymax = Q97.5    / applications),
+                  color = wes_palette("Moonrise2")[1],
+                  shape = 1, alpha = 1/3) +
+  geom_point(color = wes_palette("Moonrise2")[2]) +
+  geom_line(aes(group = dept),
+            color = wes_palette("Moonrise2")[2]) +
+  geom_text(data = d_text,
+            aes(y = admit, label = dept),
+            color = wes_palette("Moonrise2")[2],
+            family = "serif") +
+  coord_cartesian(ylim = 0:1) +
+  labs(y     = "Proportion admitted",
+       title = "Posterior validation check") +
+  theme(axis.ticks.x = element_blank())
+
+```
+
+
+
+
+---
+## Model Checking
+
+
+```{r modcheck2,echo=FALSE,fig.height=3.6}
+d <-
+  d %>%
+  mutate(case = factor(1:12))
+
+p <- 
+  predict(adm1) %>% 
+  as_tibble() %>% 
+  bind_cols(d)
+
+d_text <-
+  d %>%
+  group_by(dept) %>%
+  summarise(case  = mean(as.numeric(case)),
+            admit = mean(admit / applications) + .05)
+
+ggplot(data = d, aes(x = case, y = admit / applications)) +
+  geom_pointrange(data = p, 
+                  aes(y    = Estimate / applications,
+                      ymin = Q2.5     / applications ,
+                      ymax = Q97.5    / applications),
+                  color = wes_palette("Moonrise2")[1],
+                  shape = 1, alpha = 1/3) +
+  geom_point(color = wes_palette("Moonrise2")[2]) +
+  geom_line(aes(group = dept),
+            color = wes_palette("Moonrise2")[2]) +
+  geom_text(data = d_text,
+            aes(y = admit, label = dept),
+            color = wes_palette("Moonrise2")[2],
+            family = "serif") +
+  coord_cartesian(ylim = 0:1) +
+  labs(y     = "Proportion admitted",
+       title = "Posterior validation check") +
+  theme(axis.ticks.x = element_blank())
+```
+
+The orange lines connect observed proportions admitted in each department (odd numbers indicate males; even females).
+
+The grey circles indicate point and interval estimates of the model-predicted proportion admitted. Clearly the model fits the data poorly.
+
+
+
+
+---
+## Varying/random intercepts
+
+Based on the plot, we have some big departmental differences. 
+
+Let's specify department as a random effect in the model.
+$$n_{admit,ij} \sim \text{Binomial}(n_{ij},\pi_{ij})$$
+$$\text{logit}(\pi_{ij})=\alpha_{0i}+\beta\text{male}_{ij}$$
+$$\alpha_{0i} \sim N(\alpha,\sigma^2); ~~~ \sigma^2 \sim \text{HalfCauchy}(0,1)$$
+$$\alpha \sim N(0,10) \ \ \text{ and } \ \  \beta \sim N(0,1).$$
+
+
+
+
+
+---
+## Varying/random intercepts
+
+```{r admrint,eval=FALSE}
+adm2 <- 
+  brm(data = d, family = binomial,
+      admit | trials(applications) ~ 1 + male + (1 | dept_id),
+      prior = c(prior(normal(0, 10), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(cauchy(0, 1), class = sd)),
+      iter = 4500, warmup = 500, chains = 3, cores = 3,
+      seed = 13,
+      control = list(adapt_delta = 0.99))
+```
+
+
+
+
+---
+## Varying/random intercepts
+
+.small[
+```{r admrint2,echo=FALSE,cache=TRUE}
+adm2 <- 
+  brm(data = d, family = binomial,
+      admit | trials(applications) ~ 1 + male + (1 | dept_id),
+      prior = c(prior(normal(0, 10), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(cauchy(0, 1), class = sd)),
+      iter = 4500, warmup = 500, chains = 3, cores = 3,
+      seed = 13,
+      control = list(adapt_delta = 0.99))
+adm2$fit #will give estimates of alpha, beta, sigma, b_{0i}=\alpha_{0i}-\alpha
+```
+]
+
+In this model we see no evidence of a difference in admissions probabilities by gender though we do see big departmental variability. 
+
+
+
+
+---
+## Random slopes?
+
+How about random slopes for gender by department?
+
+```{r gendeff,eval=FALSE}
+adm3 <- 
+  brm(data = d, family = binomial,
+      admit | trials(applications) ~ 1 + male + (1 + male | dept_id),
+      prior = c(prior(normal(0, 10), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(cauchy(0, 1), class = sd),
+                prior(lkj(2), class = cor)),
+      iter = 5000, warmup = 1000, chains = 4, cores = 4,
+      seed = 13,
+      control = list(adapt_delta = .99,
+                     max_treedepth = 12))
+adm3$fit
+```
+
+
+
+
+---
+## Random slopes?
+
+.small[
+```{r gendeffb,echo=FALSE,cache=TRUE}
+adm3 <- 
+  brm(data = d, family = binomial,
+      admit | trials(applications) ~ 1 + male + (1 + male | dept_id),
+      prior = c(prior(normal(0, 10), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(cauchy(0, 1), class = sd),
+                prior(lkj(2), class = cor)),
+      iter = 5000, warmup = 1000, chains = 4, cores = 4,
+      seed = 13,
+      control = list(adapt_delta = .99,
+                     max_treedepth = 12))
+adm3$fit
+```
+]
+
+
+
+
+---
+## Diagnostics
+
+Before we get too excited let's take a quick look at the trace plots.
+
+```{r diag, eval=FALSE}
+post <- posterior_samples(adm3, add_chain = T)
+post <- post[,!is.element(colnames(post),c("lp__"))]
+
+post %>% 
+  gather(key, value, -chain, -iter) %>% 
+  mutate(chain = as.character(chain)) %>% 
+  ggplot(aes(x = iter, y = value, group = chain, color = chain)) +
+  geom_line(size = 1/15) +
+  scale_color_manual(values = c("#80A0C7", "#B1934A", "#A65141", "#EEDA9D")) +
+  scale_x_continuous(NULL, breaks = c(1001, 5000)) +
+  ylab(NULL) +
+  theme_pearl_earring +
+  theme(legend.position  = c(.825, .06),
+        legend.direction = "horizontal") +
+  facet_wrap(~key, ncol = 3, scales = "free_y")
+```
+
+
+
+---
+## Diagnostics
+
+```{r diag2, fig.height=4.6,echo=FALSE,cache=TRUE}
+#our friend Kurz's code
+theme_pearl_earring <-
+  theme(text       = element_text(color = "#E8DCCF", family = "Courier"),
+        strip.text = element_text(color = "#E8DCCF", family = "Courier"),
+        axis.text  = element_text(color = "#E8DCCF"),
+        axis.ticks = element_line(color = "#E8DCCF"),
+        line       = element_line(color = "#E8DCCF"),
+        plot.background   = element_rect(fill = "#100F14", color = "transparent"),
+        panel.background  = element_rect(fill = "#100F14", color = "#E8DCCF"),
+        strip.background  = element_rect(fill = "#100F14", color = "transparent"),
+        panel.grid = element_blank(),
+        legend.background = element_rect(fill = "#100F14", color = "transparent"),
+        legend.key        = element_rect(fill = "#100F14", color = "transparent"),
+        axis.line = element_blank())
+
+post <- posterior_samples(adm3, add_chain = T)
+post <- post[,!is.element(colnames(post),c("lp__"))]
+
+post %>% 
+  gather(key, value, -chain, -iter) %>% 
+  mutate(chain = as.character(chain)) %>% 
+  ggplot(aes(x = iter, y = value, group = chain, color = chain)) +
+  geom_line(size = 1/15) +
+  scale_color_manual(values = c("#80A0C7", "#B1934A", "#A65141", "#EEDA9D")) +
+  scale_x_continuous(NULL, breaks = c(1001, 5000)) +
+  ylab(NULL) +
+  theme_pearl_earring +
+  theme(legend.position  = c(.825, .06),
+        legend.direction = "horizontal") +
+  facet_wrap(~key, ncol = 3, scales = "free_y")
+```
+
+
+
+---
+## Random effects
+
+```{r plots,eval=FALSE}
+rbind(coef(adm3)$dept_id[, , 1],
+      coef(adm3)$dept_id[, , 2]) %>% 
+  as_tibble() %>% 
+  mutate(param   = c(paste("Intercept", 1:6), paste("male", 1:6)),
+         reorder = c(6:1, 12:7)) %>% 
+
+  # plot
+  ggplot(aes(x = reorder(param, reorder))) +
+  geom_hline(yintercept = 0, linetype = 3, color = "#8B9DAF") +
+  geom_pointrange(aes(ymin = Q2.5, ymax = Q97.5, y = Estimate, color = reorder < 7),
+                  shape = 20, size = 3/4) +
+  scale_color_manual(values = c("#394165", "#A65141")) +
+  xlab(NULL) +
+  coord_flip() +
+  theme_pearl_earring +
+  theme(legend.position = "none",
+        axis.ticks.y    = element_blank(),
+        axis.text.y     = element_text(hjust = 0))
+```
+
+
+
+
+
+---
+## Random effects
+
+```{r plots2,fig.height=4.3,echo=FALSE}
+rbind(coef(adm3)$dept_id[, , 1],
+      coef(adm3)$dept_id[, , 2]) %>% 
+  as_tibble() %>% 
+  mutate(param   = c(paste("Intercept", 1:6), paste("male", 1:6)),
+         reorder = c(6:1, 12:7)) %>% 
+
+  # plot
+  ggplot(aes(x = reorder(param, reorder))) +
+  geom_hline(yintercept = 0, linetype = 3, color = "#8B9DAF") +
+  geom_pointrange(aes(ymin = Q2.5, ymax = Q97.5, y = Estimate, color = reorder < 7),
+                  shape = 20, size = 3/4) +
+  scale_color_manual(values = c("#394165", "#A65141")) +
+  xlab(NULL) +
+  coord_flip() +
+  theme_pearl_earring +
+  theme(legend.position = "none",
+        axis.ticks.y    = element_blank(),
+        axis.text.y     = element_text(hjust = 0))
+```
+
+We see much more variability in the random intercepts than in the random slopes.
+
+
+
+---
+## What happened at Berkeley?
+
+What happened at Berkeley?  It actually doesn't require too much sophisticated modeling.
+
+What we are seeing is just Simpson's paradox.
+
+```{r datapeek}
+d[,c(1,2,3,4,8)]
+```
+
+
+
+
+---
+## What happened at Berkeley?
+
+In the raw data, women had higher acceptance probabilities in 4 of the 6 departments.
+
+However, the departments to which they applied in higher numbers were the departments that had lower overall acceptance rates.
+
+What happened is that women were more likely to apply do departments like English, which have trouble supporting grad students, and they were less likely to apply to STEM departments, which had more plentiful funding for graduate students.
+
+The men, on the other hand, were much more likely to apply to the STEM departments that had higher acceptance rates.
+
+
+
+
+---
+
+class: center, middle
+
+# What's next?
+
+### Move on to the readings for the next module!
+
+
+
+
