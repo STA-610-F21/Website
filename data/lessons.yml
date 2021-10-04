@@ -205,7 +205,7 @@ lessons:
     slidespdf: "3-4-nested-vs-nonnested-random-effects.pdf"
     
     
-  - title: "Module 3.5a: Review of GLMs"
+  - title: "Module 3.4b: Review of GLMs"
     
     
   - date: "Fri, Oct 8"
@@ -219,7 +219,7 @@ lessons:
     
     
   - date: "Wed, Oct 13"
-    title: "Module 3.5b: Logistic mixed effects model (Part I)"
+    title: "Module 3.5: Logistic mixed effects model (Part I)"
     slides: "3-5-logistic-mixed-effects-model-I.html"
     slidespdf: "3-5-logistic-mixed-effects-model-I.pdf"
     
