@@ -244,8 +244,8 @@ lessons:
   - week: "WEEK 9"
     date: "Mon, Oct 18"
     title: "Module 3.8: Multilevel categorical outcomes"
-    #slides: "3-8-categorical-outcomes.html"
-    #slidespdf: "3-8-categorical-outcomes.pdf"
+    slides: "3-8-categorical-outcomes.html"
+    slidespdf: "3-8-categorical-outcomes.pdf"
     
     
   - date: "DELIVERABLES:"

@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>STA 610L: Module 3.8</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Olanrewaju Michael Akande" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# STA 610L: Module 3.8
+## Multilevel categorical outcomes
+### Dr. Olanrewaju Michael Akande
+
+---
+
+
+
+
+
+
+
+
+
+## Categorical data
+
+We've focused on hierarchical models for binary and continuous data.
+
+Of course, our data may follow a wide variety of distributions.
+
+Today we'll consider extensions to categorical data, as interpretations of these models may be less straightforward than extensions to say count data.
+
+Examples of categorical data: beverage order in a restaurant (water, tea, coffee, soda, wine, beer, mixed drink) or your favorite Duke stats professor.
+
+First we will review simple logistic regression, and then extend the ideas to multiple outcomes.
+
+
+
+---
+## Recall logistic regression
+
+Recall that for the simple logistic regression model, we had 
+.block[
+.small[
+$$
+y_i | x_i \sim \textrm{Bernoulli}(\pi_i); \ \ \ \textrm{log}\left(\dfrac{\pi_i}{1-\pi_i}\right) = \beta_0 + \beta_1 x_i
+$$
+]
+]
+
+  for each observation `\(i = 1, \ldots, n\)`.
+ 
+To get `\(\pi_i\)`, we solve the logit equation above to get
+.block[
+.small[
+`$$\pi_i = \dfrac{e^{\beta_0 + \beta_1 x_i}}{1 + e^{\beta_0 + \beta_1 x_i}}$$`
+]
+]
+
+Consider `\(Y=0\)` a baseline category. Suppose `\(\Pr[y_i = 1 | x_i] = \pi_{i1}\)` and `\(\Pr[y_i = 0 | x_i] = \pi_{i0}\)`. Then, the logit expression is essentially
+.block[
+.small[
+`$$\textrm{log}\left(\dfrac{\pi_{i1}}{\pi_{i0}}\right) = \beta_0 + \beta_1 x_i.$$`
+]
+]
+
+`\(e^{\beta_1}\)` is thus the (multiplicative) change in odds of `\(y = 1\)` over the baseline `\(y = 0\)` when increasing `\(x\)` by one unit.
+
+
+
+---
+## Multinomial logistic regression
+
+Suppose we have a nominal-scale response variable `\(Y\)` with `\(K\)` categories, that is, `\(Y = 1, \ldots, K\)`.
+
+First, for the .hlight[random component], we need a distribution to describe `\(Y\)`.
+
+A standard option for this is the .hlight[multinomial distribution]. The distribution gives us a way to characterize
+.block[
+.small[
+`$$\Pr[y_i = 1] = \pi_1, \ Pr[y_i = 2] = \pi_2, \ \ldots, \ \Pr[y_i = K] = \pi_K, \ \ \ \textrm{where} \ \ \ \sum^K_{k=1} \pi_k = 1.$$`
+]
+]
+
+When there are no predictors, the best guess for each `\(\pi_k\)` is the sample proportion of cases with `\(y_i = k\)`, that is,
+.block[
+.small[
+`$$\hat{\pi}_k = \dfrac{\mathbf{1}[y_i = k]}{n}.$$`
+]
+]
+
+When we have predictors, then we want
+.block[
+.small[
+`$$\Pr[y_i = 1 | \boldsymbol{x}_i] = \pi_{i1}, \ \Pr[y_i = 2 | \boldsymbol{x}_i] = \pi_{i2}, \ \ldots, \ \Pr[y_i = K | \boldsymbol{x}_i] = \pi_{iK}.$$`
+]
+]
+
+
+
+---
+## Multinomial logistic regression
+
+That is, we want the `\(\pi_k\)`'s to be functions of the predictors, like in logistic regression.
+
+Turns out we can use the same .hlight[link function], that is the logit function, if we set one of the levels as the baseline.
+
+Pick a baseline outcome level, say `\(Y=1\)`.
+
+Then, the multinomial logistic regression is defined as a set of logistic regression models for each probability `\(\pi_k\)`, compared to the baseline, where `\(k \geq 2\)`.
+
+That is,
+.block[
+.small[
+`$$\textrm{log}\left(\dfrac{\pi_{ik}}{\pi_{i1}}\right) = \beta_{0k} + \beta_{1k} x_{i1} + \beta_{2k} x_{i2} + \ldots + \beta_{pk} x_{ip}; \ \ \ k \geq 2.$$`
+]
+]
+
+We therefore have `\(K-1\)` .hlight[separate logistic regressions] in this setup.
+
+
+
+---
+## Multinomial logistic regression
+
+The equation for each `\(\pi_{ik}\)` is given by
+.block[
+.small[
+`$$\pi_{ik} = \dfrac{e^{\beta_{0k} + \beta_{1k} x_{i1} + \beta_{2k} x_{i2} + \ldots + \beta_{pk} x_{ip}}}{1 + \sum^K_{k=2} e^{\beta_{0k} + \beta_{1k} x_{i1} + \beta_{2k} x_{i2} + \ldots + \beta_{pk} x_{ip}}} \ \ \ \textrm{for} \ \ \ k \geq 2$$`
+]
+]
+
+  and
+.block[
+.small[
+`$$\pi_{i1} = 1-\sum^K_{k=2} \pi_{ik}.$$`
+]
+]
+
+Also, we can extract the log odds for comparing other pairs of the response categories `\(k\)` and `\(k^\star\)`, since
+.block[
+.small[
+$$
+`\begin{split}
+\textrm{log}\left(\dfrac{\pi_{ik}}{\pi_{ik^\star}}\right) &amp; = \textrm{log}\left(\pi_{ik}\right) - \textrm{log}\left(\pi_{ik^\star}\right) \\
+ &amp; = \textrm{log}\left(\pi_{ik}\right) - \textrm{log}\left(\pi_{i1}\right) - \textrm{log}\left(\pi_{ik^\star}\right) + \textrm{log}\left(\pi_{i1}\right) \\
+&amp; = \left[ \textrm{log}\left(\pi_{ik}\right) - \textrm{log}\left(\pi_{i1}\right) \right] - \left[ \textrm{log}\left(\pi_{ik^\star}\right) - \textrm{log}\left(\pi_{i1}\right) \right] \\
+&amp; = \textrm{log}\left(\dfrac{\pi_{ik}}{\pi_{i1}}\right) - \textrm{log}\left(\dfrac{\pi_{ik^\star}}{\pi_{i1}}\right).
+\end{split}`
+$$
+]
+]
+
+
+---
+## Multinomial logistic regression
+
+Each coefficient has to be interpreted relative to the baseline.
+
+Each `\(\beta_{0k}\)` represents the baseline log-odds of general preference for `\(Y=k\)` over `\(Y=1\)`.
+
+That is, for a continuous predictor,
+  + `\(\beta_{1k}\)` is the .hlight[increase (or decrease) in the log-odds] of `\(Y=k\)` versus `\(Y=1\)` when increasing `\(x_1\)` by one unit.
+  
+  + `\(e^{\beta_{1k}}\)` is the .hlight[multiplicative increase (or decrease) in the odds] of `\(Y=k\)` versus `\(Y=1\)` when increasing `\(x_1\)` by one unit.
+
+Exponentiate confidence intervals from log-odds scale to get on the odds scale.
+
+
+---
+## Multinomial logistic regression
+
+Whereas, for a binary predictor,
+
+  + `\(\beta_{1k}\)` is the .hlight[log-odds] of `\(Y=k\)` versus `\(Y=1\)` for the group with `\(x_1 = 1\)`, compared to the group with `\(x_1 = 0\)`.
+  
+  + `\(e^{\beta_{1k}}\)` is the .hlight[odds] of `\(Y=k\)` versus `\(Y=1\)` for the group with `\(x_1 = 1\)`, compared to the group with `\(x_1 = 0\)`.
+
+Again, exponentiate confidence intervals from log-odds scale to get on the odds scale.
+
+
+---
+## Model diagnostics
+
+Use binned residuals like in logistic regression.
+
+Each outcome level has its own raw residual. For each outcome level `\(k\)`,
+
+  + make an indicator variable equal to one whenever `\(Y = k\)` and equal to zero otherwise;
+  
+  + compute the predicted probability that `\(Y=k\)` for each record; and
+  
+  + compute the raw residual = indicator value - predicted probability.
+
+For each outcome level, make bins of predictor values and plot average value of predictor versus the average raw residual. Look for patterns.
+
+You can still compute .hlight[accuracy] just as in the logistic regression model.
+
+ROC on the other hand is not so straightforward; we can draw a different ROC curve for each level of the response variable. We can also draw pairwise ROC curves.
+
+
+
+
+---
+## Hierarchical extension
+
+Consider the model:
+`$$\textrm{log}\left(\dfrac{\pi_{ik}}{\pi_{i1}}\right) = \beta_{0k} + \beta_{1k} x_{i}; \ \ \ k \geq 2.$$`
+
+
+Suppose we now have multiple measurements `\(j\)` per participant `\(i\)` in a study or per group. 
+
+For example, we might ask about instructor preference for a list of courses.
+
+How might we add random effects to this model?
+
+
+
+---
+## Hierarchical extension
+
+You don't want to assume that just because a participant has more of a tendency to select category 2 than category 1, they will also have more of a tendency to select category 3 than category 1.
+
+Thus a single random intercept per person may be insufficient.
+
+We want to allow `\(k-1\)` random intercepts per person.
+
+That is,
+`$$\textrm{log}\left(\dfrac{\pi_{ijk}}{\pi_{ij1}}\right) = \beta_{0k} + \beta_{1k} x_{ij} + b_{ik}; \ \ \ k \geq 2, ~~ b_{ik}\sim N(0,\sigma^2_k).$$`
+
+
+---
+## Example: clarity of inhaler instructions
+
+Ezzet and Whitehead (1991) present data from an industry-sponsored clinical trial designed to evaluate the clarity of two different sets of instructions for using two different inhalers (the variable .hlight[treat] indicates the inhaler used and is coded `\(0.5\)` and `\(-0.5\)`) to deliver an asthma drug.
+
+Each participant rated each inhaler; the variable .hlight[period] indicates whether the rating is from the first or second inhaler evaluated (in case participants learned from the first evaluation).
+
+The order of evaluation was randomized across subjects.
+
+After using a device, the participant rated (variable name: .hlight[rating]) the instruction leaflet as
+  + 1 = easy to understand;
+  + 2 = only clear after rereading;
+  + 3 = not very clear;
+  + 4 = confusing.
+
+
+---
+## Clarity of inhaler instructions
+
+
+```r
+data(inhaler); head(inhaler)
+```
+
+```
+##   subject rating treat period carry
+## 1       1      1   0.5    0.5     0
+## 2       2      1   0.5    0.5     0
+## 3       3      1   0.5    0.5     0
+## 4       4      1   0.5    0.5     0
+## 5       5      1   0.5    0.5     0
+## 6       6      1   0.5    0.5     0
+```
+
+```r
+#note, carry variable is a contrast to indicate possible carry over effects
+#we won't use the variable
+inhaler$treat &lt;- as.factor(inhaler$treat)
+inhaler$period &lt;- as.factor(inhaler$period)
+inhaler$rating &lt;- as.ordered(inhaler$rating)
+table(inhaler$treat)
+```
+
+```
+## 
+## -0.5  0.5 
+##  286  286
+```
+
+```r
+table(inhaler$treat, inhaler$period)
+```
+
+```
+##       
+##        -0.5 0.5
+##   -0.5  142 144
+##   0.5   144 142
+```
+
+
+
+---
+## Clarity of inhaler instructions
+
+
+```r
+ggplot(data=inhaler, aes(x=rating)) +
+geom_bar(stat="count")+facet_wrap(~treat)
+```
+
+&lt;img src="3-8-categorical-outcomes_files/figure-html/plotresponses-1.png" style="display: block; margin: auto;" /&gt;
+
+We see equal numbers in each group; it seems that the inhaler insert labeled 0.5 may have been easier to understand.
+
+
+
+
+
+---
+## Clarity of inhaler instructions
+
+
+```r
+ggplot(data=inhaler, aes(x=rating)) +
+geom_bar(stat="count")+facet_wrap(~period)
+```
+
+&lt;img src="3-8-categorical-outcomes_files/figure-html/plotresponses2-1.png" style="display: block; margin: auto;" /&gt;
+
+Period does not seem to have much impact on the ratings.
+
+
+
+
+---
+## Model
+
+Let's consider the model
+$$
+`\begin{split}
+\textrm{log}\left(\dfrac{\pi_{ijk}}{\pi_{ij1}}\right) &amp; = \beta_{0k} + \beta_{1k} t_{ij} + \beta_{2k} p_{ij} + b_{ik}; \ \ \ k = 2,3,4;\\
+b_{ik} &amp; \sim N(0,\sigma^2_k).
+\end{split}`
+$$
+
+where
+  + `\(t_{ij}\)` indicates the inhaler insert used by individual `\(i\)` in period `\(j\)`, and
+  
+  + `\(p_{ij}\)` indicates the corresponding period of measurement.
+
+
+
+
+
+---
+## Implementation in R
+
+
+```r
+#Note that these models can take a while to run
+#They can also have relatively low ESS
+#Default priors:
+  #Half t_3 scale 10 on grand intercept, 
+  #Half t_3, scale 10 on SD,
+  #Uniform improper on slopes
+m1 &lt;- brm(rating ~ treat + period + (1|subject),
+          data=inhaler,
+          family=categorical(),
+          control=list(adapt_delta=0.99),
+          chains=3)
+summary(m1)
+```
+
+
+
+---
+## Results
+
+
+```
+##  Family: categorical 
+##   Links: mu2 = logit; mu3 = logit; mu4 = logit 
+## Formula: rating ~ treat + period + (1 | subject) 
+##    Data: inhaler (Number of observations: 572) 
+##   Draws: 3 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup draws = 3000
+## 
+## Group-Level Effects: 
+## ~subject (Number of levels: 286) 
+##                   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sd(mu2_Intercept)     1.29      0.28     0.78     1.84 1.00      559      980
+## sd(mu3_Intercept)     2.09      1.24     0.16     4.83 1.01      255      446
+## sd(mu4_Intercept)     1.07      0.86     0.03     3.29 1.01      345      533
+## 
+## Population-Level Effects: 
+##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## mu2_Intercept    -0.37      0.20    -0.78     0.01 1.00     3213     2389
+## mu3_Intercept    -4.17      1.50    -7.82    -2.22 1.00      327      543
+## mu4_Intercept    -4.38      1.24    -7.66    -2.73 1.00      607      645
+## mu2_treat0.5     -1.11      0.23    -1.57    -0.67 1.00     2218     1933
+## mu2_period0.5     0.10      0.21    -0.31     0.50 1.00     4379     2028
+## mu3_treat0.5     -3.03      1.05    -5.42    -1.32 1.00      879      899
+## mu3_period0.5     0.29      0.68    -1.15     1.60 1.00     2239     1022
+## mu4_treat0.5     -1.66      0.92    -3.76    -0.07 1.00     3099     1783
+## mu4_period0.5     0.65      0.82    -0.88     2.35 1.00     2760     1516
+## 
+## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).
+```
+
+
+
+&lt;!-- --- --&gt;
+&lt;!-- ## Posterior estimates --&gt;
+
+&lt;!-- |Parameter | Posterior Mean  | 95% CrI | --&gt;
+&lt;!-- |--------|----------:|------------:| --&gt;
+&lt;!-- | `\(\alpha_2\)` | -0.89 | (-1.20, -0.61) | --&gt;
+&lt;!-- | `\(\alpha_3\)` | -8.94 | (-19.00,-3.88) | --&gt;
+&lt;!-- | `\(\alpha_4\)` | -7.91 | (-20.12, -3.75) | --&gt;
+&lt;!-- | `\(\beta_{2,trt}\)` | -1.13 | (-1.57,-0.70) | --&gt;
+&lt;!-- | `\(\beta_{3,trt}\)` | -4.30 | (-8.50, -1.79) | --&gt;
+&lt;!-- | `\(\beta_{4,trt}\)` | -2.31 | (-5.98,-0.15) | --&gt;
+&lt;!-- | `\(\beta_{2,per}\)` | 0.10 | (-0.30,0.50) | --&gt;
+&lt;!-- | `\(\beta_{3,per}\)` | 0.15 | (-2.03,1.90) | --&gt;
+&lt;!-- | `\(\beta_{4,per}\)` | 1.18 | (-0.80, 4.44) | --&gt;
+&lt;!-- | `\(\sigma_2\)` | 1.33 | (0.80, 1.91) | --&gt;
+&lt;!-- | `\(\sigma_3\)` | 4.17 | (0.87, 9.63) | --&gt;
+&lt;!-- | `\(\sigma_4\)` | 2.87 | (0.09, 9.07) | --&gt;
+
+
+
+
+---
+## Results
+
+
+Here we see evidence that when using the inhaler and instructions labeled 0.5, participants .hlight[are more likely] than when using the other inhaler and instructions (labeled -0.5), .hlight[to select the easy rating] than any of the other options.
+
+It's hard to estimate these variance components -- data are sparse for the higher categories.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+## Ordinal responses
+
+Suppose the categories of our response variable has a natural ordering.
+
+Let's start with data from Example 6.2.2 from Alan Agresti's [An Introduction to Categorical Data Analysis, Second Edition](https://find.library.duke.edu/catalog/DUKE005142588) to demonstrate this.
+
+This data is from a General Social Survey. Clearly, political ideology has a five-point ordinal scale, ranging from very liberal to very conservative.
+
+.mini[
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;th&gt; &lt;/th&gt;
+    &lt;th&gt; &lt;/th&gt;
+    &lt;th colspan="5"&gt;Political Ideology&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;th colspan="2"&gt;&lt;/th&gt;
+    &lt;td style="text-align:center"&gt;Very Liberal&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;Slightly Liberal&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;Moderate&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;Slightly Conservative&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;Very Conservative&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;th rowspan="2"&gt;Female&lt;/th&gt;
+    &lt;td height="50px"&gt;Democratic&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;44&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;47&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;118&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;23&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;32&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td height="50px"&gt;Republican&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;18&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;28&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;86&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;39&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;48&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;th rowspan="2"&gt;Male&lt;/th&gt;
+    &lt;td height="50px"&gt;Democratic&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;36&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;34&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;53&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;18&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;23&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td height="50px"&gt;Republican&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;12&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;18&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;62&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;45&lt;/td&gt;
+    &lt;td style="text-align:center"&gt;51&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+]
+  
+  
+
+---
+## Cumulative logits
+
+When we have ordinal response with categories `\(1, 2, \ldots, K\)`, we still want to estimate
+.block[
+.small[
+`$$\Pr[y_i = 1 | \boldsymbol{x}_i] = \pi_{i1}, \ \Pr[y_i = 2 | \boldsymbol{x}_i] = \pi_{i2}, \ \ldots, \ \Pr[y_i = K | \boldsymbol{x}_i] = \pi_{iK}.$$`
+]
+]
+
+However, we need to use models that can reflect the ordering
+.block[
+.small[
+`$$\Pr[y_i\leq 1 | \boldsymbol{x}_i] \leq \Pr[y_i\leq 2 | \boldsymbol{x}_i] \leq \ldots \leq \Pr[y_i \leq K | \boldsymbol{x}_i] = 1.$$`
+]
+]
+
+  *Notice that the ordering of probabilities is not for the actual marginal probabilities, but rather the cumulative probabilities.*
+
+The multinomial logistic regression does not enforce this.
+
+Instead, we can focus on building models for the cumulative logits, that is, models for 
+.block[
+.small[
+`$$\textrm{log}\left(\dfrac{\Pr[y_i \leq k | \boldsymbol{x}_i]}{\Pr[y_i &gt; k | \boldsymbol{x}_i]}\right) = \textrm{log}\left(\dfrac{\pi_{i1} + \pi_{i2} + \ldots + \pi_{ik}}{\pi_{i(k+1)} + \pi_{i(k+2)} + \ldots + \pi_{iK}}\right), \ \ \ k = 1, \ldots, K-1.$$`
+]
+]
+
+
+
+
+---
+## Proportional odds model
+
+This leads us to the .hlight[proportional odds model], written as:
+.block[
+.small[
+`$$\textrm{log}\left(\dfrac{\Pr[y_i \leq k| \boldsymbol{x}_i]}{\Pr[y_i &gt; k| \boldsymbol{x}_i]}\right) = \beta_{0k} + \beta_{1} x_{i1} + \beta_{2} x_{i2} + \ldots + \beta_{p} x_{ip}, \ \ \ k = 1, \ldots, K-1.$$`
+]
+]
+
+  *There is no need to model `\(\Pr[y_i \leq K]\)` since it is necessarily equal to 1.*
+
+Notice that this model looks like a binary logistic regression in which we combine the first `\(k\)` categories to form a single category (say 1) and the remaining categories to form a second category (say 0).
+
+Since `\(\beta_0\)` is the only parameter indexed by `\(k\)`, the `\(K-1\)` logistic regression curves essentially have the same shapes but different "intercepts".
+
+That is, the effect of the predictors is identical for all `\(K - 1\)` cumulative log odds.
+
+This is therefore, a .hlight[more parsimonious model] (both in terms of estimation and interpretation) than the multinomial logistic regression, when it fits the data well.
+
+
+
+---
+## Proportional odds model
+
+The probabilities we care about are quite easy to extract, since each
+.block[
+.small[
+`$$\Pr[y_i = k| \boldsymbol{x}_i] = \Pr[y_i \leq k| \boldsymbol{x}_i] - \Pr[y_i \leq k - 1| \boldsymbol{x}_i], \ \ \ k = 2, \ldots, K,$$`
+]
+]
+
+  with `\(\Pr[y_i \leq 1| \boldsymbol{x}_i] = \Pr[y_i = 1| \boldsymbol{x}_i]\)`.
+
+Let's focus first on a single continuous predictor, that is,
+.block[
+.small[
+`$$\textrm{log}\left(\dfrac{\Pr[y_i \leq k| x_i]}{\Pr[y_i &gt; k| x_i]}\right) = \beta_{01} + \beta_{1} x_{i1}, \ \ \ k = 1, \ldots, K-1.$$`
+]
+]
+
+  Here, `\(\beta_1 &gt; 0\)`, actually means that a 1 unit increase in `\(x\)` makes  the larger values of `\(Y\)` less likely. 
+  
+This can seem counter-intuitive in many examples, thus, many books and software packages often write 
+.block[
+.small[
+`$$\textrm{log}\left(\dfrac{\Pr[y_i \leq k| x_i]}{\Pr[y_i &gt; k| x_i]}\right) = \beta_{01} - \beta_{1} x_{i1}, \ \ \ k = 1, \ldots, K-1$$`
+]
+]
+
+  instead. Always check the documentation of your function to ascertain the representation of the model.
+  
+
+---
+## Proportional odds model
+
+Suppose we have `\(K=5\)`, `\(\beta_1 = 1.1\)`, and `\((\beta_{01},\beta_{02},\beta_{03},\beta_{04}) = (0.5,1,2,2.5)\)` in the first representation
+.block[
+.small[
+`$$\textrm{log}\left(\dfrac{\Pr[y_i \leq k| x_i]}{\Pr[y_i &gt; k| x_i]}\right) = \beta_{0j} + \beta_{1} x_{i1}, \ \ \ k = 1, \ldots, 4,$$`
+]
+]
+
+  the cumulative probabilities would look like:
+
+&lt;img src="3-8-categorical-outcomes_files/figure-html/unnamed-chunk-3-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+## Proportional odds model
+
+But with `\(K=5\)`, and the same values `\(\beta_1 = 1.1\)`, and `\((\beta_{01},\beta_{02},\beta_{03},\beta_{04}) = (0.5,1,2,2.5)\)` in the second representation
+.block[
+.small[
+`$$\textrm{log}\left(\dfrac{\Pr[y_i \leq k| x_i]}{\Pr[y_i &gt; k| x_i]}\right) = \beta_{0j} - \beta_{1} x_{i1}, \ \ \ k = 1, \ldots, 4,$$`
+]
+]
+
+  the cumulative probabilities would look like:
+
+&lt;img src="3-8-categorical-outcomes_files/figure-html/unnamed-chunk-4-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+## Proportional odds model
+
+Take our example on political ideology for instance. Suppose we fit the model 
+.block[
+.small[
+`$$\textrm{log}\left(\dfrac{\Pr[\textrm{ideology}_i \leq k| x_i]}{\Pr[\textrm{ideology}_i &gt; k| x_i]}\right) = \beta_{0k} - \beta_{1} x_{i1}, \ \ \ k = 1, \ldots, 4,$$`
+]
+]
+
+  where `\(x\)` is an indicator variable for political party, with `\(x = 1\)` for Democrats and `\(x = 0\)` for Republicans.
+
+Then,
+  + For any `\(k\)`, `\(\beta_{1}\)` is the log-odds of a Democrat, when compared to a Republican, of .hlight[being more conservative] than `\(j\)` .hlight[compared to being more liberal] than `\(j\)`.
+
+  + For any `\(k\)`, `\(e^{\beta_{1}}\)` is the odds of a Democrat, when compared to a Republican, of .hlight[being more conservative] than `\(j\)` .hlight[compared to being more liberal] than `\(j\)`.
+
+If `\(\beta_{1} &gt; 0\)`, a Democrat's response .hlight[is more likely than a Republican's response] to be in the conservative direction than in the liberal direction.
+
+
+
+
+---
+## Hierarchical extension
+
+Again consider the model
+`$$\textrm{log}\left(\dfrac{\Pr[y_i \leq k| x_i]}{\Pr[y_i &gt; k| x_i]}\right) = \beta_{0k} - \beta_{1} x_{i}, \ \ \ k = 1, \ldots, K-1.$$`
+
+Just as before, it is relatively straightforward to consider extensions to this model.
+
+Unlike before however, it makes sense to have one random intercept per person, since we have ordinal responses.
+
+So, we can write
+$$
+`\begin{split}
+\textrm{log}\left(\dfrac{\Pr[y_{ij} \leq k| x_{ij}]}{\Pr[y_{ij} &gt; k| x_{ij}]}\right) &amp; = \beta_{0k} - \left[ \beta_{1} x_{ij} + b_{i} \right]; \ \ \ k = 1, \ldots, K-1;\\
+\\
+b_{i} &amp; \sim N(0,\sigma^2).
+\end{split}`
+$$
+
+
+
+
+
+---
+## Back to inhaler data
+
+Recall that the outcome from the inhaler data is actually ordinal.
+
+That is,
+  + 1 = easy to understand
+  
+  + 2 = only clear after rereading
+  
+  + 3 = not very clear
+  
+  + 4 = confusing.
+
+Thus, it makes sense to also consider a proportional odds model here.
+
+
+
+
+
+---
+## Model
+
+We can then fit the model:
+$$
+`\begin{split}
+\textrm{log}\left(\dfrac{\Pr[y_{ij} \leq k| x_{ij}]}{\Pr[y_{ij} &gt; k| x_{ij}]}\right) &amp; = \beta_{0k} - \left[\beta_{1} t_{ij} + \beta_{2} p_{ij} + b_{i} \right]; \ \ \ k = 1,2,3;\\
+\\
+b_{i} &amp; \sim N(0,\sigma^2).
+\end{split}`
+$$
+
+where
+  + `\(t_{ij}\)` indicates the inhaler insert used by individual `\(i\)` in period `\(j\)`, and
+  
+  + `\(p_{ij}\)` indicates the corresponding period of measurement.
+
+
+
+
+
+---
+## Implementation in R
+
+
+```r
+#BRMS follows the convention I mentioned earlier with the -ve slopes
+#so need to be careful when interpreting the model
+m2 &lt;- brm(rating ~ treat + period + (1|subject),
+          data=inhaler,
+          family=cumulative(logit),
+          control=list(adapt_delta=0.95))
+summary(m2)
+```
+
+
+
+---
+## Results
+
+
+```
+##  Family: cumulative 
+##   Links: mu = logit; disc = identity 
+## Formula: rating ~ treat + period + (1 | subject) 
+##    Data: inhaler (Number of observations: 572) 
+##   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup draws = 4000
+## 
+## Group-Level Effects: 
+## ~subject (Number of levels: 286) 
+##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sd(Intercept)     1.19      0.24     0.70     1.65 1.00      698     1333
+## 
+## Population-Level Effects: 
+##              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## Intercept[1]     0.15      0.18    -0.20     0.49 1.00     6442     3335
+## Intercept[2]     3.29      0.31     2.70     3.93 1.00     2122     2595
+## Intercept[3]     4.59      0.45     3.76     5.52 1.00     2739     3039
+## treat0.5        -1.28      0.21    -1.71    -0.88 1.00     3305     2753
+## period0.5        0.20      0.19    -0.17     0.58 1.00     8327     2579
+## 
+## Family Specific Parameters: 
+##      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## disc     1.00      0.00     1.00     1.00   NA       NA       NA
+## 
+## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).
+```
+
+
+&lt;!-- --- --&gt;
+&lt;!-- ## Posterior estimates --&gt;
+
+&lt;!-- |Parameter | Posterior Mean  | 95% CrI | --&gt;
+&lt;!-- |--------|----------:|------------:| --&gt;
+&lt;!-- | `\(\alpha_1\)` | 0.71 | (0.46, 1.00) | --&gt;
+&lt;!-- | `\(\alpha_2\)` | 3.93 | (3.34,4.60) | --&gt;
+&lt;!-- | `\(\alpha_3\)` | 5.28 | (4.42, 6.25) | --&gt;
+&lt;!-- | `\(\beta_{trt}\)` | 1.31 | (0.89,1.74) | --&gt;
+&lt;!-- | `\(\beta_{per}\)` | -0.21 | (-0.60, 0.18) | --&gt;
+&lt;!-- | `\(\sigma\)` | 1.25 | (0.77, 1.73) | --&gt;
+
+
+---
+## Results
+
+Here we see evidence that when using the inhaler and instructions labeled 0.5, participants are more likely than when using the other inhaler and instructions (labeled -0.5) to select the "easy" rating than any of the other options.
+
+Since `\(\beta_{1} &lt; 0\)`, that is `\(-1.27\)`, those with the 0.5 inhaler .hlight[are more likely than] to be in the "easy" direction than in the "confusing" direction, those with the -0.5 inhaler.
+
+So we have, with the 0.5 inhaler, participants have `\(1.27 \text{ with CI: }(0.88, 1.69)\)` times the odds of picking "easy" versus the other 3 categories.
+
+They also then have `\(1.27 \text{ with CI: }(0.88, 1.69)\)` times the odds of picking the first two categories, that is "easy or only clear after rereading", versus the other 2 categories. And so on...
+
+Again, there's not much of a learning effect reflected in the period estimate.
+
+
+
+
+
+---
+
+class: center, middle
+
+# What's next?
+
+### Move on to the readings for the next module!
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
