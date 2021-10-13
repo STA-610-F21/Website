@@ -456,24 +456,30 @@ model3 &lt;- glmer(bush ~ black + female + edu_label*age_label + (1|state_label)
 ## Model failed to converge with max|grad| = 0.00802313 (tol = 0.002, component 1)
 ```
 
-We have a rank deficient model. Also, it looks like we have a convergence issue.
+Looks like we have a convergence issue. These convergence issues are really common when using `glmer`.
 
-These issues can happen. We have so many parameters to estimate from the interaction terms `edu_label*age_label` (16 actually), and it looks like that's causing a problem.
+Here we have so many parameters to estimate from the interaction terms `edu_label*age_label` (16 actually), and it looks like that's causing a problem.
 
+Now, there are a few potential reasons and fixes for this problem (see [this link](https://rstudio-pubs-static.s3.amazonaws.com/33653_57fc7b8e5d484c909b615d8633c01d51.html)) but we'll see how we can actually take advantage of the properties of our hierarchical model to get around the issue.
 
+**Side note:** if you suspect your design matrix is not full rank, you can do a quick check using the `rankMatrix` function in the `Matrix` package.
 
 
 
 ---
-## Note on estimation
+## Quick note on estimation
 
 ML estimation is carried out typically using adaptive Gaussian quadrature.
 
-To improve accuracy over many package defaults (Laplace approximation), increase the number of quadrature points to be greater than one.
+To improve accuracy, many packages (default is usually Laplace approximation) increase the number of quadrature points to be greater than one.
 
 Note that some software packages (including the .hlight[glmer] function in the .hlight[lme4] package) require Laplace approximation with Gaussian quadrature if the number of random effects is more than 1 for the sake of computational efficiency.
 
-It is possible to tweak the optimizer in the .hlight[glmer] function in particular. Read more about the [BOBYQA](https://en.wikipedia.org/wiki/BOBYQA) optimizer at your leisure.
+The main point though is that it is possible to tweak the approximation, and specifically the optimizer, in the .hlight[glmer] function, so that the usual go-to solution for getting around convergence issues is to simply change the optimizer.
+
+Read more about the [BOBYQA](https://en.wikipedia.org/wiki/BOBYQA) optimizer in particular at your leisure.
+
+**My take:** as I have mentioned before, hierarchical modeling is one of the areas where leaning Bayesian is a huge plus; not having to deal with convergence issues is one of them.
 
 
 
@@ -508,7 +514,7 @@ which also does not converge.
 
 We are unable to include education and age in this version of the model. Could be that we have too little `\(\textrm{bush}_i = 1\)` or `\(0\)` values for certain combinations? You should check!
 
-Now, there are a few potential reasons and fixes for this problem (see [this link](https://rstudio-pubs-static.s3.amazonaws.com/33653_57fc7b8e5d484c909b615d8633c01d51.html)) but we can actually take advantage of the properties of our hierarchical model to get around the issue.
+As mentioned before, we can actually take advantage of the properties of our hierarchical model to get around the issue.
 
 How about we treat those as varying/random effects instead? Let's try
 
@@ -530,6 +536,10 @@ This is more of an adhoc fix, but it often works really well in practice.
 ## 1988 elections analysis
 
 .small[
+
+```r
+summary(model3)
+```
 
 ```
 ## Generalized linear mixed model fit by maximum likelihood (Laplace

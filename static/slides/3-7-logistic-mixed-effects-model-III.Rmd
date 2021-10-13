@@ -185,10 +185,10 @@ We see in this subset of departments that roughly 45% of male applicants were ad
 Because admissions decisions for graduate school are made on a departmental level (not at the school level), it makes sense to examine results of applications by department.
 
 ```{r explore}
-d[,c(1,2,3,4,7)]
+d
 ```
 
-Hmm, what's going on here?
+Hmm, what's going on here with the success rates?
 
 
 
@@ -588,8 +588,9 @@ What happened at Berkeley?  It actually doesn't require too much sophisticated m
 
 What we are seeing is just Simpson's paradox.
 
+
 ```{r datapeek}
-d[,c(1,2,3,4,8)]
+d[,-9]
 ```
 
 
@@ -602,7 +603,7 @@ In the raw data, women had higher acceptance probabilities in 4 of the 6 departm
 
 However, the departments to which they applied in higher numbers were the departments that had lower overall acceptance rates.
 
-What happened is that women were more likely to apply do departments like English, which have trouble supporting grad students, and they were less likely to apply to STEM departments, which had more plentiful funding for graduate students.
+What happened is that women were more likely to apply to departments like English, which have trouble supporting grad students, and they were less likely to apply to STEM departments, which had more plentiful funding for graduate students.
 
 The men, on the other hand, were much more likely to apply to the STEM departments that had higher acceptance rates.
 
