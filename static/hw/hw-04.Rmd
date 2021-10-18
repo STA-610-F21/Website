@@ -1,0 +1,44 @@
+---
+title: "Homework 4"
+date: "Due: 11:59pm, Tuesday, November 23"
+output: 
+  html_document: 
+    css: hw.css
+    theme: yeti
+    toc: true
+    fig_caption: false
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+---
+
+
+## Instructions
+
+Please make sure your main output file is a pdf document. Submissions should be made on gradescope: go to Assignments $\rightarrow$ Homework 4. You may or may not need to also submit a .zip file containing supporting document depending on what your final product is. See the next section for additional instructions.
+
+Also, you may discuss this homework ONLY with the TA's or Prof. Akande; it is to be completed independently! Any online or other resources used must be cited.
+
+
+
+## Multilevel Modeling Insights
+
+Your assignment is to create a helpful tool that illustrates an important aspect of understanding and use of multilevel models. This tool could be an [interesting visualization](https://m-clark.github.io/posts/2019-05-14-shrinkage-in-mixed-models/), a [Shiny app](https://calpolystat3.shinyapps.io/Hierarchical_Models/), or just an extraordinarily clear example illustration/mini-lecture! This is very open-ended so be as creative as possible!
+
+Upload a pdf document (not to exceed 3 pages) describing the following.
+
+1. Concept your tool is designed to illustrate;
+2. Method by which this concept is illustrated (e.g., describing the functionality of a Shiny app or type of content delivered);
+3. Any relevant references important to development of your tool.
+
+The pdf MUST also contain a link to your tool, if you have one. If you do not have a link, upload a zipped folder containing the files for said tool.
+
+Grades will be based on the clarity and accuracy of the information delivered by the tool, relevance of the information to understanding multilevel models, and quality/professionalism of the tool developed.
+
+  
+  
+
+## Grading
+
+Total: 20 points.
+  

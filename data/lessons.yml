@@ -251,14 +251,22 @@ lessons:
   - date: "DELIVERABLES:"
     title: "Case Study I evaluations due!"
     
+    
+  - title: " " 
+  - title: "MODULE 4: OTHER TOPICS"
+  - title: " "
+    
   
   - date: "Wed, Oct 20"
-    title: " "
+    title: "Module 4.1: Measurement error"
+    reading: "4-1-reading.html"
+    slides: "4-1-measurement-error.html"
+    slidespdf: "4-1-measurement-error.pdf"
     
     
   - date: "NEW ASSIGNMENT:"
     title: "Homework 3"
-    #hw: "hw-03.html"
+    hw: "hw-03.html"
     
     
   - date: "Fri, Oct 22"
@@ -268,21 +276,17 @@ lessons:
     
   - week: "WEEK 10"
     date: "Mon, Oct 25"
-    title: " "
-    
-    
-    
-  - title: " " 
-  - title: "MODULE 4: OTHER TOPICS"
-  - title: " "
+    title: "Module 4.2: Poststratification and weighting"
+    #slides: "4-2-poststratification.html"
+    #slidespdf: "4-2-poststratification.pdf"
     
     
     
   - date: "Wed, Oct 27"
-    title: "Module 4.1: Measurement error"
-    #reading: "4-1-reading.html"
-    #slides: "4-1-measurement-error.html"
-    #slidespdf: "4-1-measurement-error.pdf"
+    title: "Module 4.3: Missing data"
+    #slides: "4-3-missing-data.html"
+    #slidespdf: "4-3-missing-data.pdf"
+    
     
   - date: "DELIVERABLES:"
     title: "Homework 3 due!"
@@ -300,19 +304,17 @@ lessons:
     
   - week: "WEEK 11"
     date: "Mon, Nov 1"
-    title: "Module 4.2: Poststratification and weighting"
-    #slides: "4-2-poststratification.html"
-    #slidespdf: "4-2-poststratification.pdf"
+    title: "Module 4.4: Meta-analysis"
+    #slides: "4-4-meta-analysis.html"
+    #slidespdf: "4-4-meta-analysis.pdf"
     
     
   - date: "Wed, Nov 3"
-    title: "Module 4.3: Missing data"
-    #slides: "4-3-missing-data.html"
-    #slidespdf: "4-3-missing-data.pdf"
+    title: " "
     
   - date: "NEW ASSIGNMENT:"
     title: "Homework 4"
-    #hw: "hw-04.html"
+    hw: "hw-04.html"
     
     
   - date: "Fri, Nov 5"
@@ -322,13 +324,12 @@ lessons:
     
   - week: "WEEK 12"
     date: "Mon, Nov 8"
-    title: "Module 4.4: Meta-analysis"
-    #slides: "4-4-meta-analysis.html"
-    #slidespdf: "4-4-meta-analysis.pdf"
+    title: " "
     
   
   - date: "Wed, Nov 10"
     title: "Exam review"
+    
     
   - date: "Fri, Nov 12"
     title: "Lab: Help, my team needs help with Case Study II!"
