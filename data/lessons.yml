@@ -263,6 +263,10 @@ lessons:
     slides: "4-1-measurement-error.html"
     slidespdf: "4-1-measurement-error.pdf"
     
+  - title: "Module 4.2a: Poststratification and weighting (Part I)"
+    slides: "4-2a-poststratification-I.html"
+    slidespdf: "4-2a-poststratification-I.pdf"
+    
     
   - date: "NEW ASSIGNMENT:"
     title: "Homework 3"
@@ -276,9 +280,9 @@ lessons:
     
   - week: "WEEK 10"
     date: "Mon, Oct 25"
-    title: "Module 4.2: Poststratification and weighting"
-    #slides: "4-2-poststratification.html"
-    #slidespdf: "4-2-poststratification.pdf"
+    title: "Module 4.2b: Poststratification and weighting (Part II)"
+    slides: "4-2b-poststratification-II.html"
+    slidespdf: "4-2b-poststratification-II.pdf"
     
     
     

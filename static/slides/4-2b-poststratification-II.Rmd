@@ -1,0 +1,473 @@
+---
+title: "STA 610L: Module 4.2b"
+subtitle: "Poststratification and weighting (Part II)"
+author: "Dr. Olanrewaju Michael Akande"
+date: " "
+output:
+  xaringan::moon_reader:
+    css: "slides.css"
+    logo: img/class_logo.png
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  warm = 1
+  )
+# Set dpi and height for images
+library(knitr)
+knitr::opts_chunk$set(fig.height = 2.65, dpi = 300,fig.align='center',fig.show='hold',size='footnotesize', small.mar=TRUE) 
+# For nonsese...
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(rvest)
+library(tidyverse)
+library(lme4)
+library(brms) 
+library(rstan)
+library(cowplot) # plotting
+library(dplyr)
+library(directlabels)
+library(tidybayes) #work easily with posterior samples
+rstan_options(auto_write=TRUE)
+options(mc.cores=parallel::detectCores())
+
+marriage.data <- foreign::read.dta('data/gay_marriage_megapoll.dta',
+                                convert.underscore=TRUE)
+
+Statelevel <- foreign::read.dta('data/state_level_update.dta',
+                             convert.underscore=TRUE)
+
+Census <- foreign::read.dta('data/poststratification 2000.dta',
+                         convert.underscore=TRUE)
+
+Statelevel  <- Statelevel %>% rename(state=sstate) 
+marriage.data <- Statelevel %>%
+  select(state,p.evang,p.mormon,kerry.04) %>%
+  right_join(marriage.data)
+
+# combine demographic groups and label them
+marriage.data$race.female <- (marriage.data$female *3) + marriage.data$race.wbh
+marriage.data$race.female <- factor(marriage.data$race.female,levels=1:6,
+                  labels=c("WhMale","BlMale","HMale","WhFem","BlFem","HFem"))
+marriage.data$age.edu.cat <- 4*(marriage.data$age.cat -1) + marriage.data$edu.cat
+marriage.data$age.edu.cat <- factor(marriage.data$age.edu.cat,levels=1:16,
+                        labels=c("18-29,<HS","18-29,HS","18-29,SC","18-29,CG",
+                                 "30-44,<HS","30-44,HS","30-44,SC","30-44,CG",
+                                 "45-64,<HS","45-64,HS","45-64,SC","45-64,CG",
+                                 "65+,<HS","65+,HS","65+,SC","65+,CG"))
+marriage.data$p.evang <- Statelevel$p.evang[marriage.data$state.initnum]
+# proportion of evangelicals in respondent's state
+marriage.data$p.mormon <-Statelevel$p.mormon[marriage.data$state.initnum]
+# proportion of LDS church members in respondent's state
+marriage.data$p.relig <- marriage.data$p.evang + marriage.data$p.mormon
+# combined evangelical + LDS proportions
+marriage.data$kerry.04 <- Statelevel$kerry.04[marriage.data$state.initnum]
+# John Kerry's % of 2-party vote in respondent's state in 2004
+marriage.data <- marriage.data %>%
+  filter(state!="")
+
+# Census variables
+Census <- Census %>%
+  rename(state=cstate, age.cat=cage.cat, edu.cat=cedu.cat,region=cregion)
+Census$race.female <- (Census$cfemale *3) + Census$crace.WBH 
+Census$race.female <- factor(Census$race.female,levels=1:6,
+                labels=c("WhMale","BlMale","HMale","WhFem","BlFem","HFem"))
+Census$age.edu.cat <- 4 * (Census$age.cat-1) + Census$edu.cat 
+Census$age.edu.cat <- factor(Census$age.edu.cat,levels=1:16,
+                      labels=c("18-29,<HS","18-29,HS","18-29,SC","18-29,CG",
+                               "30-44,<HS","30-44,HS","30-44,SC","30-44,CG",
+                               "45-64,<HS","45-64,HS","45-64,SC","45-64,CG",
+                               "65+,<HS","65+,HS","65+,SC","65+,CG"))
+Census <- Statelevel %>%
+  select(state,p.evang,p.mormon,kerry.04) %>%
+  right_join(Census)
+Census <- Census %>% mutate(p.relig=p.evang+p.mormon)
+
+mod.disag <- marriage.data%>%
+  group_by(state) %>%
+  summarise(support=mean(yes.of.all)) %>%
+  mutate(model="no_ps")
+
+# Find average within each group
+grp.means <- marriage.data%>% 
+  group_by(state,region,race.female,age.edu.cat,p.relig,kerry.04) %>%
+  summarize(support=mean(yes.of.all,na.rm=TRUE))
+
+
+grp.means <- Census %>%
+  select(state, region, kerry.04, race.female, age.edu.cat, p.relig, 
+         cpercent.state) %>%
+  right_join(grp.means)
+
+mod.disag.ps <- grp.means %>%
+  group_by(state) %>%
+  summarize(support=sum(support * cpercent.state, na.rm=TRUE)) %>%
+  mutate(model="ps")
+
+#make a function so we don't have to type over and over
+compare_scat <- function(d){
+  return(
+    ggplot(data=d, aes(x=support...2 ,y=support...3))+
+      geom_text(aes(label=state),hjust=0.5,vjust=0.25) +
+      geom_abline(slope=1,intercept=0) +
+      xlim(c(0,0.7)) + ylim(c(0,0.7)) +
+      xlab("support") + ylab("poststrat support") +
+      coord_fixed()
+  )
+}
+```
+
+
+
+## Multilevel model
+
+As mentioned in the previous module, we will fit a multilevel model for individual survey responses on gay marriage rights given demographics and geography, i.e. each individual's response will be a function of their demographics and state. 
+
+Let $i$ index each individual, $j$ index the race-gender combination, $k$ index the age-education combination, $s$ index each state, and $r$ index region.
+
+We denote $y_{ijksr}=1$ for supporters of same-sex marriage and $y_{ijksr}=0$ for opponents and those with no opinion.
+
+We model the mean for the state effect as a function of 3 state level variables: the region into which the state falls, the state's conservative (defined as evangelical+LDS) religious percentage, and its Democratic 2004 presidential vote share.
+
+
+
+---
+## Model
+
+We will not do any model selection here; this model is based on the questions of interest.
+
+```{r cache=TRUE, warning=FALSE, message=FALSE, eval=F}
+#run individual-level opinion model
+ml.mod0 <- glmer(yes.of.all ~ race.female + age.edu.cat + p.relig + kerry.04 +
+                  (1|state) + (1|region), data=marriage.data,
+               family=binomial(link="logit"),
+               control=glmerControl(optimizer="bobyqa",optCtrl=list(maxfun=2e5)))
+summary(ml.mod0)
+```
+
+
+
+---
+## Model
+
+.small[
+```{r cache=TRUE, warning=FALSE, message=FALSE, echo=F}
+#run individual-level opinion model
+ml.mod0 <- glmer(yes.of.all ~ race.female + age.edu.cat + p.relig + kerry.04 +(1|state) + (1|region), data=marriage.data,
+               family=binomial(link="logit"),control=glmerControl(optimizer="bobyqa",optCtrl=list(maxfun=2e5)))
+summary(ml.mod0)
+```
+]
+
+
+---
+## Model
+
+I am a bit concerned about the amount of information available to estimate the race-gender and age-education combinations.
+
+So, let's actually treat the race-gender and age-education combinations as random effects to borrow information across their levels.
+
+We therefore fit the following model.
+$$
+\begin{split}
+\mathrm{logit}\left[\mathrm{Pr}(y_{ijksr} = 1)\right] & = \beta_0 + \beta^{relig}\cdot relig_{s} + \beta^{vote} \cdot vote_s\\
+& + \alpha^{region}_{r} + \alpha^{state}_s + \alpha^{race,gender}_{j} +  \alpha^{age,edu}_{k};\\
+\\
+\alpha^{region}_r & \sim N(0,\sigma^2_{region}), ~~~\mathrm{r = 1, ..., 5}; \\
+\alpha^{state}_s & \sim N(0,\sigma^2_{state}), ~~~\mathrm{s = 1, ..., 51}; \\
+\alpha^{race,gender}_j & \sim N(0, \sigma^2_{race,gender}), ~~~\mathrm{j=1, ..., 6}; \\
+\alpha^{age,edu}_k & \sim N(0, \sigma^2_{age,edu}), ~~~\mathrm{k=1,...,16}. \\
+\end{split}
+$$
+
+
+
+---
+## Model
+
+Using a slightly different notation, we can also write the model as
+$$\mathrm{logit}\left(\mathrm{Pr}(y_i = 1)\right) = \beta_0 + \alpha^{race,gender}_{j[i]} +  \alpha^{age,edu}_{k[i]} + \gamma^{state}_{s[i]}.$$
+
+That is,
+\begin{eqnarray*}
+\alpha^{race,gender}_j &\sim& N(0, \sigma^2_{race,gender}), ~~~\mathrm{j=1, ..., 6}, \\
+\alpha^{age,edu}_k &\sim& N(0, \sigma^2_{age,edu}), ~~~\mathrm{k=1,...,16},
+\end{eqnarray*}
+
+and
+\begin{eqnarray*}
+\gamma^{state}_s &\sim& N(\alpha^{state}_s + \alpha^{region}_{r[s]} + \beta^{relig}\cdot relig_s + \beta^{vote} \cdot vote_s, \sigma^2_{state}), \\
+\alpha^{region}_r &\sim& N(0,\sigma^2_{region}),
+\end{eqnarray*}
+where $\mathrm{r = 1, ..., 5}$ and $\mathrm{s = 1, ..., 51}$.
+
+
+
+
+---
+## Model coding
+
+```{r indiv1, cache=TRUE, warning=FALSE, message=FALSE}
+#run individual-level opinion model
+ml.mod <- glmer(yes.of.all ~ p.relig + kerry.04 +
+                  (1|race.female) + (1|age.edu.cat) + (1|state) + (1|region),
+                data=marriage.data,
+               family=binomial(link="logit"),
+               control=glmerControl(optimizer="bobyqa",optCtrl=list(maxfun=2e5)))
+# just checking scale of these proportions
+summary(marriage.data$p.relig)
+summary(marriage.data$kerry.04)
+```
+
+
+
+
+---
+## Model results
+
+.small[
+```{r indiv1b, warning=F, message=F}
+summary(ml.mod)
+```
+]
+
+
+
+---
+## Model results
+
+Note we have no responses from AK or HI.
+
+```{r AKHI, cache=T,warning=FALSE,message=FALSE}
+# note nobody from AK or HI in survey
+marriage.data %>%
+  filter(state=="AK",state=="HI")
+```
+
+
+
+---
+## Predictions
+
+We make predictions in states, broken out by the demographic groups of interest, which will allow us to poststratify down the road.
+
+For now we calculate the predictions, and we'll examine them closely later.
+
+```{r predm1, cache=TRUE}
+ps.ml.mod <- Census %>%
+  mutate(support=predict(ml.mod,newdata=.,allow.new.levels=TRUE,type='response')) %>%
+  mutate(support=support*cpercent.state) %>%
+  group_by(state) %>%
+  summarize(support=sum(support))
+```
+
+
+
+---
+## Bayesian model
+
+Now we fit a fully Bayesian model, with same data model as the ML model but with default priors to help some more with borrowing of information and convergence.
+
+```{r bayesmod, eval=FALSE}
+bayes.mod <- brm(yes.of.all~(1|race.female)+(1|age.edu.cat)+(1|state)+(1|region)+
+               p.relig+kerry.04, data=marriage.data,
+               control = list(adapt_delta = 0.99,max_treedepth = 12),
+             family=bernoulli())
+```
+
+```{r bayesmod2, echo=FALSE, cache=TRUE, warning=FALSE, message=FALSE, results='hide'}
+bayes.mod <- brm(yes.of.all~(1|race.female)+(1|age.edu.cat)+(1|state)+(1|region)+
+               p.relig+kerry.04, data=marriage.data,
+               control = list(adapt_delta = 0.99,max_treedepth = 12),
+             family=bernoulli())
+```
+
+
+
+---
+## Bayesian model results
+
+.small[
+```{r bayesmod3}
+summary(bayes.mod)
+```
+]
+
+
+---
+## Benefits of Bayesian approach
+
+The most obvious benefit of a Bayesian approach is the total accounting of uncertainty, as we can easily see by plotting the estimated SD's of the group-level intercepts in the frequentist model against the posteriors from the Bayesian model.
+
+```{r bayesbenefits, eval=FALSE}
+library(broom.mixed)
+ml_sd <- broom::tidy(ml.mod) %>%
+  filter(stringr::str_detect(term,"sd_"))
+
+bayes.mod %>%
+  gather_draws(`sd.*`,regex=TRUE) %>%
+  ungroup() %>%
+  mutate(group=stringr::str_replace_all(.variable,c("sd_"="","__Intercept"="")),
+         estimate=.value) %>%
+  ggplot(aes(y=group,x=estimate)) +
+  ggridges::geom_density_ridges(aes(height=..density..),
+                                rel_min_height=0.01,stat="density",
+                                scale=1.5) +
+  geom_point(data=ml_sd)
+```
+
+
+
+---
+## Benefits of Bayesian approach
+
+```{r bayesbenefits2, echo=FALSE, cache=TRUE, warning=FALSE, message=FALSE, fig.height=3.8}
+library(broom.mixed)
+ml_sd <- broom::tidy(ml.mod) %>%
+  filter(stringr::str_detect(term,"sd_"))
+
+bayes.mod %>%
+  gather_draws(`sd.*`,regex=TRUE) %>%
+  ungroup() %>%
+  mutate(group=stringr::str_replace_all(.variable,c("sd_"="","__Intercept"="")),
+         estimate=.value) %>%
+  ggplot(aes(y=group,x=estimate)) +
+  ggridges::geom_density_ridges(aes(height=..density..),
+                                rel_min_height=0.01,stat="density",
+                                scale=1.5) +
+  geom_point(data=ml_sd)
+```
+
+The dots are the point estimates from the frequentist model, but the Bayesian model gives you an idea of the full posterior distribution of values, from which we can sample.
+
+
+
+---
+## Poststratifying Bayes
+
+```{r postbayes, cache=TRUE, warning=FALSE,message=FALSE}
+#next let's get the point estimate and poststratify from the Bayesian model
+ps.bayes.mod <- bayes.mod %>%
+  add_predicted_samples(newdata=Census, allow_new_levels=TRUE) %>%
+  rename(support = pred) %>%
+  mean_qi() %>%
+  mutate(support = support * cpercent.state) %>%
+  group_by(state) %>%
+  summarize(support = sum(support))
+```
+
+
+
+---
+## Comparing results
+
+Now we consider comparisons across the 3 approaches.
+
+```{r compareresults, cache=TRUE, warning=F,message=F}
+mod.disag[nrow(mod.disag) + 1,] = list("AK", mean(mod.disag$support), "no_ps")
+mod.disag[nrow(mod.disag) + 1,] = list("HI", mean(mod.disag$support), "no_ps")
+disag.ml <- bind_cols(mod.disag[,1:2], ps.ml.mod[,2]) %>% compare_scat() +
+  xlab("disag model") + ylab("freq model")
+disag.bayes <- bind_cols(mod.disag[,1:2], ps.bayes.mod[,2]) %>% compare_scat() + 
+  xlab("disag model") + ylab("bayes model")
+ml.bayes <- bind_cols(ps.ml.mod[,1:2], ps.bayes.mod[,2]) %>% compare_scat() + 
+  xlab("freq model") + ylab("bayes model")
+```
+
+
+
+---
+## Plots
+
+```{r fig.height=4}
+plot_grid(disag.ml)
+```
+
+
+---
+## Plots
+
+```{r fig.height=4}
+plot_grid(disag.bayes)
+```
+
+
+---
+## Plots
+
+```{r fig.height=3.6}
+plot_grid(ml.bayes)
+```
+
+Note our predictions from the frequentist and Bayesian approaches are similar, and the models disagree with the disaggregated model from the last module, which does not borrow information.
+
+
+
+---
+## Prediction
+
+Now we can evaluate predictions, taking advantage of the uncertainty quantification advantages of the Bayesian approach.
+
+We will sample from the posterior to get predicted probabilities for each group of interest based on proportions obtained from the Census data.
+
+```{r predict, cache=TRUE, warning=F,message=F}
+predict_val <- predict(bayes.mod, newdata=Census, allow_new_levels=TRUE, 
+            nsamples=500, summary=FALSE)
+```
+
+
+
+---
+## Prediction
+
+.small[
+```{r showpred}
+dim(Census)
+head(Census)
+```
+]
+
+We'll focus on the first four subgroups: white Alaskan men with $<$HS education in the 4 age groups (18-29, 30-44, 45-64, 65+).
+
+The first 6 sampled support values for those men are in columns 1-4 here....
+
+```{r}
+dim(predict_val)
+```
+
+```{r showpred2, eval=F}
+head(predict_val)
+```
+
+
+---
+## Poststratification again
+
+We could then use these predicted probabilities to estimate public opinion under a variety of assumptions (opinion of all residents, or applying other data on how frequently people in each demographic group vote, to get opinions of likely voters).
+
+These predictions based on data from the Census can be combined with information on how often people in each group vote to predict election outcomes.
+
+
+
+
+---
+
+class: center, middle
+
+# What's next?
+
+### Move on to the readings for the next module!
+
+
+
+
