@@ -1,0 +1,146 @@
+---
+title: "Case Study II"
+subtitle: "Voting in NC"
+output: 
+  html_document: 
+    css: hw.css
+    theme: yeti
+    toc: true
+    toc_float: true
+    fig_caption: true
+---
+
+```{r include=FALSE}
+library(tidyverse)
+library(tufte)
+library(knitr)
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  digits = 2
+  )
+#knitr::opts_chunk$set(eval = FALSE)
+#knitr::opts_chunk$set(fig.height = 2.65, dpi = 300,fig.align='center',fig.show='hold',size='footnotesize', small.mar=TRUE) 
+knitr::opts_chunk$set(dpi = 72,fig.align='center',fig.show='hold') 
+```
+
+## Due dates
+
+- Presentations: 10:15 - 11:30am, Wednesday, April 21.
+- Final reports: 11:59pm, Sunday, April 25.
+- Evaluation of team members: 11:59pm, Monday, April 26.
+
+
+
+## General instructions
+### Team work
+You MUST work within your assigned teams.
+
+- <font color="red">Each team member must work on understanding the data, exploring the data, building the models and providing answers to the questions of interest. This should be the focus of your team meetings.</font>
+- The other responsibilities must be divided according to the following designations:
+  + <font color="green">Checker:</font> Double-checks the work for reproducibility and errors. Also responsible for submitting the report and presentation files.
+  + <font color="green">Coordinator:</font> Keeps everyone on task and makes sure everyone is involved. Also responsible for coordinating team meetings and defining the objectives for each meeting.
+  + <font color="green">Presenter:</font> Primarily responsible for putting the team presentations together, including the presentation slides and recorded videos.
+  + <font color="green">Programmer:</font> Primarily responsible for all things coding. The programmer is responsible for putting everyone's code together and making sure the final product is "readable".
+  + <font color="green">Writer:</font> Primarily responsible for putting together the final report.
+- <font color="red">Four-person teams should combine the roles of checker and coordinator into a single role. Three-person teams should combine the roles of checker and writer into a single role, and the roles of coordinator and presenter into a single role.</font>
+- <font color="red">All teams must rotate all designations from Case Study I. That is, each role from Case Study I must be handled by a different team member for this project.</font>
+
+
+
+### Presentations
+<font color="red">Each team will create/record a short video presentation (at most 7 minutes) of their findings. Feel free to get creative; fun animations are welcome!</font>
+
+  + The presentation should cover a brief introduction, a detailed presentation of your model, and your most interesting and important findings. At least one EDA plot must be included.
+  + If you choose to use presentation slides, you should create them with the time limit in mind. You should consider making between 8 and 12 slides (excluding the title slide), so that you have approximately one minute to get through each one. You are free to create your presentation slides using PowerPoint, LaTeX or any other application you choose. 
+  + You are free to record the presentation videos using any application you choose. Zoom is likely the easiest option.
+  + The order of the in-class presentations will be randomized; each team is expected to come to class fully prepared to present first.
+  + Also, each team should come to class prepared to answer questions from the instructor and other students. There will be approximately 5 minutes for questions after each team's video presentation.
+  +  <font color="red">Each team's presentation files (videos and slides) must be submitted on Sakai by 5:00pm on Tuesday, April 20. The checker should upload the files to their Dropbox folder on Sakai.</font> 
+
+
+### Reports
+Each team MUST turn in only one report with team members' names at the top of the report, and the different designations (checker, coordinator, presenter, programmer, and writer).
+
+  + Please limit your write-up to 8 pages in total (in 11 point font or larger). <font color="red">You will be penalized should your combined report exceed 8 pages!</font>
+  + Your write-up should specify
+the statistical model used, including the data model and prior distributions (if relevant), in addition to
+communicating your analysis findings.
+  + Please type your reports using R Markdown, LaTeX or any other word processor but be sure to knit or convert the final output file to `.pdf`. 
+  + <font color="red">**DO NOT INCLUDE R CODE OR OUTPUT IN YOUR SOLUTIONS/REPORTS** *R outputs should be converted to nicely formatted tables. Feel free to use R packages such as `kable`, `xtable`, `stargazer`, etc.*</font>
+  + All R-code must be included in the appendix. Feel free to also include any supplemental material that is important for your analysis, such as diagnostic checks or exploratory plots that you feel justify the conclusions in your report.
+  + All reports must be submitted on Gradescope: go to Assignments $\rightarrow$ Case Study II Reports. Gradescope will let you select your team mates when submitting, so make sure to do so. The checker is responsible for submitting the report.
+  
+
+
+### Evaluations
+<font color="red">All team members must complete a very short written evaluation, quickly describing the effort put forth by other team members.</font>
+
+  + The evaluation should include a list of all other team members (not including you) and considering all the work on the assignment that was not done by you, a breakdown of the fraction of work done by each other team member. For example, if you are on a 4 person team and the other team members all contributed equally, you would assign the fraction 1/3 to each of them (regardless of whether you all did 1/4 of the work overall, or whether you personally did half the work and the others each did 1/6).
+  + In the case you feel one or more team members deserves a different grade on the assignment than the others, you should provide a description of why that member or members deserves a different grade. (In this case you can talk about your own relative contribution.)
+  + Submit on Gradescope: go to Assignments $\rightarrow$ Case Study II Evaluations.
+
+
+
+## Analysis
+
+### Introduction
+
+The North Carolina State Board of Elections (NCSBE) is the agency charged with the administration of the elections process and campaign finance disclosure and compliance. Among other things, they provide voter registration and turnout data online (https://www.ncsbe.gov/index.html, https://www.ncsbe.gov/results-data). Using the NC voter files for the general elections in November 2020, you will attempt to identify/estimate how different groups voted in the 2020 elections, at least out of those who registered. Here's an interesting read on turnout rates for NC in 2016: https://democracync.org/wp-content/uploads/2017/05/WhoVoted2016.pdf (you might consider creating a similar graphic to the one on page 4).
+
+### Data
+
+The data can be found on Sakai. The file `voter_stats_20201103.txt` contains information about the aggregate counts of registered voters by the demographic variables; the data dictionary can be found in the file `DataDictionaryForVoterStats.txt`. The file `history_stats_20201103.txt` contains information about the aggregate counts of voters who actually voted by the demographic variables. 
+
+You will only work with a subset of thoe overall data. <font color="green">Take a random sample of 30 counties out of all the counties in both datasets.</font> You should indicate the counties you sampled in your final report. You will need to merge the two files `voter_stats_20201103.txt` and `history_stats_20201103.txt` by the common variables for the counties you care about. Take a look at the set of `join` functions in the `dplyr` package in R (https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/join) or the `merge` function in base R. I recommend the functions in `dplyr`. You may choose to merge the datasets before or after selecting the samples you want, but be careful if you decide to do the latter.
+
+Unfortunately, the data dictionary from the NCSBE does not provide the exact difference between the variables `party_cd` and `voted_party_cd` in the `history_stats_20201103.txt` file (if you are able to find documentation on the difference, do let me know). However, I suspect that the voted party code encodes the information about people who changed their party affiliation as at the registration deadline, whereas the first party code is everyone's original affiliation. Voters are allowed to change their party affiliation in NC so that lines up. The two variables are thus very similar and only a small percentage of the rows in the `history_stats_20201103.txt` file have different values for the two variables. I would suggest using the voted party code (`voted_party_cd`) for the `history_stats_20201103.txt` dataset.
+
+You should discard the following variables before merging: `election_date`,`stats_type`, and `update_date`. Also, you can not really merge by or use the `voting_method` and `voting_method_desc` variables in your analysis either because that information is only available in the `history_stats_20201103.txt` data and not the other dataset. That means you should not use those two variables when merging.
+
+Before discarding the variables however, you need to aggregate to make sure that you are merging correctly. As a simple example, suppose 4 males voted in person and 3 males voted by mail, you need to aggregate out the method of voting so that you have 7 males in total. This is because we are unable to separate people who voted by different voting methods in the `voter_stats_20201103.txt` we want to merge from. So, the simplest way is to use the aggregate function in R. As an example, the code:
+```{r eval = FALSE}
+aggregated_data <- aggregate(Data$total_voters,
+                             list(Age=Data$age,Party=Data$party_cd),sum)
+```
+will sum all voters by all age groups and party. You can also use the `dplyr` package to aggregate in the same way if you prefer that.
+
+Once you have this clean data for the `history_stats_20201103.txt` file, you should then go ahead to grab the information on total registered voters from `voter_stats_20201103.txt`, by merging by all variables in `history_stats_20201103.txt`, except `total_voters`.
+
+
+### Questions of interest
+
+Your job is to use a Bayesian hierarchical model to answer the following questions of interest.
+
+- How did different demographic subgroups vote in the 2020 general elections? For example, how did the turnout for males compare to the turnout for females after controlling for other potential predictors?
+- Did the overall probability or odds of voting differ by county in 2020? Which counties differ the most from other counties?
+- How did the turnout rates differ between females and males for the different party affiliations?
+- How did the turnout rates differ between age groups for the different party affiliations?
+
+Be sure to include the following in your report: 
+
+- the final models you ultimately decided to use,
+- clear model building, that is, justification for the models (e.g., why you chose certain transformations and why you decided the final models are reasonable),
+- model assessment and validation for the final models (think residual binned plots, accuracy, AUC, etc),
+- the relevant model outputs (table of coefficients with SEs and/or confidence intervals, etc),
+- your interpretation of the results in the context of the questions of interest, including clear and direct answers to the questions posed, and
+- any potential limitations of the analyses.
+
+<font color="red">Finally, your analysis MUST address the questions of interest directly.</font> 
+
+
+## Grading
+
+100 points.
+
+
+
+
+
+
+
+
+
+
+
+

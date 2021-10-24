@@ -288,8 +288,8 @@ lessons:
     
   - date: "Wed, Oct 27"
     title: "Module 4.3: Missing data"
-    #slides: "4-3-missing-data.html"
-    #slidespdf: "4-3-missing-data.pdf"
+    slides: "4-3-missing-data.html"
+    slidespdf: "4-3-missing-data.pdf"
     
     
   - date: "DELIVERABLES:"

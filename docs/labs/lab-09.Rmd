@@ -1,5 +1,5 @@
 ---
-title: "Lab 6: Badgered by Badgers"
+title: "Lab 9: Badgered by Badgers"
 author: "Multilevel and hierarchical models"
 output: 
   tufte::tufte_html:
