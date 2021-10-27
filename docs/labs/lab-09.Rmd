@@ -23,7 +23,7 @@ knitr::opts_chunk$set(eval = FALSE)
 ```
 
 
-**Due:**  11:59pm, Wednesday, March 31
+**Due:**  11:59pm, Sunday, October 31
 
 
 # Housekeeping
@@ -34,7 +34,7 @@ knitr::opts_chunk$set(eval = FALSE)
 
 ## Gradescope
 
-You MUST submit both your .Rmd and .pdf files to the course site on Gradescope here: https://www.gradescope.com/courses/224715/assignments. Do NOT create a zipped folder with the two documents but instead, upload them as two separate documents. Also, be sure to knit to pdf and NOT html; ask the TA about knitting to pdf if you cannot figure it out. Be sure to submit under the right assignment entry. Finally, when submitting your files, please select the corresponding pages for each exercise.
+You MUST submit both your .Rmd and .pdf files to the course site on Gradescope here: https://www.gradescope.com/courses/281587/assignments. Do NOT create a zipped folder with the two documents but instead, upload them as two separate documents. Also, be sure to knit to pdf and NOT html; ask the TA about knitting to pdf if you cannot figure it out. Be sure to submit under the right assignment entry. Finally, when submitting your files, please select the corresponding pages for each exercise.
 
 
 # Introduction

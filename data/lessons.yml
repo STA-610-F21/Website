@@ -297,24 +297,31 @@ lessons:
     
   - date: "NEW ASSIGNMENT:"
     title: "Case Study II"
-    #project: "case-study-II.html"
+    project: "case-study-II.html"
     
     
   - date: "Fri, Oct 29"
     title: "Lab 9: Badgered by Badgers"
-    #lab: "lab-09.html"
+    lab: "lab-09.html"
     
     
     
   - week: "WEEK 11"
     date: "Mon, Nov 1"
     title: "Module 4.4: Meta-analysis"
-    #slides: "4-4-meta-analysis.html"
-    #slidespdf: "4-4-meta-analysis.pdf"
+    slides: "4-4-meta-analysis.html"
+    slidespdf: "4-4-meta-analysis.pdf"
     
     
   - date: "Wed, Nov 3"
-    title: " "
+    title: "Module 4.5: Introduction to finite mixture models (categorical data)"
+    #slides: "4-5-mixture-models-categorical.html"
+    #slidespdf: "4-5-mixture-models-categorical.pdf"
+    
+  - title: "Module 4.6: Introduction to finite mixture models (continuous data)"
+    #slides: "4-6-mixture-models-continuous.html"
+    #slidespdf: "4-6-mixture-models-continuous.pdf"
+    
     
   - date: "NEW ASSIGNMENT:"
     title: "Homework 4"
@@ -346,13 +353,7 @@ lessons:
     
     
   - date: "Wed, Nov 17"
-    title: "Module 4.5: Introduction to finite mixture models (categorical data)"
-    #slides: "4-5-mixture-models-categorical.html"
-    #slidespdf: "4-5-mixture-models-categorical.pdf"
-    
-  - title: "Module 4.6: Introduction to finite mixture models (continuous data)"
-    #slides: "4-6-mixture-models-continuous.html"
-    #slidespdf: "4-6-mixture-models-continuous.pdf"
+    title: "Team meetings for Case Study II"
     
     
   - date: "Fri, Nov 19"
