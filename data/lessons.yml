@@ -287,9 +287,7 @@ lessons:
     
     
   - date: "Wed, Oct 27"
-    title: "Module 4.3: Missing data"
-    slides: "4-3-missing-data.html"
-    slidespdf: "4-3-missing-data.pdf"
+    title: "No class"
     
     
   - date: "DELIVERABLES:"
@@ -308,19 +306,15 @@ lessons:
     
   - week: "WEEK 11"
     date: "Mon, Nov 1"
-    title: "Module 4.4: Meta-analysis"
-    slides: "4-4-meta-analysis.html"
-    slidespdf: "4-4-meta-analysis.pdf"
+    title: "Module 4.3: Missing data"
+    slides: "4-3-missing-data.html"
+    slidespdf: "4-3-missing-data.pdf"
     
     
   - date: "Wed, Nov 3"
-    title: "Module 4.5: Introduction to finite mixture models (categorical data)"
-    #slides: "4-5-mixture-models-categorical.html"
-    #slidespdf: "4-5-mixture-models-categorical.pdf"
-    
-  - title: "Module 4.6: Introduction to finite mixture models (continuous data)"
-    #slides: "4-6-mixture-models-continuous.html"
-    #slidespdf: "4-6-mixture-models-continuous.pdf"
+    title: "Module 4.4: Meta-analysis"
+    slides: "4-4-meta-analysis.html"
+    slidespdf: "4-4-meta-analysis.pdf"
     
     
   - date: "NEW ASSIGNMENT:"
@@ -332,10 +326,15 @@ lessons:
     title: "Lab 10: Hands on with Stan (Part III)"
     
     
-    
   - week: "WEEK 12"
     date: "Mon, Nov 8"
-    title: " "
+    title: "Module 4.5: Introduction to finite mixture models (categorical data)"
+    #slides: "4-5-mixture-models-categorical.html"
+    #slidespdf: "4-5-mixture-models-categorical.pdf"
+    
+  - title: "Module 4.6: Introduction to finite mixture models (continuous data)"
+    #slides: "4-6-mixture-models-continuous.html"
+    #slidespdf: "4-6-mixture-models-continuous.pdf"
     
   
   - date: "Wed, Nov 10"
@@ -353,7 +352,8 @@ lessons:
     
     
   - date: "Wed, Nov 17"
-    title: "Team meetings for Case Study II"
+    title: " "
+    #title: "Team meetings for Case Study II"
     
     
   - date: "Fri, Nov 19"
