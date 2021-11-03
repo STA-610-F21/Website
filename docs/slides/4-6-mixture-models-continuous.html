@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>STA 610L: Module 4.6</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Olanrewaju Michael Akande" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# STA 610L: Module 4.6
+## Introduction to finite mixture models (continuous data)
+### Dr. Olanrewaju Michael Akande
+
+---
+
+
+
+
+
+
+
+
+## Continuous data (univariate case)
+
+- Suppose we have univariate continuous data `\(y_i \overset{iid}{\sim} f\)`, for `\(i, \ldots, n\)`, where `\(f\)` is an unknown density.
+
+--
+
+- Turns out that we can approximate "almost" any `\(f\)` with a .hlight[mixture of normals]. Usual choices are
+
+--
+
+  1. .hlight[Location mixture] (multimodal):
+  .block[
+.small[
+`$$f(y) = \sum_{k=1}^K \lambda_k \mathcal{N}\left( \mu_k, \sigma^2 \right)$$`
+]
+]
+
+--
+
+  2. .hlight[Scale mixture] (unimodal and symmetric about the mean, but fatter tails than a regular normal distribution):
+  .block[
+.small[
+`$$f(y) = \sum_{k=1}^K \lambda_k \mathcal{N}\left( \mu, \sigma^2_k \right)$$`
+]
+]
+
+--
+
+  3. .hlight[Location-scale mixture] (multimodal with potentially fat tails):
+  .block[
+.small[
+`$$f(y) = \sum_{k=1}^K \lambda_k \mathcal{N}\left( \mu_k, \sigma^2_k \right)$$`
+]
+]
+
+
+
+---
+## Location mixture example
+
+`$$f(y) = 0.55 \mathcal{N}\left(-10, 4 \right) + 0.30 \mathcal{N}\left(0, 4 \right) + 0.15 \mathcal{N}\left(10, 4 \right)$$`
+
+&lt;img src="4-6-mixture-models-continuous_files/figure-html/unnamed-chunk-2-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+## Scale mixture example
+
+`$$f(y) = 0.55 \mathcal{N}\left(0, 1 \right) + 0.30 \mathcal{N}\left(0, 5 \right) + 0.15 \mathcal{N}\left(0, 10 \right)$$`
+
+&lt;img src="4-6-mixture-models-continuous_files/figure-html/unnamed-chunk-3-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+## Location-scale mixture example
+
+`$$f(y) = 0.55 \mathcal{N}\left(-10, 1 \right) + 0.30 \mathcal{N}\left(0, 5 \right) + 0.15 \mathcal{N}\left(10, 10 \right)$$`
+
+&lt;img src="4-6-mixture-models-continuous_files/figure-html/unnamed-chunk-4-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+
+---
+## Location mixture of normals
+
+- Consider the location mixture `\(f(y) = \sum_{k=1}^K \lambda_k \mathcal{N}\left( \mu_k, \sigma^2 \right)\)`. How can we do inference?
+
+--
+
+- Right now, we only have three unknowns: `\(\boldsymbol{\lambda} = (\lambda_1, \ldots, \lambda_K)\)`, `\(\boldsymbol{\mu} = (\mu_1, \ldots, \mu_K)\)`, and `\(\sigma^2\)`.
+
+--
+
+- For priors, the most obvious choices are
+
+  + `\(\pi[\boldsymbol{\lambda}] = \textrm{Dirichlet}(\alpha_1,\ldots,\alpha_K)\)`,
+  
+  + `\(\mu_k \sim \mathcal{N}(\mu_0,\gamma^2_0)\)`, for each `\(k = 1, \ldots, K\)`, and
+  
+  + `\(\sigma^2 \sim \mathcal{IG}\left(\dfrac{\nu_0}{2}, \dfrac{\nu_0 \sigma_0^2}{2}\right)\)`.
+
+--
+
+- However, we do not want to use the likelihood with the sum in the mixture. We prefer products!
+
+
+
+---
+## Data augmentation
+
+- This once again brings us to the concept of .hlight[data augmentation], which we can now discuss in a bit more detail.
+
+--
+
+- Data augmentation is a commonly-used technique for designing MCMC samplers using .hlight[auxiliary/latent/hidden variables]. Again, we have already seen this.
+
+--
+
+- **Idea**: introduce variable `\(Z\)` that depends on the distribution of the existing variables in such a way that the resulting conditional distributions, with `\(Z\)` included, are easier to sample from and/or result in better mixing.
+
+--
+
+- `\(Z\)`'s are just latent/hidden variables that are introduced for the purpose of simplifying/improving the sampler.
+
+
+
+---
+## Data augmentation
+
+- For example, suppose we want to sample from `\(p(x,y)\)`, but `\(p(x|y)\)` and/or `\(p(y|x)\)` are complicated. 
+
+--
+
+- Choose `\(p(z|x,y)\)` such that `\(p(x|y,z)\)`, `\(p(y|x,z)\)`, and `\(p(z|x,y)\)` are easy to sample from. Note that we have `\(p(x,y,z) = p(z|x,y)p(x,y)\)`.
+
+--
+
+- Alternatively, rewrite the model as `\(p(x,y | z)\)` and specify `\(p(z)\)` such that `$$p(x,y) = \int p(x, y | z) p(z) \text{d}z,$$`
+  where the resulting `\(p(x|y,z)\)`, `\(p(y|x,z)\)`, and `\(p(z|x,y)\)` from the joint `\(p(x,y,z)\)` are again easy to sample from. 
+
+--
+
+- Next, construct a Gibbs sampler to sample all three variables `\((X,Y,Z)\)` from `\(p(x,y,z)\)`.
+
+--
+
+- Finally, throw away the sampled `\(Z\)`'s and from what we know about Gibbs sampling, the samples `\((X,Y)\)` are from the desired `\(p(x,y)\)`.
+
+
+
+---
+## Location mixture of normals
+
+- Back to location mixture `\(f(y) = \sum_{k=1}^K \lambda_k \mathcal{N}\left( \mu_k, \sigma^2 \right)\)`.
+
+--
+
+- Introduce latent variable `\(z_i \in \{1,\ldots, K\}\)`.
+
+--
+
+- Then, we have
+  
+  + `\(y_i | z_i \sim \mathcal{N}\left( \mu_{z_i}, \sigma^2 \right)\)`, and
+  
+  + `\(\Pr(z_i = k) = \lambda_k \equiv \prod\limits_{k=1}^K \lambda_k^{\mathbb{1}[z_i = k]}\)`.
+  
+--
+
+- How does that help? Well, the observed data likelihood is now
+.block[
+.small[
+$$
+`\begin{split}
+p\left[Y = (y_1, \ldots, y_n) | Z = (z_1, \ldots, z_n), \boldsymbol{\lambda}, \boldsymbol{\mu}, \sigma^2 \right] &amp; = \prod_{i=1}^n  p\left(y_i | z_i, \mu_{z_i}, \sigma^2 \right)\\
+\\
+&amp; = \prod_{i=1}^n \dfrac{1}{\sqrt{2\pi\sigma^2}}  \ \textrm{exp}\left\{-\frac{1}{2\sigma^2} (y_i-\mu_{z_i})^2\right\}\\
+\end{split}`
+$$
+]
+]
+
+  which is much easier to work with.
+
+
+
+---
+## Posterior inference
+
+- The joint posterior is
+.block[
+.small[
+$$
+`\begin{split}
+\pi\left(Z, \boldsymbol{\mu}, \sigma^2, \boldsymbol{\lambda} | Y \right) &amp; \propto \left[ \prod_{i=1}^n  p\left(y_i | z_i, \mu_{z_i}, \sigma^2 \right) \right]  \cdot \Pr(Z| \boldsymbol{\mu}, \sigma^2, \boldsymbol{\lambda})  \cdot \pi(\boldsymbol{\mu}, \sigma^2, \boldsymbol{\lambda}) \\
+\\
+&amp; \propto \left[ \prod_{i=1}^n  p\left(y_i | z_i, \mu_{z_i}, \sigma^2 \right) \right] \cdot \Pr(Z| \boldsymbol{\lambda}) \cdot \pi(\boldsymbol{\lambda})  \cdot \pi(\boldsymbol{\mu})  \cdot \pi(\sigma^2) \\
+\\
+&amp; \propto \left[ \prod_{i=1}^n \dfrac{1}{\sqrt{2\pi\sigma^2}}  \ \textrm{exp}\left\{-\frac{1}{2\sigma^2} (y_i-\mu_{z_i})^2\right\} \right] \\
+&amp; \ \ \ \ \ \times \left[ \prod_{i=1}^n \prod\limits_{k=1}^K \lambda_k^{\mathbb{1}[z_i = k]} \right] \\
+&amp; \ \ \ \ \ \times \left[ \prod\limits_{k=1}^K \lambda_k^{\alpha_k-1} \right]. \\
+&amp; \ \ \ \ \ \times \left[ \prod\limits_{k=1}^K \mathcal{N}(\mu_k; \mu_0,\gamma^2_0) \right] \\
+&amp; \ \ \ \ \ \times \left[ \mathcal{IG}\left(\sigma^2; \dfrac{\nu_0}{2}, \dfrac{\nu_0 \sigma_0^2}{2}\right) \right]. \\
+\end{split}`
+$$
+]
+]
+
+
+
+---
+## Full conditionals
+
+- For `\(i = 1, \ldots, n\)`, sample `\(z_i \in \{1,\ldots, K\}\)` from a categorical distribution (multinomial distribution with sample size one) with probabilities
+.block[
+.small[
+$$
+`\begin{split}
+\Pr[z_i = k | \dots ] &amp; = \dfrac{ \Pr[y_i, z_i = k | \mu_k, \sigma^2, \lambda_k] }{ \sum\limits^K_{l=1} \Pr[y_i, z_i = l | \mu_l, \sigma^2, \lambda_l] } \\
+\\
+&amp; = \dfrac{ \Pr[y_i | z_i = k, \mu_k, \sigma^2] \cdot \Pr[z_i = k| \lambda_k] }{ \sum\limits^K_{l=1} \Pr[y_i | z_i = l, \mu_l, \sigma^2] \cdot \Pr[z_i = l| \lambda_l] } \\
+\\
+&amp; = \dfrac{ \lambda_k \cdot \mathcal{N}\left(y_i;  \mu_k, \sigma^2 \right) }{ \sum\limits^K_{l=1} \lambda_l \cdot \mathcal{N}\left(y_i;  \mu_l, \sigma^2 \right) }. \\
+\end{split}`
+$$
+]
+]
+
+--
+
+- Note that `\(\mathcal{N}\left(y_i;  \mu_k, \sigma^2 \right)\)` just means evaluating the density `\(\mathcal{N}\left(\mu_k, \sigma^2 \right)\)` at the value `\(y_i\)`. 
+
+
+
+---
+## Full conditionals
+
+- Next, sample `\(\boldsymbol{\lambda} = (\lambda_1, \ldots, \lambda_K)\)` from
+.block[
+.small[
+$$
+`\begin{split}
+\pi[\boldsymbol{\lambda} | \dots ] \equiv \textrm{Dirichlet}\left(\alpha_1 + n_1,\ldots,\alpha_K + n_K\right),\\
+\end{split}`
+$$
+]
+]
+
+  where `\(n_k = \sum\limits_{i=1}^n \mathbb{1}[z_i = k]\)`, the number of individuals assigned to cluster `\(k\)`.
+
+--
+
+- Sample the mean `\(\mu_k\)` for each cluster from
+.block[
+.small[
+$$
+`\begin{split}
+\pi[\mu_k | \dots ] &amp; \equiv \mathcal{N}(\mu_{k,n},\gamma^2_{k,n});\\
+\gamma^2_{k,n} &amp; = \dfrac{1}{ \dfrac{n_k}{\sigma^2} + \dfrac{1}{\gamma_0^2} }; \ \ \ \ \ \ \ \ \mu_{k,n} = \gamma^2_{k,n} \left[ \dfrac{n_k}{\sigma^2} \bar{y}_k + \dfrac{1}{\gamma_0^2} \mu_0 \right],
+\end{split}`
+$$
+]
+]
+
+--
+
+- Finally, sample `\(\sigma^2\)` from
+.block[
+.small[
+$$
+`\begin{split}
+\pi(\sigma^2 | \dots ) &amp; \boldsymbol{=} \mathcal{IG}\left(\dfrac{\nu_n}{2}, \dfrac{\nu_n\sigma_n^2}{2}\right).\\
+\nu_n &amp; = \nu_0 + n; \ \ \ \ \ \ \ \sigma_n^2  = \dfrac{1}{\nu_n} \left[ \nu_0 \sigma_0^2 + \sum^n_{i=1} (y_i - \mu_{z_i})^2 \right].\\
+\end{split}`
+$$
+]
+]
+
+
+
+
+---
+## Practical considerations
+
+- The standard Gibbs sampler for this model can suffer from label switching.
+
+--
+
+- For example, suppose our groups are men and women. Then, if we run the sampler multiple times (starting from the same initial values), sometimes it will settle on females as the first group, and sometimes on females are the second group.
+
+--
+
+- Specifically, MCMC on mixture models in general can suffer from label switching.
+
+--
+
+- Fortunately, results are still valid if we interpret them correctly.
+
+--
+
+- Specifically, we should focus on quantities and estimands that are invariant to permutations of the clusters. For example, look at marginal quantities, instead of conditional ones.
+
+
+
+
+---
+## Other practical considerations
+
+- So far we have assumed that the number of clusters `\(K\)` is known.
+
+--
+
+- What if we don't know `\(K\)`?
+
+  + Compare marginal likelihood for different choices of `\(K\)` and select `\(K\)` with best performance.
+
+--
+
+  + Can also use other metrics, such as MSE, and so on.
+  
+--
+
+  + Maybe a prior on `\(K\)`?
+
+--
+
+  + Go Bayesian non-parametric: .hlight[Dirichlet processes]!
+
+
+  
+
+---
+class: center, middle
+
+# See the R script [here](https://sta-602l-s21.github.io/Course-Website/slides/Mixtures.R) for sample code.
+
+
+
+---
+## Finite mixture of multivariate normals
+
+- It is relatively easy to extend this to the multivariate case.
+
+--
+
+- As with the univariate case, given a sufficiently large number of mixture components, a scale-location multivariate normal mixture model can be used to approximate any multivariate density.
+
+--
+
+- We have
+$$
+`\begin{split}
+\textbf{y}_i &amp; \overset{iid}{\sim} \sum\limits_{k = 1}^K \lambda_k \cdot \mathcal{N}_p(\boldsymbol{\mu}_k, \Sigma_k)
+\end{split}`
+$$
+
+--
+
+- Or equivalently,
+$$
+`\begin{split}
+\textbf{y}_i | z_i, \boldsymbol{\mu}_{z_i}, \Sigma_{z_i} &amp; \sim \mathcal{N}_p(\boldsymbol{\mu}_{z_i}, \Sigma_{z_i})\\
+\Pr(z_i = k) &amp; = \lambda_k \equiv \prod\limits_{k=1}^K \lambda_k^{\mathbb{1}[z_i = k]}\\
+\end{split}`
+$$
+
+
+
+---
+## Posterior inference
+
+- We can then specify priors as
+$$
+`\begin{split}
+\pi(\boldsymbol{\mu}_k)  &amp; = \mathcal{N}_p\left(\boldsymbol{\mu}_0, \Lambda_0 \right) \ \ \ \ \text{for } k = 1, \ldots, K; \\
+\\
+\pi(\Sigma_k) &amp; = \mathcal{IW}_p\left(\nu_0, S_0\right) \ \ \ \ \text{for } k = 1, \ldots, K; \\
+\\
+\pi[\boldsymbol{\lambda}] &amp; = \textrm{Dirichlet}(a_1,\ldots,a_K).\\
+\end{split}`
+$$
+
+--
+
+- We can also just use the conjugate option for `\(\pi(\boldsymbol{\mu}_k, \Sigma_k)\)` to avoid specifying `\(\Lambda_0\)`, so that we have
+$$
+`\begin{split}
+\pi(\boldsymbol{\mu}_k, \Sigma_k)  &amp; = \pi(\boldsymbol{\mu}_k | \Sigma_k) \cdot \pi(\Sigma_k)\\
+&amp; = \mathcal{N}_p\left(\boldsymbol{\mu}_0, \frac{1}{\kappa_0}\Sigma_k\right) \cdot \mathcal{IW}_p\left(\nu_0, S_0\right) \ \ \ \ \text{for } k = 1, \ldots, K; \\
+\\
+\pi[\boldsymbol{\lambda}] &amp; = \textrm{Dirichlet}(a_1,\ldots,a_K).\\
+\end{split}`
+$$
+
+--
+
+- Gibbs sampler for both options follow directly from STA 360/601/602 and what we have covered so far.
+
+
+---
+## Label switching again
+
+- To avoid label switching when fitting the model, we can constrain the order of the `\(\boldsymbol{\mu}_k\)`'s.
+
+--
+
+- Here are three of many approaches:
+
+--
+
+  1. Constrain the prior on the `\(\boldsymbol{\mu}_k\)`'s to be 
+`$$\boldsymbol{\mu}_k | \boldsymbol{\Sigma}_k \sim \mathcal{N}_p(\boldsymbol{\mu}_0, \frac{1}{\kappa_0}\Sigma_k ) \ \ \ \boldsymbol{\mu}_{k-1} &lt; \boldsymbol{\mu}_k &lt; \boldsymbol{\mu}_{k+1},$$`
+which does not always seem reasonable.
+
+--
+
+  2. Relax option 1 above to only the first component of the mean vectors
+`$$\boldsymbol{\mu}_k | \boldsymbol{\Sigma}_k \sim \mathcal{N}_p(\boldsymbol{\mu}_0, \frac{1}{\kappa_0}\Sigma_k ) \ \ \ {\mu}_{1,k-1} &lt; {\mu}_{1,k} &lt; {\mu}_{1,k+1}.$$`
+
+--
+
+  3. Try an ad-hoc fix. After sampling the `\(\boldsymbol{\mu}_k\)`'s, rearrange the labels to satisfy `\({\mu}_{1,k-1} &lt; {\mu}_{1,k} &lt; {\mu}_{1,k+1}\)` and reassign the labels on `\(\boldsymbol{\Sigma}_k\)` accordingly.
+
+
+---
+## DP mixture of normals (teaser)
+
+- To avoid setting `\(K\)` apriori, we can extend this finite mixture of normals to a .hlight[Dirichlet process (DP) mixture of normals].
+
+--
+
+- The first level of the model remains the same. That is,
+$$
+`\begin{split}
+\textbf{y}_i | z_i, \boldsymbol{\mu}_{z_i}, \Sigma_{z_i} &amp; \sim \mathcal{N}_p(\boldsymbol{\mu}_{z_i}, \Sigma_{z_i}) \ \ \ \ \text{for each }i;\\
+\\
+\pi(\boldsymbol{\mu}_k, \Sigma_k)  &amp; = \pi(\boldsymbol{\mu}_k | \Sigma_k) \cdot \pi(\Sigma_k)\\
+\\
+&amp; = \mathcal{N}_p\left(\boldsymbol{\mu}, \frac{1}{\kappa_0}\Sigma_k\right) \cdot \mathcal{IW}_p\left(\nu_0, S_0\right) \ \ \ \ \text{for each } k.\\
+\end{split}`
+$$
+
+
+---
+## DP mixture of normals (teaser)
+
+- For the prior on `\(\boldsymbol{\lambda} = (\lambda_1,\ldots,\lambda_K)\)`, use the following .hlight[stick breaking representation of the Dirichlet process].
+$$
+`\begin{split}
+P(z_i = k)  &amp; = \lambda_k;\\
+\lambda_k  &amp; = V_k \prod\limits_{l &lt; k}^{} (1 - V_l) \ \ \text{for} \ \ k = 1, \ldots, \infty;\\
+V_k  &amp; \overset{iid}{\sim} \text{Beta}(1, \alpha);\\
+\alpha &amp; \sim \text{Gamma}(a, b).\\
+\end{split}`
+$$
+
+--
+
+- As an approximation, use `\(\lambda_k  = V_k \prod\limits_{l &lt; k}^{} (1 - V_l) \ \ \textrm{for} \ \ k = 1, \ldots, K^{\star}\)` with `\(K^{\star}\)` set to be as large as possible!
+
+--
+
+- This specification forces the model to only use as many components as needed, and usually, no more. Also, the Gibbs sampler is relatively straightforward.
+
+--
+
+- Other details are beyond the scope of this course, but I am happy to provide resources for those interested!
+
+
+
+
+
+---
+
+class: center, middle
+
+# What's next?
+
+### Move on to the readings for the next module!
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

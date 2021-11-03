@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>STA 610L: Module 4.5</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dr. Olanrewaju Michael Akande" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# STA 610L: Module 4.5
+## Introduction to finite mixture models (categorical data)
+### Dr. Olanrewaju Michael Akande
+
+---
+
+
+
+
+
+
+
+
+
+## Categorical data (univariate)
+
+- Suppose
+
+  + `\(Y \in \{1,\ldots, D\}\)`;
+  
+  + `\(\Pr(y = d) = \theta_d\)` for each `\(d = 1,\ldots, D\)`; and
+  
+  + `\(\boldsymbol{\theta} = (\theta_1,\ldots,\theta_D)\)`.
+  
+- Then the pmf of `\(Y\)` is
+.block[
+.small[
+`$$\Pr[y = d| \boldsymbol{\theta}] = \prod_{d=1}^D \theta_d^{\mathbb{1}[y = d]}.$$`
+]
+]
+
+--
+
+- We say `\(Y\)` has a .hlight[multinomial distribution] with sample size 1, or a .hlight[categorical distribution].
+
+--
+
+- Write as `\(Y | \boldsymbol{\theta} \sim \textrm{Multinomial}(1,\boldsymbol{\theta})\)` or `\(Y | \boldsymbol{\theta} \sim \textrm{Categorical}(\boldsymbol{\theta})\)`.
+
+--
+
+- Clearly, this is just an extension of the Bernoulli distribution.
+
+
+
+
+---
+## Dirichlet distribution
+
+- Since the elements of the probability vector `\(\boldsymbol{\theta}\)` must always sum to one, that is, its support is the `\(D-1\)` .hlight[simplex].
+
+--
+
+- A conjugate prior for categorical/multinomial data is the .hlight[Dirichlet distribution].
+
+--
+
+- A random variable `\(\boldsymbol{\theta}\)` has a .hlight[Dirichlet distribution] with parameter `\(\boldsymbol{\alpha}\)`, if
+.block[
+.small[
+`$$p[\boldsymbol{\theta} | \boldsymbol{\alpha}] = \dfrac{\Gamma\left(\sum_{d=1}^D \alpha_d\right)}{\prod_{d=1}^D \Gamma(\alpha_d)} \prod_{d=1}^D \theta_d^{\alpha_d-1}, \ \ \ \alpha_d &gt; 0 \ \textrm{ for all } \ d = 1,\ldots, D.$$`
+]
+]
+
+  where `\(\boldsymbol{\alpha} = (\alpha_1,\ldots,\alpha_D)\)`, and
+.block[
+.small[
+`$$\sum_{d=1}^D \theta_d = 1, \ \ \theta_d \geq 0 \ \textrm{ for all } \ d = 1,\ldots, D.$$`
+]
+]
+
+--
+
+- We write this as `\(\boldsymbol{\theta} \sim \textrm{Dirichlet}(\boldsymbol{\alpha}) = \textrm{Dirichlet}(\alpha_1,\ldots,\alpha_D)\)`.
+
+--
+
+- The Dirichlet distribution is a multivariate generalization of the .hlight[beta distribution].
+
+
+
+---
+## Dirichlet distribution
+
+- Write
+.block[
+.small[
+`$$\alpha_0 = \sum_{d=1}^D \alpha_d \ \ \ \textrm{and} \ \ \ \alpha_d^\star = \dfrac{\alpha_d}{\alpha_0}.$$`
+]
+]
+
+--
+
+- Then we can re-write the pdf as
+.block[
+.small[
+`$$p[\boldsymbol{\theta} | \boldsymbol{\alpha}] = \frac{\Gamma\left(\alpha_0\right)}{\prod_{d=1}^D \Gamma(\alpha_d)} \prod_{d=1}^D \theta_d^{\alpha_d-1}, \ \ \ \alpha_d &gt; 0 \ \textrm{ for all } \ d = 1,\ldots, D.$$`
+]
+]
+  
+--
+
+- Properties:
+
+  - 
+.block[
+.small[
+`$$\mathbb{E}[\theta_d] = \alpha_d^\star;$$`
+]
+]
+
+--
+
+  - 
+.block[
+.small[
+`$$\textrm{Mode}[\theta_d] = \dfrac{\alpha_d - 1}{\alpha_0 - d};$$`
+]
+]
+
+--
+  
+  - 
+.block[
+.small[
+`$$\mathbb{Var}[\theta_d] = \dfrac{\alpha_d^\star(1-\alpha_d^\star)}{\alpha_0 + 1} = \dfrac{\mathbb{E}[\theta_d](1-\mathbb{E}[\theta_d])}{\alpha_0 + 1};$$`
+]
+]
+  
+--
+
+  - 
+.block[
+.small[
+`$$\mathbb{Cov}[\theta_d,\theta_k] = \dfrac{\alpha_d^\star\alpha_k^\star}{\alpha_0 + 1} = \dfrac{\mathbb{E}[\theta_d]\mathbb{E}[\theta_k]}{\alpha_0 + 1}.$$`
+]
+]
+
+
+
+
+
+---
+## Dirichlet examples
+
+`\(\textrm{Dirichlet}(1,1,1)\)`
+
+&lt;img src="4-5-mixture-models-categorical_files/figure-html/unnamed-chunk-2-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+## Dirichlet examples
+
+`\(\textrm{Dirichlet}(10,10,10)\)`
+
+&lt;img src="4-5-mixture-models-categorical_files/figure-html/unnamed-chunk-3-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+## Dirichlet examples
+
+`\(\textrm{Dirichlet}(100,100,100)\)`
+
+&lt;img src="4-5-mixture-models-categorical_files/figure-html/unnamed-chunk-4-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+## Dirichlet examples
+
+`\(\textrm{Dirichlet}(1,10,1)\)`
+
+&lt;img src="4-5-mixture-models-categorical_files/figure-html/unnamed-chunk-5-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+
+---
+## Dirichlet examples
+
+`\(\textrm{Dirichlet}(50,100,10)\)`
+
+&lt;img src="4-5-mixture-models-categorical_files/figure-html/unnamed-chunk-6-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+
+
+---
+## Likelihood
+
+- Let `\(Y_i, \ldots, Y_n | \boldsymbol{\theta} \sim \textrm{Categorical}(\boldsymbol{\theta})\)`.
+
+--
+
+- Recall
+.block[
+.small[
+`$$\Pr[y_i = d| \boldsymbol{\theta}] = \prod_{d=1}^D \theta_d^{\mathbb{1}[y_i = d]}.$$`
+]
+]
+
+--
+
+- Then,
+.block[
+.small[
+$$
+`\begin{split}
+p[Y | \boldsymbol{\theta}] = p[y_1,\ldots,y_n | \boldsymbol{\theta}] = \prod_{i=1}^n \prod_{d=1}^D \theta_d^{\mathbb{1}[y_i = d]} = \prod_{d=1}^D  \theta_d^{\sum_{i=1}^n \mathbb{1}[y_i = d]} = \prod_{d=1}^D  \theta_d^{n_d}
+\end{split}`
+$$
+]
+]
+
+  where `\(n_d\)` is just the number of individuals in category `\(d\)`.
+
+--
+
+- Maximum likelihood estimate of `\(\theta_d\)` is
+.block[
+.small[
+`$$\hat{\theta}_d = \dfrac{n_d}{n}, \ \ d = 1,\ldots, D$$`
+]
+]
+
+
+
+---
+## Posterior
+
+- Set `\(\pi(\boldsymbol{\theta}) = \textrm{Dirichlet}(\alpha_1,\ldots,\alpha_D)\)`. Then
+.block[
+.small[
+$$
+`\begin{split}
+\pi(\boldsymbol{\theta} | Y) &amp; \propto p[Y| \boldsymbol{\theta}] \cdot \pi[\boldsymbol{\theta}]\\
+&amp; \propto \prod_{d=1}^D  \theta_d^{n_d} \prod_{d=1}^D \theta_d^{\alpha_d-1} \\
+&amp; \propto \prod_{d=1}^D  \theta_d^{\alpha_d + n_d - 1}\\
+&amp; = \textrm{Dirichlet}(\alpha_1 + n_1,\ldots,\alpha_D + n_D)
+\end{split}`
+$$
+]
+]
+
+--
+
+- Posterior expectation:
+.block[
+.small[
+`$$\mathbb{E}[\theta_d | Y] = \dfrac{\alpha_d + n_d}{\sum_{d^\star=1}^D (\alpha_{d^\star} + n_{d^\star})}.$$`
+]
+]
+
+--
+
+- &lt;div class="question"&gt;
+We can also extend the Dirichlet-multinomial model to more variables (contingency tables).
+&lt;/div&gt;
+
+--
+
+- First, what if our data actually comes from `\(K\)` different sub-populations of groups of people?
+
+
+
+---
+## Finite mixture of multinomials
+
+
+- For example, if our categorical data comes from men and women, and we don't expect marginal independence across the two groups, then we have a mixture of distributions.
+
+--
+
+- With our data coming from a "combination" or "mixture" of sub-populations, we no longer have independence across all observations, so that the likelihood `\(p[Y| \boldsymbol{\theta}] \neq \prod\limits_{i=1}^n \prod\limits_{d=1}^D \theta_j^{\mathbb{1}[y_i = d]}\)`.
+
+--
+
+- However, we can still have "conditional independence" within each group.
+
+--
+
+- Unfortunately, we do not always know the indexes for those groups.
+
+--
+
+- That is, we know our data contains `\(K\)` different groups, but we actually do not know which observations belong to which groups.
+
+--
+
+- **Solution**: introduce a .hlight[latent variable] `\(z_i\)` representing the group/cluster indicator for each observation `\(i\)`, so that each `\(z_i \in \{1,\ldots, K\}\)`.
+
+
+
+
+---
+## Finite mixture of multinomials
+
+- Given the cluster indicator `\(z_i\)` for observation `\(i\)`, write
+  + `\(\Pr(y_i = d | z_i) = \psi_{z_i,d} \equiv \prod\limits_{d=1}^D \psi_{z_i,d}^{\mathbb{1}[y_i = d | z_i]}\)`, and
+  + `\(\Pr(z_i = k) = \lambda_k \equiv \prod\limits_{k=1}^K \lambda_k^{\mathbb{1}[z_i = k]}\)`.
+  
+--
+
+- Then, the marginal probabilities we care about will be
+.block[
+.small[
+$$
+`\begin{split}
+\theta_d &amp; = \Pr(y_i = d)\\
+&amp; = \sum_{k=1}^K \Pr(y_i = d | z_i = k) \cdot \Pr(z_i = k)\\
+&amp; = \sum_{k=1}^K \lambda_k \cdot \psi_{k,d}, \\
+\end{split}`
+$$
+]
+]
+
+  which is a .hlight[finite mixture of multinomials], with the weights given by `\(\lambda_k\)`.
+  
+&lt;!-- -- --&gt;
+
+&lt;!-- - Intuitively, if we randomly select any `\(y_i\)`, the probability that the `\(y_i\)` is equal to `\(d\)`, `\(\Pr(y_i = d)\)`, is a weighted average of the probability of `\(y_i\)` is equal to `\(d\)` within each cluster/group. --&gt;
+
+
+
+
+---
+## Posterior inference
+
+- Write
+
+  + `\(\boldsymbol{\lambda} = (\lambda_1, \ldots, \lambda_K)\)`, and
+  
+--
+
+  + `\(\boldsymbol{\psi} = \{\psi_{z_i,d}\}\)` to be a `\(K \times D\)` matrix of probabilities, where each `\(k\)`th row is the vector of probabilities for cluster `\(k\)`.
+
+--
+
+- The observed data likelihood is
+.block[
+.small[
+$$
+`\begin{split}
+p\left[Y = (y_1, \ldots, y_n) | Z = (z_1, \ldots, z_n), \boldsymbol{\psi}, \boldsymbol{\lambda}\right] &amp; = \prod_{i=1}^n \prod\limits_{d=1}^D \Pr\left(y_i = d | z_i, \psi_{z_i,d} \right)\\
+&amp; = \prod_{i=1}^n \prod\limits_{d=1}^D \psi_{z_i,d}^{\mathbb{1}[y_i = d | z_i]},
+\end{split}`
+$$
+]
+]
+
+  which includes products (and not the sums in the mixture pdf), and as you will see, makes sampling a bit easier.
+  
+--
+
+- Next we need priors.
+
+
+
+---
+## Posterior inference
+
+- First, for `\(\boldsymbol{\lambda} = (\lambda_1, \ldots, \lambda_K)\)`, the vector of cluster probabilities, we can use a Dirichlet prior. That is,
+.block[
+.small[
+`$$\pi[\boldsymbol{\lambda}] = \textrm{Dirichlet}(\alpha_1,\ldots,\alpha_K) \propto \prod\limits_{k=1}^K \lambda_k^{\alpha_k-1}.$$`
+]
+]
+  
+--
+
+- For `\(\boldsymbol{\psi}\)`, we can assume independent Dirichlet priors for each cluster vector `\(\boldsymbol{\psi}_k = (\psi_{k,1}, \ldots, \psi_{k,D})\)`. That is, for each `\(k = 1, \ldots, K\)`, 
+.block[
+.small[
+`$$\pi[\boldsymbol{\psi}_k] = \textrm{Dirichlet}(a_1,\ldots,a_d) \propto \prod\limits_{d=1}^D \psi_{k,d}^{a_d-1}.$$`
+]
+]
+  
+--
+
+- Finally, from our distribution on the `\(z_i\)`'s, we have
+.block[
+.small[
+$$
+`\begin{split}
+p\left[Z = (z_1, \ldots, z_n) | \boldsymbol{\lambda}\right] &amp; = \prod_{i=1}^n \prod\limits_{k=1}^K \lambda_k^{\mathbb{1}[z_i = k]}.
+\end{split}`
+$$
+]
+]
+
+
+
+
+---
+## Posterior inference
+
+- Note that the unobserved variables and parameters are `\(Z = (z_1, \ldots, z_n)\)`, `\(\boldsymbol{\psi}\)`, and `\(\boldsymbol{\lambda}\)`.
+
+--
+
+- So, the joint posterior is
+.block[
+.small[
+$$
+`\begin{split}
+\pi\left(Z, \boldsymbol{\psi}, \boldsymbol{\lambda} | Y \right) &amp; \propto p\left[Y | Z, \boldsymbol{\psi}, \boldsymbol{\lambda}\right]  \cdot p(Z| \boldsymbol{\psi}, \boldsymbol{\lambda})  \cdot \pi(\boldsymbol{\psi}, \boldsymbol{\lambda}) \\
+\\
+&amp; \propto \left[ \prod_{i=1}^n \prod\limits_{d=1}^D p\left(y_i = d | z_i, \psi_{z_i,d} \right) \right]  \cdot p(Z| \boldsymbol{\lambda})  \cdot \pi(\boldsymbol{\psi}) \cdot \pi(\boldsymbol{\lambda}) \\
+\\
+&amp; \propto \left( \prod_{i=1}^n \prod\limits_{d=1}^D \psi_{z_i,d}^{\mathbb{1}[y_i = d | z_i]} \right) \\
+&amp; \ \ \ \ \ \times \left( \prod_{i=1}^n \prod\limits_{k=1}^K \lambda_k^{\mathbb{1}[z_i = k]} \right) \\
+&amp; \ \ \ \ \ \times \left( \prod\limits_{k=1}^K \prod\limits_{d=1}^D \psi_{k,d}^{a_d-1} \right) \\
+&amp; \ \ \ \ \ \times \left( \prod\limits_{k=1}^K \lambda_k^{\alpha_k-1} \right). \\
+\end{split}`
+$$
+]
+]
+
+
+
+---
+## Posterior inference
+
+- First, we need to sample the `\(z_i\)`'s, one at a time, from their full conditionals. 
+
+--
+
+- For `\(i = 1, \ldots, n\)`, sample `\(z_i \in \{1,\ldots, K\}\)` from a categorical distribution (multinomial distribution with sample size one) with probabilities
+.block[
+.small[
+$$
+`\begin{split}
+\Pr[z_i = k | \dots ] &amp; = \Pr[z_i = k | y_i, \boldsymbol{\psi}_k, \lambda_k] \\
+\\
+&amp; = \dfrac{ \Pr[y_i, z_i = k | \boldsymbol{\psi}_k, \lambda_k] }{ \sum\limits^K_{l=1} \Pr[y_i, z_i = l | \boldsymbol{\psi}_l, \lambda_l] } \\
+\\
+&amp; = \dfrac{ \Pr[y_i | z_i = k, \boldsymbol{\psi}_k] \cdot \Pr[z_i = k, \lambda_k] }{ \sum\limits^K_{l=1} \Pr[y_i | z_i = l, \boldsymbol{\psi}_l] \cdot \Pr[z_i = l, \lambda_l] } \\
+\\
+&amp; = \dfrac{ \psi_{k,d} \cdot \lambda_k }{ \sum\limits^K_{l=1} \psi_{l,d} \cdot \lambda_l }. \\
+\end{split}`
+$$
+]
+]
+
+
+
+---
+## Posterior inference
+
+- Next, sample each cluster vector `\(\boldsymbol{\psi}_k = (\psi_{k,1}, \ldots, \psi_{k,D})\)` from
+.block[
+.small[
+$$
+`\begin{split}
+\pi[\boldsymbol{\psi}_k | \dots ] &amp; \propto \pi\left(Z, \boldsymbol{\psi}, \boldsymbol{\lambda} | Y \right) \\
+\\
+&amp; \propto \left( \prod_{i=1}^n \prod\limits_{d=1}^D \psi_{z_i,d}^{\mathbb{1}[y_i = d | z_i]} \right) \cdot \left( \prod_{i=1}^n \prod\limits_{k=1}^K \lambda_k^{\mathbb{1}[z_i = k]} \right) \cdot \left( \prod\limits_{k=1}^K \prod\limits_{d=1}^D \psi_{k,d}^{a_d-1} \right) \cdot \left( \prod\limits_{k=1}^K \lambda_k^{\alpha_k-1} \right)\\
+\\
+&amp; \propto \left(  \prod\limits_{d=1}^D \psi_{k,d}^{n_{k,d}} \right) \cdot \left( \prod\limits_{d=1}^D \psi_{k,d}^{a_d-1} \right) \\
+\\
+&amp; = \left(  \prod\limits_{d=1}^D \psi_{k,d}^{a_d + n_{k,d} - 1} \right) \\
+\\
+&amp; \equiv \textrm{Dirichlet}\left(a_1 + n_{k,1},\ldots,a_D + n_{k,D}\right).
+\end{split}`
+$$
+]
+]
+
+  where `\(n_{k,d} = \sum\limits_{i: z_i = k} \mathbb{1}[y_i = d]\)`, the number of individuals in cluster `\(k\)` that are assigned to category `\(d\)` of the levels of `\(y\)`.
+
+
+
+---
+## Posterior inference
+
+- Finally, sample `\(\boldsymbol{\lambda} = (\lambda_1, \ldots, \lambda_K)\)`, the vector of cluster probabilities from
+.block[
+.small[
+$$
+`\begin{split}
+\pi[\boldsymbol{\lambda} | \dots ] &amp; \propto \pi\left(Z, \boldsymbol{\psi}, \boldsymbol{\lambda} | Y \right) \\
+\\
+&amp; \propto \left( \prod_{i=1}^n \prod\limits_{d=1}^D \psi_{z_i,d}^{\mathbb{1}[y_i = d | z_i]} \right) \cdot \left( \prod_{i=1}^n \prod\limits_{k=1}^K \lambda_k^{\mathbb{1}[z_i = k]} \right) \cdot \left( \prod\limits_{k=1}^K \prod\limits_{d=1}^D \psi_{k,d}^{a_d-1} \right) \cdot \left( \prod\limits_{k=1}^K \lambda_k^{\alpha_k-1} \right)\\
+\\
+&amp; \propto \left( \prod_{i=1}^n \prod\limits_{k=1}^K \lambda_k^{\mathbb{1}[z_i = k]} \right) \cdot \left( \prod\limits_{k=1}^K \lambda_k^{\alpha_k-1} \right)\\
+\\
+&amp; \propto \left( \prod\limits_{k=1}^K \lambda_k^{n_k} \right) \cdot \left( \prod\limits_{k=1}^K \lambda_k^{\alpha_k-1} \right)\\
+\\
+&amp; \propto \left( \prod\limits_{k=1}^K \lambda_k^{\alpha_k + n_k - 1} \right)\\
+&amp; \equiv \textrm{Dirichlet}\left(\alpha_1 + n_1,\ldots,\alpha_K + n_K\right),\\
+\end{split}`
+$$
+]
+]
+
+  with `\(n_k = \sum\limits_{i=1}^n \mathbb{1}[z_i = k]\)`, the number of individuals assigned to cluster `\(k\)`.
+
+
+
+---
+## Categorical data: bivariate case
+
+- How can we extend the same ideeas to multiple categorical variables?
+
+--
+  
+- Well let's start small. Suppose we have data `\((y_{i1},y_{i2})\)`, for `\(i = 1, \ldots, n\)`, where
+  + `\(y_{i1} \in \{1,\ldots, D_1\}\)`
+  + `\(y_{i2} \in \{1,\ldots, D_2\}\)`.
+  
+--
+
+- This is just a two-way contingency table, so that we are interested in estimating the probabilities `\(\Pr(y_{i1} = d_1, y_{i2} = d_2) = \theta_{d_1d_2}\)`.
+    
+--
+      
+- Write `\(\boldsymbol{\theta} = \{\theta_{d_1d_2}\}\)`, which is a `\(D_1 \times D_2\)` matrix of all the probabilities.
+
+
+
+---
+## Categorical data: bivariate case
+        
+- The likelihood is therefore
+.block[
+.small[
+$$
+`\begin{split}
+p[Y| \boldsymbol{\theta}] &amp; = \prod_{i=1}^n \prod_{d_2=1}^{D_2} \prod_{d_1=1}^{D_1} \theta_{d_1d_2}^{\mathbb{1}[y_{i1} = d_1, y_{i2} = d_2]}\\
+\\
+&amp; = \prod_{d_2=1}^{D_2} \prod_{d_1=1}^{D_1} \theta_{d_1d_2}^{\sum\limits_{i=1}^n \mathbb{1}[y_{i1} = d_1, y_{i2} = d_2]}\\
+\\
+&amp; = \prod_{d_2=1}^{D_2} \prod_{d_1=1}^{D_1} \theta_{d_1d_2}^{n_{d_1d_2}}
+\end{split}`
+$$
+]
+]
+
+  where `\(n_{d_1d_2} = \sum\limits_{i=1}^n \mathbb{1}[y_{i1} = d_1, y_{i2} = d_2]\)` is just the number of observations in cell `\((d_1,d_2)\)` of the contingency table.
+      
+      
+      
+---
+## Posterior inference
+        
+- How can we do Bayesian inference?
+
+--
+
+- Several options! Most common are:
+
+--
+        
+- .hlight[Option 1:] Follow the univariate approach.
+
+  + Rewrite the bivariate data as univariate data, that is, `\(y_i \in \{1,\ldots, D_1 D_2\}\)`.
+
+--
+
+  + Write `\(\Pr(y_i = d) = \nu_d\)` for each `\(d = 1,\ldots, D_1 D_2\)`.
+  
+--
+
+  + Specify Dirichlet prior as `\(\boldsymbol{\nu} = (\nu_1,\ldots,\nu_{D_1 D_2}) \sim \textrm{Dirichlet}(\alpha_1,\ldots,\alpha_{D_1 D_2})\)`.
+  
+--
+
+  + Then, posterior is also Dirichlet with parameters updated with the number in each cell of the contingency table.
+      
+
+
+---
+## Posterior inference
+
+- .hlight[Option 2:] Assume independence, then follow the univariate approach.
+
+  + Write `\(\Pr(y_{i1} = d_1, y_{i2} = d_2) = \Pr(y_{i1} = d_1)\Pr(y_{i2} = d_2)\)`, so that `\(\theta_{d_1d_2} = \lambda_{d_1} \psi_{d_2}\)`.
+  
+--
+
+  + Specify independent Dirichlet priors on `\(\boldsymbol{\lambda} = (\lambda_1,\ldots,\lambda_{D_1})\)` and `\(\boldsymbol{\psi} = (\psi_1,\ldots,\psi_{D_2})\)`.
+  
+--
+
+  + That is,
+      + `\(\boldsymbol{\lambda} \sim \textrm{Dirichlet}(a_1,\ldots,a_{D_1})\)`
+      
+      + `\(\boldsymbol{\psi} \sim \textrm{Dirichlet}(b_1,\ldots,b_{D_2})\)`.
+
+--
+  + This reduces the number of parameters from `\(D_1 D_2 - 1\)` to `\(D_1 + D_2 - 2\)`.
+      
+
+---
+## Posterior inference
+        
+- .hlight[Option 3:] Log-linear model
+  + `\(\theta_{d_1d_2} = \dfrac{e^{ \alpha_{d_1} + \beta_{d_2} + \gamma_{d_1d_2} }}{ \sum\limits_{d_2=1}^{D_2} \sum\limits_{d_1=1}^{D_1} e^{ \alpha_{d_1} + \beta_{d_2} + \gamma_{d_1d_2} }}\)`;
+  
+--
+
+  + Specify priors (perhaps normal) on the parameters.
+      
+
+
+---
+## Posterior inference
+        
+- .hlight[Option 4:] Latent structure model
+  + Assume conditional independence given a .hlight[latent variable];
+  
+--
+
+  + That is, write
+  .block[
+.small[
+$$
+`\begin{split}
+\theta_{d_1d_2} &amp; = \Pr(y_{i1} = d_1, y_{i2} = d_2)\\
+&amp; = \sum_{k=1}^K \Pr(y_{i1} = d_1, y_{i2} = d_2 | z_i = k) \cdot \Pr(z_i = k)\\
+&amp; = \sum_{k=1}^K \Pr(y_{i1} = d_2| z_i = k) \cdot \Pr(y_{i2} = d_2 | z_i = k) \cdot \Pr(z_i = k)\\
+&amp; = \sum_{k=1}^K \lambda_{k,d_1} \psi_{k,d_2} \cdot \omega_k .\\
+\end{split}`
+$$
+]
+]
+
+--
+
+  + This is once again, a .hlight[finite mixture of multinomial distributions].
+     
+
+
+---
+## Categorical data: extensions
+
+- For categorical data with more than two categorical variables, it is relatively easy to extend the framework for latent structure models.
+
+--
+
+- Clearly, there will be many more parameters (vectors and matrices) to keep track of, depending on the number of clusters and number of variables!
+
+--
+
+- If interested, read up on .hlight[finite mixture of products of multinomials]. 
+
+--
+
+- Can also go full Bayesian nonparametrics with a .hlight[Dirichlet process mixture of products of multinomials]. 
+
+--
+
+- Happy to provide resources for those interested!
+
+
+
+
+
+---
+
+class: center, middle
+
+# What's next?
+
+### Move on to the readings for the next module!
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

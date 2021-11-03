@@ -329,12 +329,12 @@ lessons:
   - week: "WEEK 12"
     date: "Mon, Nov 8"
     title: "Module 4.5: Introduction to finite mixture models (categorical data)"
-    #slides: "4-5-mixture-models-categorical.html"
-    #slidespdf: "4-5-mixture-models-categorical.pdf"
+    slides: "4-5-mixture-models-categorical.html"
+    slidespdf: "4-5-mixture-models-categorical.pdf"
     
   - title: "Module 4.6: Introduction to finite mixture models (continuous data)"
-    #slides: "4-6-mixture-models-continuous.html"
-    #slidespdf: "4-6-mixture-models-continuous.pdf"
+    slides: "4-6-mixture-models-continuous.html"
+    slidespdf: "4-6-mixture-models-continuous.pdf"
     
   
   - date: "Wed, Nov 10"
