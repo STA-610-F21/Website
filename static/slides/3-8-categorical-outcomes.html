@@ -603,7 +603,7 @@ This can seem counter-intuitive in many examples, thus, many books and software 
 Suppose we have `\(K=5\)`, `\(\beta_1 = 1.1\)`, and `\((\beta_{01},\beta_{02},\beta_{03},\beta_{04}) = (0.5,1,2,2.5)\)` in the first representation
 .block[
 .small[
-`$$\textrm{log}\left(\dfrac{\Pr[y_i \leq k| x_i]}{\Pr[y_i &gt; k| x_i]}\right) = \beta_{0j} + \beta_{1} x_{i1}, \ \ \ k = 1, \ldots, 4,$$`
+`$$\textrm{log}\left(\dfrac{\Pr[y_i \leq k| x_i]}{\Pr[y_i &gt; k| x_i]}\right) = \beta_{0k} + \beta_{1} x_{i1}, \ \ \ k = 1, \ldots, 4,$$`
 ]
 ]
 
@@ -618,7 +618,7 @@ Suppose we have `\(K=5\)`, `\(\beta_1 = 1.1\)`, and `\((\beta_{01},\beta_{02},\b
 But with `\(K=5\)`, and the same values `\(\beta_1 = 1.1\)`, and `\((\beta_{01},\beta_{02},\beta_{03},\beta_{04}) = (0.5,1,2,2.5)\)` in the second representation
 .block[
 .small[
-`$$\textrm{log}\left(\dfrac{\Pr[y_i \leq k| x_i]}{\Pr[y_i &gt; k| x_i]}\right) = \beta_{0j} - \beta_{1} x_{i1}, \ \ \ k = 1, \ldots, 4,$$`
+`$$\textrm{log}\left(\dfrac{\Pr[y_i \leq k| x_i]}{\Pr[y_i &gt; k| x_i]}\right) = \beta_{0k} - \beta_{1} x_{i1}, \ \ \ k = 1, \ldots, 4,$$`
 ]
 ]
 
@@ -641,9 +641,9 @@ Take our example on political ideology for instance. Suppose we fit the model
   where `\(x\)` is an indicator variable for political party, with `\(x = 1\)` for Democrats and `\(x = 0\)` for Republicans.
 
 Then,
-  + For any `\(k\)`, `\(\beta_{1}\)` is the log-odds of a Democrat, when compared to a Republican, of .hlight[being more conservative] than `\(j\)` .hlight[compared to being more liberal] than `\(j\)`.
+  + For any `\(k\)`, `\(\beta_{1}\)` is the log-odds of a Democrat, when compared to a Republican, of .hlight[being more conservative] than `\(k\)` .hlight[compared to being more liberal] than `\(k\)`.
 
-  + For any `\(k\)`, `\(e^{\beta_{1}}\)` is the odds of a Democrat, when compared to a Republican, of .hlight[being more conservative] than `\(j\)` .hlight[compared to being more liberal] than `\(j\)`.
+  + For any `\(k\)`, `\(e^{\beta_{1}}\)` is the odds of a Democrat, when compared to a Republican, of .hlight[being more conservative] than `\(k\)` .hlight[compared to being more liberal] than `\(k\)`.
 
 If `\(\beta_{1} &gt; 0\)`, a Democrat's response .hlight[is more likely than a Republican's response] to be in the conservative direction than in the liberal direction.
 
