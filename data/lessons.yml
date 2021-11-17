@@ -332,10 +332,6 @@ lessons:
     slides: "4-5-mixture-models-categorical.html"
     slidespdf: "4-5-mixture-models-categorical.pdf"
     
-  - title: "Module 4.6: Introduction to finite mixture models (continuous data)"
-    slides: "4-6-mixture-models-continuous.html"
-    slidespdf: "4-6-mixture-models-continuous.pdf"
-    
   
   - date: "Wed, Nov 10"
     title: "Exam review"
@@ -352,7 +348,9 @@ lessons:
     
     
   - date: "Wed, Nov 17"
-    title: " "
+    title: "Module 4.6: Introduction to finite mixture models (continuous data)"
+    slides: "4-6-mixture-models-continuous.html"
+    slidespdf: "4-6-mixture-models-continuous.pdf"
     #title: "Team meetings for Case Study II"
     
     
